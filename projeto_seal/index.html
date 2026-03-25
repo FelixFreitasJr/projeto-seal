@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Consulta Estoque</title>
+</head>
+<body>
+
+<h2>Buscar Produto</h2>
+
+<input type="text" id="busca" placeholder="Digite código ou nome">
+<button id="btnBuscar">Buscar</button>
+
+<ul id="lista"></ul>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+  const supabaseUrl = 'https://kndmargfvjtbiylextfj.supabase.co'
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtuZG1hcmdmdmp0Yml5bGV4dGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzOTU4OTQsImV4cCI6MjA4OTk3MTg5NH0.ZMvYmUr6asA_HL-GPVRXh3GQcIcbXx7jL5-mFBKo8mE'
+
+  const supabase = createClient(supabaseUrl, supabaseKey)
+
+  async function buscar() {
+    const termo = document.getElementById('busca').value
+
+const { data, error } = await supabase
+  .from('produtos')
+  .select('*')
+  .or(`codigo.ilike.%${termo}%,nome.ilike.%${termo}%`)
+
+    console.log('DATA:', data)
+    console.log('ERROR:', error)
+
+    const lista = document.getElementById('lista')
+    lista.innerHTML = ''
+
+    if (data) {
+      data.forEach(item => {
+        const li = document.createElement('li')
+        li.innerText = `${item.codigo} - ${item.nome} | ${item.endereco_externo} | ${item.liberacao}`
+        lista.appendChild(li)
+      })
+    }
+  }
+
+  // 👇 FORA da função (correto)
+  document.getElementById('btnBuscar').addEventListener('click', buscar)
+
+</script>
+
+</body>
+</html>

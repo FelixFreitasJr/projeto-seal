@@ -1,0 +1,2 @@
+export const SUPABASE_URL =  'https://kndmargfvjtbiylextfj.supabase.co'
+export const SUPABASE_KEY =   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtuZG1hcmdmdmp0Yml5bGV4dGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzOTU4OTQsImV4cCI6MjA4OTk3MTg5NH0.ZMvYmUr6asA_HL-GPVRXh3GQcIcbXx7jL5-mFBKo8mE'
