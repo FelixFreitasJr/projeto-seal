@@ -21,7 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tabela.innerHTML = ''
 
-    let query = supabase.from('produtos').select('*')
+    let query = supabase
+    .from('produtos')
+    .select('*')
+    .order('nome', { ascending: true })
 
     if (termo) {
       query = query.or(`codigo.ilike.%${termo}%,nome.ilike.%${termo}%,observacao.ilike.%${termo}%`)
