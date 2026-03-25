@@ -8,9 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabela = document.getElementById('tabela')
   const total = document.getElementById('totalItens')
   const modal = document.getElementById('modal')
+  const inputBusca = document.getElementById('busca')
+
+  let timeout = null
 
   async function buscar() {
-    const termo = document.getElementById('busca').value
+    const termo = inputBusca.value.trim()
 
     tabela.innerHTML = ''
 
@@ -48,7 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
       linhas += `
         <tr>
           <td>${item.codigo}</td>
-          <td>${item.nome}</td>
+          <td>
+            ${item.nome}
+            <div class="obs">${item.observacao || ''}</div>
+          </td>
           <td>${item.endereco_externo || '-'}</td>
           <td>${item.endereco_satelite || '-'}</td>
           <td><span class="status ${classeStatus}">${item.liberacao || '-'}</span></td>
@@ -59,9 +65,19 @@ document.addEventListener('DOMContentLoaded', () => {
     tabela.innerHTML = linhas
   }
 
-  // BOTÕES
+  // BOTÃO BUSCAR
   document.getElementById('btnBuscar').addEventListener('click', buscar)
 
+  // BUSCA AUTOMÁTICA
+  inputBusca.addEventListener('input', () => {
+    clearTimeout(timeout)
+
+    timeout = setTimeout(() => {
+      buscar()
+    }, 300)
+  })
+
+  // MODAL
   document.getElementById('btnNovo').addEventListener('click', () => {
     modal.classList.remove('hidden')
   })
@@ -70,11 +86,15 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.classList.add('hidden')
   })
 
+  // SALVAR ITEM
   document.getElementById('btnSalvar').addEventListener('click', async () => {
-    const codigo = document.getElementById('codigo').value
-    const nome = document.getElementById('nome').value
-    const externo = document.getElementById('externo').value
-    const satelite = document.getElementById('satelite').value
+
+    // 🔥 FORÇAR MAIÚSCULO
+    const codigo = document.getElementById('codigo').value.toUpperCase()
+    const nome = document.getElementById('nome').value.toUpperCase()
+    const externo = document.getElementById('externo').value.toUpperCase()
+    const satelite = document.getElementById('satelite').value.toUpperCase()
+    const observacao = document.getElementById('observacao').value.toUpperCase()
     const liberacao = document.getElementById('liberacao').value
 
     if (!codigo || !nome) {
@@ -87,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .insert([{
         codigo,
         nome,
+        observacao,
         endereco_externo: externo,
         endereco_satelite: satelite,
         liberacao
@@ -107,10 +128,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('nome').value = ''
     document.getElementById('externo').value = ''
     document.getElementById('satelite').value = ''
+    document.getElementById('observacao').value = ''
 
     buscar()
   })
 
-  // carrega ao abrir
+  // CARREGA AO ABRIR
   buscar()
 })
