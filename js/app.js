@@ -4,17 +4,14 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 // conexão com Supabase
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-// função de busca
 async function buscar() {
   const termo = document.getElementById('busca').value
-  document.getElementById('totalItens').innerText = `${data.length} itens encontrados`
 
   const { data, error } = await supabase
     .from('produtos')
     .select('*')
     .or(`codigo.ilike.%${termo}%,nome.ilike.%${termo}%`)
 
-  // tratamento de erro
   if (error) {
     console.error(error)
     alert('Erro ao buscar dados')
@@ -24,14 +21,17 @@ async function buscar() {
   const tabela = document.getElementById('tabela')
   tabela.innerHTML = ''
 
-  // caso não tenha resultado
+  const total = document.getElementById('totalItens')
+
+  // 👉 valida depois de existir
   if (!data || data.length === 0) {
     tabela.innerHTML = '<tr><td colspan="5">Nenhum resultado encontrado</td></tr>'
-document.getElementById('totalItens').innerText = '0 itens encontrados'
+    total.innerText = '0 itens encontrados'
     return
   }
 
-  // montagem das linhas
+  total.innerText = `${data.length} itens encontrados`
+
   let linhas = ''
 
   data.forEach(item => {
