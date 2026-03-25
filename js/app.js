@@ -22,13 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
     tabela.innerHTML = ''
 
     let query = supabase
-    .from('produtos')
-    .select('*')
-    .order('nome', { ascending: true })
+      .from('produtos')
+      .select('*')
 
     if (termo) {
       query = query.or(`codigo.ilike.%${termo}%,nome.ilike.%${termo}%,observacao.ilike.%${termo}%`)
     }
+
+    query = query.order('nome', { ascending: true })
 
     const { data, error } = await query
 
@@ -67,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <td><span class="status ${classeStatus}">${item.liberacao || '-'}</span></td>
           <td>
             <button onclick="editarItem('${item.id}')">✏️</button>
+            <button onclick="excluirItem('${item.id}')" style="margin-left:5px;">🗑️</button>
           </td>
         </tr>
       `
@@ -87,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   document.getElementById('btnNovo').addEventListener('click', () => {
-    btnSalvar.dataset.id = '' // garante novo cadastro
+    btnSalvar.dataset.id = ''
     modal.classList.remove('hidden')
   })
 
@@ -196,4 +198,29 @@ window.editarItem = async function(id) {
   document.getElementById('btnSalvar').dataset.id = id
 
   document.getElementById('modal').classList.remove('hidden')
+}
+
+// =========================
+// EXCLUIR ITEM (GLOBAL)
+// =========================
+window.excluirItem = async function(id) {
+
+  const confirmar = confirm('Deseja realmente excluir este item?')
+  if (!confirmar) return
+
+  const { error } = await supabase
+    .from('produtos')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    console.error(error)
+    alert('Erro ao excluir item')
+    return
+  }
+
+  alert('Item excluído com sucesso')
+
+  // atualiza lista
+  document.querySelector('#btnBuscar').click()
 }
