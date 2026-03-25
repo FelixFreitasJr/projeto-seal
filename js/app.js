@@ -9,9 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const total = document.getElementById('totalItens')
   const modal = document.getElementById('modal')
   const inputBusca = document.getElementById('busca')
+  const btnSalvar = document.getElementById('btnSalvar')
 
   let timeout = null
 
+  // =========================
+  // BUSCAR
+  // =========================
   async function buscar() {
     const termo = inputBusca.value.trim()
 
@@ -32,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (!data || data.length === 0) {
-      tabela.innerHTML = '<tr><td colspan="5">Nenhum resultado encontrado</td></tr>'
+      tabela.innerHTML = '<tr><td colspan="6">Nenhum resultado encontrado</td></tr>'
       total.innerText = '0 itens no estoque'
       return
     }
@@ -58,6 +62,9 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>${item.endereco_externo || '-'}</td>
           <td>${item.endereco_satelite || '-'}</td>
           <td><span class="status ${classeStatus}">${item.liberacao || '-'}</span></td>
+          <td>
+            <button onclick="editarItem('${item.id}')">✏️</button>
+          </td>
         </tr>
       `
     })
@@ -65,20 +72,19 @@ document.addEventListener('DOMContentLoaded', () => {
     tabela.innerHTML = linhas
   }
 
-  // BOTÃO BUSCAR
+  // =========================
+  // EVENTOS
+  // =========================
+
   document.getElementById('btnBuscar').addEventListener('click', buscar)
 
-  // BUSCA AUTOMÁTICA
   inputBusca.addEventListener('input', () => {
     clearTimeout(timeout)
-
-    timeout = setTimeout(() => {
-      buscar()
-    }, 300)
+    timeout = setTimeout(buscar, 300)
   })
 
-  // MODAL
   document.getElementById('btnNovo').addEventListener('click', () => {
+    btnSalvar.dataset.id = '' // garante novo cadastro
     modal.classList.remove('hidden')
   })
 
@@ -86,10 +92,11 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.classList.add('hidden')
   })
 
-  // SALVAR ITEM
-  document.getElementById('btnSalvar').addEventListener('click', async () => {
+  // =========================
+  // SALVAR (INSERT / UPDATE)
+  // =========================
+  btnSalvar.addEventListener('click', async () => {
 
-    // 🔥 FORÇAR MAIÚSCULO
     const codigo = document.getElementById('codigo').value.toUpperCase()
     const nome = document.getElementById('nome').value.toUpperCase()
     const externo = document.getElementById('externo').value.toUpperCase()
@@ -102,16 +109,36 @@ document.addEventListener('DOMContentLoaded', () => {
       return
     }
 
-    const { error } = await supabase
-      .from('produtos')
-      .insert([{
-        codigo,
-        nome,
-        observacao,
-        endereco_externo: externo,
-        endereco_satelite: satelite,
-        liberacao
-      }])
+    const id = btnSalvar.dataset.id
+
+    let response
+
+    if (id) {
+      response = await supabase
+        .from('produtos')
+        .update({
+          codigo,
+          nome,
+          observacao,
+          endereco_externo: externo,
+          endereco_satelite: satelite,
+          liberacao
+        })
+        .eq('id', id)
+    } else {
+      response = await supabase
+        .from('produtos')
+        .insert([{
+          codigo,
+          nome,
+          observacao,
+          endereco_externo: externo,
+          endereco_satelite: satelite,
+          liberacao
+        }])
+    }
+
+    const { error } = response
 
     if (error) {
       console.error(error)
@@ -119,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return
     }
 
-    alert('Item cadastrado com sucesso')
+    alert(id ? 'Item atualizado com sucesso' : 'Item cadastrado com sucesso')
 
     modal.classList.add('hidden')
 
@@ -130,9 +157,40 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('satelite').value = ''
     document.getElementById('observacao').value = ''
 
+    btnSalvar.dataset.id = ''
+
     buscar()
   })
 
-  // CARREGA AO ABRIR
+  // carregar ao abrir
   buscar()
 })
+
+// =========================
+// EDITAR ITEM (GLOBAL)
+// =========================
+window.editarItem = async function(id) {
+
+  const { data, error } = await supabase
+    .from('produtos')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (error) {
+    console.error(error)
+    alert('Erro ao carregar item')
+    return
+  }
+
+  document.getElementById('codigo').value = data.codigo
+  document.getElementById('nome').value = data.nome
+  document.getElementById('externo').value = data.endereco_externo
+  document.getElementById('satelite').value = data.endereco_satelite
+  document.getElementById('observacao').value = data.observacao
+  document.getElementById('liberacao').value = data.liberacao
+
+  document.getElementById('btnSalvar').dataset.id = id
+
+  document.getElementById('modal').classList.remove('hidden')
+}
