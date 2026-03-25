@@ -18,6 +18,7 @@
 <div class="barra-topo">
   <input type="text" id="busca" placeholder="Pesquisar por código, nome ou endereço">
   <button id="btnBuscar">Buscar</button>
+  <button id="btnNovo">+ Novo Item</button>
 
   <span id="totalItens" class="contador">0 itens no estoque</span>
 </div>
@@ -42,6 +43,28 @@
   <a href="https://github.com/FelixFreitasJr" target="_blank">Felix Freitas Jr</a> — INI / Fiocruz |
   <a href="https://github.com/FelixFreitasJr/projeto-seal" target="_blank">Documentação</a>
 </footer>
+
+<div id="modal" class="modal hidden">
+  <div class="modal-content">
+    <h3>Novo Item</h3>
+
+    <input id="codigo" placeholder="Código">
+    <input id="nome" placeholder="Nome do item">
+    <input id="externo" placeholder="Endereço externo">
+    <input id="satelite" placeholder="Endereço satélite">
+
+    <select id="liberacao">
+      <option value="LIVRE">LIVRE</option>
+      <option value="SOMENTE NO EXTERNO">SOMENTE NO EXTERNO</option>
+      <option value="INATIVO">INATIVO</option>
+    </select>
+
+    <div class="modal-actions">
+      <button id="btnCancelar">Cancelar</button>
+      <button id="btnSalvar">Salvar</button>
+    </div>
+  </div>
+</div>
 
 <script type="module" src="js/app.js"></script>
 

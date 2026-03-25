@@ -3,59 +3,114 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-async function buscar() {
-  const termo = document.getElementById('busca').value
+document.addEventListener('DOMContentLoaded', () => {
+
   const tabela = document.getElementById('tabela')
   const total = document.getElementById('totalItens')
+  const modal = document.getElementById('modal')
 
-  tabela.innerHTML = ''
+  async function buscar() {
+    const termo = document.getElementById('busca').value
 
-  let query = supabase.from('produtos').select('*')
+    tabela.innerHTML = ''
 
-  if (termo) {
-    query = query.or(`codigo.ilike.%${termo}%,nome.ilike.%${termo}%`)
+    let query = supabase.from('produtos').select('*')
+
+    if (termo) {
+      query = query.or(`codigo.ilike.%${termo}%,nome.ilike.%${termo}%`)
+    }
+
+    const { data, error } = await query
+
+    if (error) {
+      console.error(error)
+      alert('Erro ao buscar dados')
+      return
+    }
+
+    if (!data || data.length === 0) {
+      tabela.innerHTML = '<tr><td colspan="5">Nenhum resultado encontrado</td></tr>'
+      total.innerText = '0 itens no estoque'
+      return
+    }
+
+    total.innerText = `${data.length} itens no estoque`
+
+    let linhas = ''
+
+    data.forEach(item => {
+      let classeStatus = ''
+
+      if (item.liberacao === 'LIVRE') classeStatus = 'livre'
+      else if (item.liberacao === 'SOMENTE NO EXTERNO') classeStatus = 'externo'
+      else classeStatus = 'inativo'
+
+      linhas += `
+        <tr>
+          <td>${item.codigo}</td>
+          <td>${item.nome}</td>
+          <td>${item.endereco_externo || '-'}</td>
+          <td>${item.endereco_satelite || '-'}</td>
+          <td><span class="status ${classeStatus}">${item.liberacao || '-'}</span></td>
+        </tr>
+      `
+    })
+
+    tabela.innerHTML = linhas
   }
 
-  const { data, error } = await query
+  // BOTÕES
+  document.getElementById('btnBuscar').addEventListener('click', buscar)
 
-  if (error) {
-    console.error(error)
-    alert('Erro ao buscar dados')
-    return
-  }
-
-  if (!data || data.length === 0) {
-    tabela.innerHTML = '<tr><td colspan="5">Nenhum resultado encontrado</td></tr>'
-    total.innerText = '0 itens no estoque'
-    return
-  }
-
-  total.innerText = `${data.length} itens no estoque`
-
-  let linhas = ''
-
-  data.forEach(item => {
-    let classeStatus = ''
-
-    if (item.liberacao === 'LIVRE') classeStatus = 'livre'
-    else if (item.liberacao === 'SOMENTE NO EXTERNO') classeStatus = 'externo'
-    else classeStatus = 'inativo'
-
-    linhas += `
-      <tr>
-        <td>${item.codigo}</td>
-        <td>${item.nome}</td>
-        <td>${item.endereco_externo || '-'}</td>
-        <td>${item.endereco_satelite || '-'}</td>
-        <td><span class="status ${classeStatus}">${item.liberacao || '-'}</span></td>
-      </tr>
-    `
+  document.getElementById('btnNovo').addEventListener('click', () => {
+    modal.classList.remove('hidden')
   })
 
-  tabela.innerHTML = linhas
-}
+  document.getElementById('btnCancelar').addEventListener('click', () => {
+    modal.classList.add('hidden')
+  })
 
-// eventos
-document.getElementById('btnBuscar').addEventListener('click', buscar)
+  document.getElementById('btnSalvar').addEventListener('click', async () => {
+    const codigo = document.getElementById('codigo').value
+    const nome = document.getElementById('nome').value
+    const externo = document.getElementById('externo').value
+    const satelite = document.getElementById('satelite').value
+    const liberacao = document.getElementById('liberacao').value
 
-window.addEventListener('load', buscar)
+    if (!codigo || !nome) {
+      alert('Código e Nome são obrigatórios')
+      return
+    }
+
+    const { error } = await supabase
+      .from('produtos')
+      .insert([{
+        codigo,
+        nome,
+        endereco_externo: externo,
+        endereco_satelite: satelite,
+        liberacao
+      }])
+
+    if (error) {
+      console.error(error)
+      alert('Erro ao salvar')
+      return
+    }
+
+    alert('Item cadastrado com sucesso')
+
+    modal.classList.add('hidden')
+
+    // limpar campos
+    document.getElementById('codigo').value = ''
+    document.getElementById('nome').value = ''
+    document.getElementById('externo').value = ''
+    document.getElementById('satelite').value = ''
+
+    buscar()
+  })
+
+  // carrega ao abrir
+  buscar()
+})
