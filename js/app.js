@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let query = supabase.from('produtos').select('*')
 
     if (termo) {
-      query = query.or(`codigo.ilike.%${termo}%,nome.ilike.%${termo}%`)
+      query = query.or(`codigo.ilike.%${termo}%,nome.ilike.%${termo}%,observacao.ilike.%${termo}%`)
     }
 
     const { data, error } = await query
