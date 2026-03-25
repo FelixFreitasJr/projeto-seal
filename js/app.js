@@ -115,6 +115,17 @@ document.addEventListener('DOMContentLoaded', () => {
       return
     }
 
+    const { data: existente } = await supabase
+      .from('produtos')
+      .select('id')
+      .eq('codigo', codigo)
+      .maybeSingle()
+
+    if (existente && existente.id !== id) {
+      alert('Já existe um item com esse código')
+      return
+    }
+
     const id = btnSalvar.dataset.id
 
     let response
@@ -246,7 +257,7 @@ window.clonarItem = async function(id) {
   }
 
   const novoItem = {
-    codigo: data.codigo,
+    codigo: data.codigo + '_COPIA',
     nome: data.nome + ' (CÓPIA)',
     observacao: data.observacao,
     endereco_externo: data.endereco_externo,
