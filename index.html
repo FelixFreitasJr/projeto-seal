@@ -2,17 +2,25 @@
 <html>
 <head>
   <title>Consulta Estoque</title>
-  
-  <!-- CSS -->
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<h2>Buscar Produto</h2>
+<!-- TOPO -->
+<div class="topo">
+  <div class="titulo">
+    <strong>SEAL — Serviço de Almoxarifado</strong><br>
+    <small>Localizador de Estoque</small>
+  </div>
+</div>
 
-<input type="text" id="busca" placeholder="Digite código ou nome">
-<button id="btnBuscar">Buscar</button>
+<!-- BUSCA -->
+<div class="busca-container">
+  <input type="text" id="busca" placeholder="Pesquisar por código, nome ou endereço">
+  <button id="btnBuscar">Buscar</button>
+</div>
 
+<!-- TABELA -->
 <table>
   <thead>
     <tr>
@@ -26,7 +34,6 @@
   <tbody id="tabela"></tbody>
 </table>
 
-<!-- JS sempre no final -->
 <script type="module" src="js/app.js"></script>
 
 </body>
