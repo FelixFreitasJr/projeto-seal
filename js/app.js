@@ -1,7 +1,6 @@
 import { SUPABASE_URL, SUPABASE_KEY } from './config.js'
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-// conexão com Supabase
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 async function buscar() {
@@ -27,11 +26,11 @@ async function buscar() {
 
   if (!data || data.length === 0) {
     tabela.innerHTML = '<tr><td colspan="5">Nenhum resultado encontrado</td></tr>'
-    total.innerText = '0 itens encontrados'
+    total.innerText = '0 itens no estoque'
     return
   }
 
-  total.innerText = `${data.length} itens encontrados`
+  total.innerText = `${data.length} itens no estoque`
 
   let linhas = ''
 
@@ -56,7 +55,7 @@ async function buscar() {
   tabela.innerHTML = linhas
 }
 
-// evento do botão
+// eventos
 document.getElementById('btnBuscar').addEventListener('click', buscar)
 
 window.addEventListener('load', buscar)

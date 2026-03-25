@@ -10,18 +10,16 @@
 <div class="topo">
   <div class="titulo">
     <strong>SEAL — Serviço de Almoxarifado</strong><br>
-    <small>Localizador de Estoque</small>
+    <small>Localizador de Estoque · INI / Fiocruz</small>
   </div>
 </div>
 
-<!-- BUSCA -->
-<div class="busca-container">
+<!-- BARRA DE BUSCA -->
+<div class="barra-topo">
   <input type="text" id="busca" placeholder="Pesquisar por código, nome ou endereço">
   <button id="btnBuscar">Buscar</button>
-</div>
 
-<div class="info">
-  <span id="totalItens">0 itens encontrados</span>
+  <span id="totalItens" class="contador">0 itens no estoque</span>
 </div>
 
 <!-- TABELA -->
@@ -37,6 +35,13 @@
   </thead>
   <tbody id="tabela"></tbody>
 </table>
+
+<!-- RODAPÉ -->
+<footer class="rodape">
+  Desenvolvido por 
+  <a href="https://github.com/FelixFreitasJr" target="_blank">Felix Freitas Jr</a> — INI / Fiocruz |
+  <a href="https://github.com/FelixFreitasJr/projeto-seal" target="_blank">Documentação</a>
+</footer>
 
 <script type="module" src="js/app.js"></script>
 

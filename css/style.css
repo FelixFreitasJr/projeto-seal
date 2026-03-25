@@ -17,32 +17,33 @@ body {
   opacity: 0.8;
 }
 
-/* BUSCA */
-.busca-container {
+/* BARRA DE BUSCA */
+.barra-topo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 20px;
 }
 
-.busca-container input {
+.barra-topo input {
   padding: 8px;
   width: 350px;
 }
 
-.busca-container button {
+.barra-topo button {
   padding: 8px 12px;
-  margin-left: 5px;
   cursor: pointer;
 }
 
-/* INFO (contador) */
-.info {
-  margin: 0 20px;
+.contador {
+  margin-left: auto;
   font-size: 14px;
   color: #555;
 }
 
 /* TABELA */
 table {
-  margin: 0 20px 20px 20px;
+  margin: 0 20px 10px 20px;
   border-collapse: collapse;
   width: calc(100% - 40px);
   background: white;
@@ -58,12 +59,11 @@ th {
   background-color: #f4f4f4;
 }
 
-/* HOVER */
 tr:hover {
   background-color: #f1f1f1;
 }
 
-/* ORGANIZAÇÃO DE COLUNAS */
+/* COLUNAS */
 th:nth-child(1), td:nth-child(1) {
   width: 120px;
   font-weight: bold;
@@ -88,7 +88,6 @@ th:nth-child(5), td:nth-child(5) {
   font-weight: bold;
 }
 
-/* CORES PROFISSIONAIS */
 .livre {
   background-color: #28a745;
   color: white;
@@ -102,4 +101,23 @@ th:nth-child(5), td:nth-child(5) {
 .inativo {
   background-color: #dc3545;
   color: white;
+}
+
+/* RODAPÉ */
+.rodape {
+  text-align: center;
+  padding: 10px;
+  font-size: 12px;
+  color: #777;
+  background-color: #f1f1f1;
+}
+
+.rodape a {
+  color: #2f7d5b;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.rodape a:hover {
+  text-decoration: underline;
 }
