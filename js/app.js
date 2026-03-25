@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>
             <button onclick="editarItem('${item.id}')">✏️</button>
             <button onclick="excluirItem('${item.id}')" style="margin-left:5px;">🗑️</button>
+            <button onclick="clonarItem('${item.id}')" style="margin-left:5px;">📄</button>
           </td>
         </tr>
       `
@@ -171,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
   buscar()
 })
 
+
 // =========================
 // EDITAR ITEM (GLOBAL)
 // =========================
@@ -200,6 +202,7 @@ window.editarItem = async function(id) {
   document.getElementById('modal').classList.remove('hidden')
 }
 
+
 // =========================
 // EXCLUIR ITEM (GLOBAL)
 // =========================
@@ -221,6 +224,47 @@ window.excluirItem = async function(id) {
 
   alert('Item excluído com sucesso')
 
-  // atualiza lista
+  document.querySelector('#btnBuscar').click()
+}
+
+
+// =========================
+// CLONAR ITEM (GLOBAL)
+// =========================
+window.clonarItem = async function(id) {
+
+  const { data, error } = await supabase
+    .from('produtos')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (error) {
+    console.error(error)
+    alert('Erro ao clonar item')
+    return
+  }
+
+  const novoItem = {
+    codigo: data.codigo,
+    nome: data.nome + ' (CÓPIA)',
+    observacao: data.observacao,
+    endereco_externo: data.endereco_externo,
+    endereco_satelite: data.endereco_satelite,
+    liberacao: data.liberacao
+  }
+
+  const { error: erroInsert } = await supabase
+    .from('produtos')
+    .insert([novoItem])
+
+  if (erroInsert) {
+    console.error(erroInsert)
+    alert('Erro ao clonar item')
+    return
+  }
+
+  alert('Item clonado com sucesso')
+
   document.querySelector('#btnBuscar').click()
 }
