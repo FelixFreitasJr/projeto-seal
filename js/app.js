@@ -6,11 +6,18 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 async function buscar() {
   const termo = document.getElementById('busca').value
+  const tabela = document.getElementById('tabela')
+  const total = document.getElementById('totalItens')
 
-  const { data, error } = await supabase
-    .from('produtos')
-    .select('*')
-    .or(`codigo.ilike.%${termo}%,nome.ilike.%${termo}%`)
+  tabela.innerHTML = ''
+
+  let query = supabase.from('produtos').select('*')
+
+  if (termo) {
+    query = query.or(`codigo.ilike.%${termo}%,nome.ilike.%${termo}%`)
+  }
+
+  const { data, error } = await query
 
   if (error) {
     console.error(error)
@@ -18,12 +25,6 @@ async function buscar() {
     return
   }
 
-  const tabela = document.getElementById('tabela')
-  tabela.innerHTML = ''
-
-  const total = document.getElementById('totalItens')
-
-  // 👉 valida depois de existir
   if (!data || data.length === 0) {
     tabela.innerHTML = '<tr><td colspan="5">Nenhum resultado encontrado</td></tr>'
     total.innerText = '0 itens encontrados'
@@ -57,3 +58,5 @@ async function buscar() {
 
 // evento do botão
 document.getElementById('btnBuscar').addEventListener('click', buscar)
+
+window.addEventListener('load', buscar)
