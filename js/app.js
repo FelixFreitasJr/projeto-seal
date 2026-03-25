@@ -7,6 +7,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 // função de busca
 async function buscar() {
   const termo = document.getElementById('busca').value
+  document.getElementById('totalItens').innerText = `${data.length} itens encontrados`
 
   const { data, error } = await supabase
     .from('produtos')
@@ -26,6 +27,7 @@ async function buscar() {
   // caso não tenha resultado
   if (!data || data.length === 0) {
     tabela.innerHTML = '<tr><td colspan="5">Nenhum resultado encontrado</td></tr>'
+document.getElementById('totalItens').innerText = '0 itens encontrados'
     return
   }
 
