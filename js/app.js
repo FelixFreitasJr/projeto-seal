@@ -115,6 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return
     }
 
+    const id = btnSalvar.dataset.id
+
     const { data: existente } = await supabase
       .from('produtos')
       .select('id')
@@ -126,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return
     }
 
-    const id = btnSalvar.dataset.id
+    
 
     let response
 
