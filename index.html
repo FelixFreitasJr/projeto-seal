@@ -1,26 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Consulta Estoque</title>
+  <title>SEAL - Estoque</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <!-- TOPO -->
 <div class="topo">
+  <img src="img/logo.png" class="logo">
   <div class="titulo">
     <strong>SEAL — Serviço de Almoxarifado</strong><br>
     <small>Localizador de Estoque · INI / Fiocruz</small>
   </div>
 </div>
 
-<!-- BARRA DE BUSCA -->
+<!-- BUSCA -->
 <div class="barra-topo">
-  <input type="text" id="busca" placeholder="Pesquisar por código, nome ou endereço">
+  <input id="busca" placeholder="Pesquisar por código, nome ou observação...">
   <button id="btnBuscar">Buscar</button>
   <button id="btnNovo">+ Novo Item</button>
 
-  <span id="totalItens" class="contador">0 itens no estoque</span>
+  <span id="totalItens" class="contador"></span>
 </div>
 
 <!-- TABELA -->
@@ -28,11 +29,11 @@
   <table>
     <thead>
       <tr>
-        <th>Código</th>
-        <th>Nome</th>
-        <th>Externo</th>
-        <th>Satélite</th>
-        <th>Status</th>
+        <th onclick="ordenar('codigo')">Código</th>
+        <th onclick="ordenar('nome')">Nome</th>
+        <th onclick="ordenar('endereco_externo')">Externo</th>
+        <th onclick="ordenar('endereco_satelite')">Satélite</th>
+        <th onclick="ordenar('liberacao')">Status</th>
         <th>Ações</th>
       </tr>
     </thead>
@@ -40,27 +41,20 @@
   </table>
 </div>
 
-<!-- RODAPÉ -->
-<footer class="rodape">
-  Desenvolvido por 
-  <a href="https://github.com/FelixFreitasJr" target="_blank">Felix Freitas Jr</a> — INI / Fiocruz |
-  <a href="https://github.com/FelixFreitasJr/projeto-seal" target="_blank">Documentação</a>
-</footer>
-
+<!-- MODAL -->
 <div id="modal" class="modal hidden">
   <div class="modal-content">
     <h3>Novo Item</h3>
 
     <input id="codigo" placeholder="Código">
-    <input id="nome" placeholder="Nome do item">
-    <input id="externo" placeholder="Endereço externo">
-    <input id="satelite" placeholder="Endereço satélite">
+    <input id="nome" placeholder="Nome">
+    <input id="externo" placeholder="Externo">
+    <input id="satelite" placeholder="Satélite">
     <input id="observacao" placeholder="Observação">
 
     <select id="liberacao">
       <option value="LIVRE">LIVRE</option>
       <option value="SOMENTE NO EXTERNO">SOMENTE NO EXTERNO</option>
-      <option value="SOMENTE NO SATELITE">SOMENTE NO SATELITE</option>
       <option value="INATIVO">INATIVO</option>
     </select>
 
@@ -70,6 +64,16 @@
     </div>
   </div>
 </div>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<!-- RODAPÉ -->
+<footer class="rodape">
+  Desenvolvido por 
+  <a href="https://github.com/FelixFreitasJr" target="_blank">Felix Freitas Jr</a> |
+  <a href="https://github.com/FelixFreitasJr/projeto-seal" target="_blank">Documentação</a>
+</footer>
 
 <script type="module" src="js/app.js"></script>
 

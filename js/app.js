@@ -3,6 +3,20 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
+// CONTROLE DE ORDENAÇÃO
+let ordem = { campo: 'nome', asc: true }
+
+// TOAST
+function mostrarToast(msg) {
+  const toast = document.getElementById('toast')
+  toast.innerText = msg
+  toast.style.display = 'block'
+
+  setTimeout(() => {
+    toast.style.display = 'none'
+  }, 3000)
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
   const tabela = document.getElementById('tabela')
@@ -29,13 +43,13 @@ document.addEventListener('DOMContentLoaded', () => {
       query = query.or(`codigo.ilike.%${termo}%,nome.ilike.%${termo}%,observacao.ilike.%${termo}%`)
     }
 
-    query = query.order('nome', { ascending: true })
+    query = query.order(ordem.campo, { ascending: ordem.asc })
 
     const { data, error } = await query
 
     if (error) {
       console.error(error)
-      alert('Erro ao buscar dados')
+      mostrarToast('Erro ao buscar dados')
       return
     }
 
@@ -50,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let linhas = ''
 
     data.forEach(item => {
+
       let classeStatus = ''
 
       if (item.liberacao === 'LIVRE') classeStatus = 'livre'
@@ -68,8 +83,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <td><span class="status ${classeStatus}">${item.liberacao || '-'}</span></td>
           <td>
             <button onclick="editarItem('${item.id}')">✏️</button>
-            <button onclick="excluirItem('${item.id}')" style="margin-left:5px;">🗑️</button>
-            <button onclick="clonarItem('${item.id}')" style="margin-left:5px;">📄</button>
+            <button onclick="excluirItem('${item.id}')">🗑️</button>
+            <button onclick="clonarItem('${item.id}')">📄</button>
           </td>
         </tr>
       `
@@ -111,12 +126,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const liberacao = document.getElementById('liberacao').value
 
     if (!codigo || !nome) {
-      alert('Código e Nome são obrigatórios')
+      mostrarToast('Código e Nome são obrigatórios')
       return
     }
 
     const id = btnSalvar.dataset.id
 
+    // VALIDAÇÃO DE CÓDIGO ÚNICO
     const { data: existente } = await supabase
       .from('produtos')
       .select('id')
@@ -124,11 +140,9 @@ document.addEventListener('DOMContentLoaded', () => {
       .maybeSingle()
 
     if (existente && existente.id !== id) {
-      alert('Já existe um item com esse código')
+      mostrarToast('Já existe um item com esse código')
       return
     }
-
-    
 
     let response
 
@@ -161,11 +175,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (error) {
       console.error(error)
-      alert('Erro ao salvar')
+      mostrarToast('Erro ao salvar')
       return
     }
 
-    alert(id ? 'Item atualizado com sucesso' : 'Item cadastrado com sucesso')
+    mostrarToast(id ? 'Item atualizado com sucesso' : 'Item cadastrado com sucesso')
 
     modal.classList.add('hidden')
 
@@ -187,6 +201,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // =========================
+// ORDENAR COLUNA (GLOBAL)
+// =========================
+window.ordenar = function(campo) {
+  if (ordem.campo === campo) {
+    ordem.asc = !ordem.asc
+  } else {
+    ordem.campo = campo
+    ordem.asc = true
+  }
+  document.getElementById('btnBuscar').click()
+}
+
+
+// =========================
 // EDITAR ITEM (GLOBAL)
 // =========================
 window.editarItem = async function(id) {
@@ -199,7 +227,7 @@ window.editarItem = async function(id) {
 
   if (error) {
     console.error(error)
-    alert('Erro ao carregar item')
+    mostrarToast('Erro ao carregar item')
     return
   }
 
@@ -231,13 +259,12 @@ window.excluirItem = async function(id) {
 
   if (error) {
     console.error(error)
-    alert('Erro ao excluir item')
+    mostrarToast('Erro ao excluir item')
     return
   }
 
-  alert('Item excluído com sucesso')
-
-  document.querySelector('#btnBuscar').click()
+  mostrarToast('Item excluído com sucesso')
+  document.getElementById('btnBuscar').click()
 }
 
 
@@ -254,7 +281,7 @@ window.clonarItem = async function(id) {
 
   if (error) {
     console.error(error)
-    alert('Erro ao clonar item')
+    mostrarToast('Erro ao clonar item')
     return
   }
 
@@ -273,11 +300,10 @@ window.clonarItem = async function(id) {
 
   if (erroInsert) {
     console.error(erroInsert)
-    alert('Erro ao clonar item')
+    mostrarToast('Erro ao clonar item')
     return
   }
 
-  alert('Item clonado com sucesso')
-
-  document.querySelector('#btnBuscar').click()
+  mostrarToast('Item clonado com sucesso')
+  document.getElementById('btnBuscar').click()
 }

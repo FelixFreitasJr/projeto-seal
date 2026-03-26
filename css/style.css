@@ -1,98 +1,61 @@
-/* BASE */
-html, body {
-  height: 100%;
-  margin: 0;
-}
-
 body {
+  margin: 0;
   font-family: Arial;
-  background-color: #f5f5f5;
-
+  background: #f5f5f5;
   display: flex;
   flex-direction: column;
+  height: 100vh;
 }
 
 /* TOPO */
 .topo {
-  background-color: #2f7d5b;
+  background: #2f7d5b;
   color: white;
-  padding: 15px 20px;
-  font-size: 18px;
-}
-
-.titulo small {
-  font-size: 12px;
-  opacity: 0.8;
-}
-
-/* BARRA DE BUSCA */
-.barra-topo {
   display: flex;
   align-items: center;
+  padding: 10px 20px;
+}
+
+.logo {
+  width: 50px;
+  margin-right: 15px;
+}
+
+/* BARRA */
+.barra-topo {
+  display: flex;
   gap: 10px;
-  padding: 20px;
-}
-
-.barra-topo input {
-  padding: 8px;
-  width: 350px;
-}
-
-.barra-topo button {
-  padding: 8px 12px;
-  cursor: pointer;
+  padding: 15px;
 }
 
 .contador {
   margin-left: auto;
-  font-size: 14px;
-  color: #555;
-}
-
-/* CONTEÚDO (IMPORTANTE PRO RODAPÉ) */
-.conteudo {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
 }
 
 /* TABELA */
+.conteudo {
+  flex: 1;
+}
+
 table {
-  margin: 0 20px 10px 20px;
-  border-collapse: collapse;
   width: calc(100% - 40px);
+  margin: 0 20px;
+  border-collapse: collapse;
   background: white;
 }
 
-th, td {
-  border-bottom: 1px solid #ccc;
-  padding: 10px;
-  text-align: left;
+th {
+  cursor: pointer;
+  background: #eee;
 }
 
-th {
-  background-color: #f4f4f4;
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
 }
 
 tr:hover {
-  background-color: #f1f1f1;
-}
-
-/* COLUNAS */
-th:nth-child(1), td:nth-child(1) {
-  width: 120px;
-  font-weight: bold;
-  color: #2f7d5b;
-}
-
-th:nth-child(3), td:nth-child(3),
-th:nth-child(4), td:nth-child(4) {
-  width: 180px;
-}
-
-th:nth-child(5), td:nth-child(5) {
-  width: 150px;
-  text-align: center;
+  background: #f1f1f1;
 }
 
 /* STATUS */
@@ -100,88 +63,125 @@ th:nth-child(5), td:nth-child(5) {
   padding: 4px 8px;
   border-radius: 10px;
   font-size: 12px;
-  font-weight: bold;
 }
 
-.livre {
-  background-color: #28a745;
-  color: white;
-}
+.livre { background: green; color: white; }
+.externo { background: orange; }
+.inativo { background: red; color: white; }
 
-.externo {
-  background-color: #ffc107;
-  color: black;
-}
-
-.inativo {
-  background-color: #dc3545;
-  color: white;
-}
-
-/* OBSERVAÇÃO */
+/* OBS */
 .obs {
   font-size: 12px;
   color: #666;
-  margin-top: 3px;
 }
 
 /* MODAL */
 .modal {
   position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.5);
-
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 }
 
-.hidden {
-  display: none;
-}
+.hidden { display: none; }
 
 .modal-content {
   background: white;
   padding: 20px;
-  border-radius: 8px;
-  width: 300px;
-
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.modal-content input,
-.modal-content select {
-  padding: 8px;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #2f7d5b;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  display: none;
 }
 
 /* RODAPÉ */
 .rodape {
   text-align: center;
   padding: 10px;
-  font-size: 12px;
-  color: #777;
-  background-color: #f1f1f1;
-
-  margin-top: auto;
+  background: #eee;
 }
 
-.rodape a {
-  color: #2f7d5b;
-  text-decoration: none;
-  font-weight: bold;
+/* INPUT DE BUSCA */
+.barra-topo input {
+  padding: 10px 12px;
+  width: 350px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: 0.2s;
 }
 
-.rodape a:hover {
-  text-decoration: underline;
+.barra-topo input:focus {
+  outline: none;
+  border-color: #2f7d5b;
+  box-shadow: 0 0 4px rgba(47, 125, 91, 0.3);
+}
+
+/* BOTÕES GERAIS */
+button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+/* BOTÃO BUSCAR */
+#btnBuscar {
+  background-color: #2f7d5b;
+  color: white;
+}
+
+#btnBuscar:hover {
+  background-color: #25664a;
+}
+
+/* BOTÃO NOVO ITEM */
+#btnNovo {
+  background-color: #007bff;
+  color: white;
+}
+
+#btnNovo:hover {
+  background-color: #0056b3;
+}
+
+/* BOTÕES DA TABELA */
+td button {
+  background-color: #eee;
+  padding: 5px 8px;
+  font-size: 13px;
+}
+
+td button:hover {
+  background-color: #ddd;
+}
+
+/* BOTÕES DO MODAL */
+.modal-actions button:first-child {
+  background-color: #ccc;
+}
+
+.modal-actions button:last-child {
+  background-color: #2f7d5b;
+  color: white;
+}
+
+.modal-actions button:last-child:hover {
+  background-color: #25664a;
 }
