@@ -46,6 +46,7 @@ https://felixfreitasjr.github.io/projeto-seal/
 
 ## 📁 Estrutura do projeto
 
+```shell
 /projeto-seal
 │
 ├── index.html
@@ -54,7 +55,10 @@ https://felixfreitasjr.github.io/projeto-seal/
 ├── js/
 │ ├── app.js
 │ └── config.js
+├── img/
+│ ├── logo.png
 └── README.md
+```
 
 ## ⚠️ Observações
 Projeto em desenvolvimento, com melhorias contínuas planejadas:
@@ -64,5 +68,5 @@ Projeto em desenvolvimento, com melhorias contínuas planejadas:
 
 ## 👨‍💻 Autor
 
-Felix Freitas Jr
+Felix Freitas Jr<br>
 INI / Fiocruz
