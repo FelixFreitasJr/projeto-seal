@@ -10,7 +10,7 @@
 <div class="topo">
   <img src="img/logo.png" class="logo">
   <div class="titulo">
-    <strong>SEAL — Serviço de Almoxarifado</strong><br>
+    <strong>SEAL — Serviço de Almoxarifado - Centro Hospitalar</strong><br>
     <small>Localizador de Estoque · INI / Fiocruz</small>
   </div>
 </div>
@@ -18,8 +18,12 @@
 <!-- BUSCA -->
 <div class="barra-topo">
   <input id="busca" placeholder="Pesquisar por código, nome ou observação...">
-  <button id="btnBuscar">Buscar</button>
-  <button id="btnNovo">+ Novo Item</button>
+  <button id="btnBuscar">
+  <img src="img/buscar.svg" class="icone"> Buscar
+</button>
+  <button id="btnNovo">
+  <img src="img/novo.svg" class="icone"> Novo Item
+</button>
 
   <span id="totalItens" class="contador"></span>
 </div>
@@ -55,12 +59,20 @@
     <select id="liberacao">
       <option value="LIVRE">LIVRE</option>
       <option value="SOMENTE NO EXTERNO">SOMENTE NO EXTERNO</option>
+      <option value="SOMENTE NO SATELITE">SOMENTE NO SATELITE</option>
+      <option value="LIVRE">SOB SUPERVISÃO</option>
+      <option value="LIVRE">SOMENTE PACIENTE</option>
+      <option value="LIVRE">SOMENTE CME</option>
       <option value="INATIVO">INATIVO</option>
     </select>
 
     <div class="modal-actions">
-      <button id="btnCancelar">Cancelar</button>
-      <button id="btnSalvar">Salvar</button>
+      <button id="btnCancelar">
+        <img src="img/excluir.svg" class="icone">Cancelar
+      </button>
+      <button id="btnSalvar">
+        <img src="img/salvar.svg" class="icone"> Salvar
+      </button>
     </div>
   </div>
 </div>
