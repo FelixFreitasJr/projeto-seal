@@ -12,6 +12,15 @@ function mostrarToast(msg) {
   setTimeout(() => toast.style.display = 'none', 3000)
 }
 
+  function limparFormulario() {
+  document.getElementById('codigo').value = ''
+  document.getElementById('nome').value = ''
+  document.getElementById('externo').value = ''
+  document.getElementById('satelite').value = ''
+  document.getElementById('observacao').value = ''
+  document.getElementById('liberacao').value = 'LIVRE'
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
   const tabela = document.getElementById('tabela')
@@ -42,15 +51,17 @@ document.addEventListener('DOMContentLoaded', () => {
       return
     }
 
-    total.innerText = `${data.length} itens`
+    total.innerText = `${data.length} itens no estoque`
 
     let linhas = ''
 
     data.forEach(item => {
 
-      let classeStatus =
-        item.liberacao === 'LIVRE' ? 'livre' :
-        item.liberacao === 'SOMENTE NO EXTERNO' ? 'externo' : 'inativo'
+    let classeStatus = 'inativo'
+
+    if (item.liberacao === 'LIVRE') classeStatus = 'livre'
+    else if (item.liberacao === 'SOMENTE NO EXTERNO') classeStatus = 'externo'
+    else classeStatus = 'inativo'
 
       linhas += `
         <tr>
@@ -114,11 +125,17 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   document.getElementById('btnNovo').addEventListener('click', () => {
+    limparFormulario()
     btnSalvar.dataset.id = ''
     modal.classList.remove('hidden')
-  })
+})
+
+  document.getElementById('btnExportar').addEventListener('click', () => {
+  window.print()
+})
 
   document.getElementById('btnCancelar').addEventListener('click', () => {
+    limparFormulario()
     modal.classList.add('hidden')
   })
 
@@ -164,11 +181,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     mostrarToast('Salvo com sucesso')
+    limparFormulario()
     modal.classList.add('hidden')
     buscar()
   })
 
+
+
   buscar()
+
 })
 
 // =========================
@@ -231,3 +252,4 @@ document.addEventListener('click', (e) => {
     document.querySelectorAll('.menu-acoes').forEach(m => m.classList.add('hidden'))
   }
 })
+

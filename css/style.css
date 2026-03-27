@@ -35,8 +35,8 @@ body {
 ========================= */
 .barra-topo {
   position: fixed;
-  top: 70px;
-  width: 100%;
+  top: 55px;
+  width: 96%;
   z-index: 999;
 
   display: flex;
@@ -46,10 +46,11 @@ body {
   padding: 12px 20px;
   background: white;
   border-bottom: 1px solid #ddd;
+  flex-wrap: wrap;
+  margin-left: 1%;
 }
 
 .contador {
-  margin-left: auto;
   font-size: 13px;
   color: #666;
 }
@@ -122,6 +123,15 @@ button img {
 
 #btnNovo:hover {
   background: #0056b3;
+}
+
+#btnExportar {
+  background-color: #6c757d;
+  color: white;
+}
+
+#btnExportar:hover {
+  background-color: #5a6268;
 }
 
 /* =========================
@@ -212,9 +222,10 @@ tr:hover {
 .btn-menu {
   background: transparent;
   border: none;
-  font-size: 18px;
+  font-size: 20px;
   color: #333;
   padding: 4px;
+  margin-left: 15%;
 }
 
 .btn-menu:hover {
@@ -292,6 +303,25 @@ tr:hover {
 .modal-actions {
   display: flex;
   justify-content: space-between;
+  gap: 10px;
+}
+
+#btnCancelar {
+  background-color: #dc3545;
+  color: white;
+}
+
+#btnCancelar:hover {
+  background-color: #b02a37;
+}
+
+#btnSalvar {
+  background-color: #007bff;
+  color: white;
+}
+
+#btnSalvar:hover {
+  background-color: #0056b3;
 }
 
 /* =========================
@@ -326,4 +356,13 @@ tr:hover {
   background: #eee;
   font-size: 12px;
   color: #666;
+}
+
+@media print {
+  .barra-topo,
+  .rodape,
+  .btn-menu,
+  button {
+    display: none !important;
+  }
 }
