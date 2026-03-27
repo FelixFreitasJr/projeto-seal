@@ -82,16 +82,16 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>${item.endereco_satelite || '-'}</td>
           <td><span class="status ${classeStatus}">${item.liberacao || '-'}</span></td>
           <td>
-            <button class="editar" onclick="editarItem('${item.id}')">
-              <img src="img/editar.svg" class="icone">
+            <button onclick="editarItem('${item.id}')" class="btn-icon">
+              <img src="img/editar.svg">
             </button>
 
-            <button class="excluir" onclick="excluirItem('${item.id}')">
-              <img src="img/excluir.svg" class="icone">
+            <button onclick="excluirItem('${item.id}')" class="btn-icon">
+              <img src="img/excluir.svg">
             </button>
 
-            <button class="clonar" onclick="clonarItem('${item.id}')">
-              <img src="img/clonar.svg" class="icone">
+            <button onclick="clonarItem('${item.id}')" class="btn-icon">
+              <img src="img/clonar.svg">
             </button>
           </td>
         </tr>

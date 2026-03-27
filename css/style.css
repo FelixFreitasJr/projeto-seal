@@ -185,3 +185,46 @@ td button:hover {
 .modal-actions button:last-child:hover {
   background-color: #25664a;
 }
+
+/* BOTÕES COM ÍCONE */
+button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+
+  background-color: #2f7d5b;
+  color: white;
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+button:hover {
+  background-color: #25694c;
+}
+
+/* ÍCONES DENTRO DO BOTÃO */
+button img {
+  width: 16px;
+  height: 16px;
+}
+
+/* BOTÕES DE AÇÃO (tabela) */
+.btn-icon {
+  padding: 5px;
+  background: transparent;
+}
+
+.btn-icon img {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-icon:hover {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
