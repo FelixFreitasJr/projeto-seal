@@ -3,18 +3,13 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-// CONTROLE DE ORDENAÇÃO
 let ordem = { campo: 'nome', asc: true }
 
-// TOAST
 function mostrarToast(msg) {
   const toast = document.getElementById('toast')
   toast.innerText = msg
   toast.style.display = 'block'
-
-  setTimeout(() => {
-    toast.style.display = 'none'
-  }, 3000)
+  setTimeout(() => toast.style.display = 'none', 3000)
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -24,20 +19,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('modal')
   const inputBusca = document.getElementById('busca')
   const btnSalvar = document.getElementById('btnSalvar')
+  const limparBusca = document.getElementById('limparBusca')
 
   let timeout = null
 
-  // =========================
-  // BUSCAR
-  // =========================
   async function buscar() {
+
     const termo = inputBusca.value.trim()
 
-    tabela.innerHTML = ''
-
-    let query = supabase
-      .from('produtos')
-      .select('*')
+    let query = supabase.from('produtos').select('*')
 
     if (termo) {
       query = query.or(`codigo.ilike.%${termo}%,nome.ilike.%${termo}%,observacao.ilike.%${termo}%`)
@@ -48,64 +38,62 @@ document.addEventListener('DOMContentLoaded', () => {
     const { data, error } = await query
 
     if (error) {
-      console.error(error)
-      mostrarToast('Erro ao buscar dados')
+      mostrarToast('Erro ao buscar')
       return
     }
 
-    if (!data || data.length === 0) {
-      tabela.innerHTML = '<tr><td colspan="5">Nenhum resultado encontrado</td></tr>'
-      total.innerText = '0 itens no estoque'
-      return
-    }
-
-    total.innerText = `${data.length} itens no estoque`
+    total.innerText = `${data.length} itens`
 
     let linhas = ''
 
     data.forEach(item => {
 
-      let classeStatus = ''
-
-      if (item.liberacao === 'LIVRE') classeStatus = 'livre'
-      else if (item.liberacao === 'SOMENTE NO EXTERNO') classeStatus = 'externo'
-      else classeStatus = 'inativo'
+      let classeStatus =
+        item.liberacao === 'LIVRE' ? 'livre' :
+        item.liberacao === 'SOMENTE NO EXTERNO' ? 'externo' : 'inativo'
 
       linhas += `
         <tr>
           <td>${item.codigo}</td>
+
           <td>
             ${item.nome}
             <div class="info-extra">
               <span class="status ${classeStatus}">
                 ${item.liberacao || '-'}
               </span>
-              ${item.observacao ? `<span class="separador">|</span>
-              <span class="obs">${item.observacao}</span>` : ''}
+
+              ${item.observacao ? `
+                <span class="separador">|</span>
+                <span class="obs">${item.observacao}</span>
+              ` : ''}
             </div>
           </td>
+
           <td>${item.endereco_externo || '-'}</td>
           <td>${item.endereco_satelite || '-'}</td>
-          
+
           <td>
-          <div class="acoes">
-            <button class="btn-menu" onclick="toggleMenu(this)">⋮</button>
-
-            <div class="menu-acoes hidden">
-              <button onclick="editarItem('${item.id}')">
-                <img src="img/editar.svg"> Editar
+            <div class="acoes">
+              <button class="btn-menu" onclick="toggleMenu(this)">
+                ⋮
               </button>
 
-              <button onclick="clonarItem('${item.id}')">
-                <img src="img/clonar.svg"> Clonar
-              </button>
+              <div class="menu-acoes hidden">
+                <button onclick="editarItem('${item.id}')">
+                  <img src="img/editar.svg"> Editar
+                </button>
 
-              <button onclick="excluirItem('${item.id}')">
-                <img src="img/excluir.svg"> Excluir
-              </button>
+                <button onclick="clonarItem('${item.id}')">
+                  <img src="img/clonar.svg"> Clonar
+                </button>
+
+                <button onclick="excluirItem('${item.id}')">
+                  <img src="img/excluir.svg"> Excluir
+                </button>
+              </div>
             </div>
-          </div>
-        </td>
+          </td>
         </tr>
       `
     })
@@ -113,15 +101,16 @@ document.addEventListener('DOMContentLoaded', () => {
     tabela.innerHTML = linhas
   }
 
-  // =========================
-  // EVENTOS
-  // =========================
-
   document.getElementById('btnBuscar').addEventListener('click', buscar)
 
   inputBusca.addEventListener('input', () => {
     clearTimeout(timeout)
     timeout = setTimeout(buscar, 300)
+  })
+
+  limparBusca.addEventListener('click', () => {
+    inputBusca.value = ''
+    buscar()
   })
 
   document.getElementById('btnNovo').addEventListener('click', () => {
@@ -133,26 +122,18 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.classList.add('hidden')
   })
 
-  // =========================
-  // SALVAR (INSERT / UPDATE)
-  // =========================
   btnSalvar.addEventListener('click', async () => {
 
     const codigo = document.getElementById('codigo').value.toUpperCase()
     const nome = document.getElementById('nome').value.toUpperCase()
-    const externo = document.getElementById('externo').value.toUpperCase()
-    const satelite = document.getElementById('satelite').value.toUpperCase()
-    const observacao = document.getElementById('observacao').value.toUpperCase()
-    const liberacao = document.getElementById('liberacao').value
 
     if (!codigo || !nome) {
-      mostrarToast('Código e Nome são obrigatórios')
+      mostrarToast('Código e Nome obrigatórios')
       return
     }
 
     const id = btnSalvar.dataset.id
 
-    // VALIDAÇÃO DE CÓDIGO ÚNICO
     const { data: existente } = await supabase
       .from('produtos')
       .select('id')
@@ -160,96 +141,48 @@ document.addEventListener('DOMContentLoaded', () => {
       .maybeSingle()
 
     if (existente && existente.id !== id) {
-      mostrarToast('Já existe um item com esse código')
+      mostrarToast('Código já existe')
       return
     }
 
-    let response
-
-    if (id) {
-      response = await supabase
-        .from('produtos')
-        .update({
-          codigo,
-          nome,
-          observacao,
-          endereco_externo: externo,
-          endereco_satelite: satelite,
-          liberacao
-        })
-        .eq('id', id)
-    } else {
-      response = await supabase
-        .from('produtos')
-        .insert([{
-          codigo,
-          nome,
-          observacao,
-          endereco_externo: externo,
-          endereco_satelite: satelite,
-          liberacao
-        }])
+    const dados = {
+      codigo,
+      nome,
+      observacao: document.getElementById('observacao').value,
+      endereco_externo: document.getElementById('externo').value,
+      endereco_satelite: document.getElementById('satelite').value,
+      liberacao: document.getElementById('liberacao').value
     }
 
-    const { error } = response
+    const resposta = id
+      ? await supabase.from('produtos').update(dados).eq('id', id)
+      : await supabase.from('produtos').insert([dados])
 
-    if (error) {
-      console.error(error)
+    if (resposta.error) {
       mostrarToast('Erro ao salvar')
       return
     }
 
-    mostrarToast(id ? 'Item atualizado com sucesso' : 'Item cadastrado com sucesso')
-
+    mostrarToast('Salvo com sucesso')
     modal.classList.add('hidden')
-
-    // limpar campos
-    document.getElementById('codigo').value = ''
-    document.getElementById('nome').value = ''
-    document.getElementById('externo').value = ''
-    document.getElementById('satelite').value = ''
-    document.getElementById('observacao').value = ''
-
-    btnSalvar.dataset.id = ''
-
     buscar()
   })
 
-  // carregar ao abrir
   buscar()
 })
 
+// =========================
+// FUNÇÕES GLOBAIS
+// =========================
 
-// =========================
-// ORDENAR COLUNA (GLOBAL)
-// =========================
 window.ordenar = function(campo) {
-  if (ordem.campo === campo) {
-    ordem.asc = !ordem.asc
-  } else {
-    ordem.campo = campo
-    ordem.asc = true
-  }
+  ordem.asc = ordem.campo === campo ? !ordem.asc : true
+  ordem.campo = campo
   document.getElementById('btnBuscar').click()
 }
 
-
-// =========================
-// EDITAR ITEM (GLOBAL)
-// =========================
 window.editarItem = async function(id) {
-
-  const { data, error } = await supabase
-    .from('produtos')
-    .select('*')
-    .eq('id', id)
-    .single()
-
-  if (error) {
-    console.error(error)
-    mostrarToast('Erro ao carregar item')
-    return
-  }
+  const { data } = await supabase.from('produtos').select('*').eq('id', id).single()
 
   document.getElementById('codigo').value = data.codigo
   document.getElementById('nome').value = data.nome
@@ -259,79 +192,33 @@ window.editarItem = async function(id) {
   document.getElementById('liberacao').value = data.liberacao
 
   document.getElementById('btnSalvar').dataset.id = id
-
   document.getElementById('modal').classList.remove('hidden')
 }
 
-
-// =========================
-// EXCLUIR ITEM (GLOBAL)
-// =========================
 window.excluirItem = async function(id) {
-
-  const confirmar = confirm('Deseja realmente excluir este item?')
-  if (!confirmar) return
-
-  const { error } = await supabase
-    .from('produtos')
-    .delete()
-    .eq('id', id)
-
-  if (error) {
-    console.error(error)
-    mostrarToast('Erro ao excluir item')
-    return
-  }
-
-  mostrarToast('Item excluído com sucesso')
+  if (!confirm('Excluir item?')) return
+  await supabase.from('produtos').delete().eq('id', id)
+  mostrarToast('Excluído')
   document.getElementById('btnBuscar').click()
 }
 
-
-// =========================
-// CLONAR ITEM (GLOBAL)
-// =========================
 window.clonarItem = async function(id) {
+  const { data } = await supabase.from('produtos').select('*').eq('id', id).single()
 
-  const { data, error } = await supabase
-    .from('produtos')
-    .select('*')
-    .eq('id', id)
-    .single()
-
-  if (error) {
-    console.error(error)
-    mostrarToast('Erro ao clonar item')
-    return
-  }
-
-  const novoItem = {
+  await supabase.from('produtos').insert([{
+    ...data,
+    id: undefined,
     codigo: data.codigo + '_COPIA',
-    nome: data.nome + ' (CÓPIA)',
-    observacao: data.observacao,
-    endereco_externo: data.endereco_externo,
-    endereco_satelite: data.endereco_satelite,
-    liberacao: data.liberacao
-  }
+    nome: data.nome + ' (CÓPIA)'
+  }])
 
-  const { error: erroInsert } = await supabase
-    .from('produtos')
-    .insert([novoItem])
-
-  if (erroInsert) {
-    console.error(erroInsert)
-    mostrarToast('Erro ao clonar item')
-    return
-  }
-
-  mostrarToast('Item clonado com sucesso')
+  mostrarToast('Clonado')
   document.getElementById('btnBuscar').click()
 }
 
-window.toggleMenu = function(botao) {
-  const menu = botao.nextElementSibling
+window.toggleMenu = function(btn) {
+  const menu = btn.nextElementSibling
 
-  // fecha outros menus
   document.querySelectorAll('.menu-acoes').forEach(m => {
     if (m !== menu) m.classList.add('hidden')
   })
@@ -339,11 +226,8 @@ window.toggleMenu = function(botao) {
   menu.classList.toggle('hidden')
 }
 
-// fecha ao clicar fora
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.acoes')) {
-    document.querySelectorAll('.menu-acoes').forEach(m => {
-      m.classList.add('hidden')
-    })
+    document.querySelectorAll('.menu-acoes').forEach(m => m.classList.add('hidden'))
   }
 })
