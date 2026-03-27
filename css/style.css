@@ -52,6 +52,7 @@ th {
 th, td {
   padding: 10px;
   border-bottom: 1px solid #ccc;
+  text-align: left;
 }
 
 tr:hover {
@@ -227,4 +228,55 @@ button img {
 .btn-icon:hover {
   background-color: #f0f0f0;
   border-radius: 4px;
+}
+
+.info-extra {
+  font-size: 12px;
+  margin-top: 4px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  color: #666;
+}
+
+.separador {
+  color: #aaa;
+}
+
+.acoes {
+  position: relative;
+}
+
+.btn-menu {
+  background: transparent;
+  font-size: 18px;
+  padding: 4px;
+}
+
+.menu-acoes {
+  position: absolute;
+  right: 0;
+  top: 25px;
+
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+
+.menu-acoes button {
+  background: none;
+  color: black;
+  text-align: left;
+  padding: 8px;
+}
+
+.menu-acoes button:hover {
+  background-color: #f0f0f0;
 }

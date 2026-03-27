@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (!data || data.length === 0) {
-      tabela.innerHTML = '<tr><td colspan="6">Nenhum resultado encontrado</td></tr>'
+      tabela.innerHTML = '<tr><td colspan="5">Nenhum resultado encontrado</td></tr>'
       total.innerText = '0 itens no estoque'
       return
     }
@@ -76,24 +76,36 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>${item.codigo}</td>
           <td>
             ${item.nome}
-            <div class="obs">${item.observacao || ''}</div>
+            <div class="info-extra">
+              <span class="status ${classeStatus}">
+                ${item.liberacao || '-'}
+              </span>
+              ${item.observacao ? `<span class="separador">|</span>
+              <span class="obs">${item.observacao}</span>` : ''}
+            </div>
           </td>
           <td>${item.endereco_externo || '-'}</td>
           <td>${item.endereco_satelite || '-'}</td>
-          <td><span class="status ${classeStatus}">${item.liberacao || '-'}</span></td>
+          
           <td>
-            <button onclick="editarItem('${item.id}')" class="btn-icon">
-              <img src="img/editar.svg">
-            </button>
+          <div class="acoes">
+            <button class="btn-menu" onclick="toggleMenu(this)">⋮</button>
 
-            <button onclick="excluirItem('${item.id}')" class="btn-icon">
-              <img src="img/excluir.svg">
-            </button>
+            <div class="menu-acoes hidden">
+              <button onclick="editarItem('${item.id}')">
+                <img src="img/editar.svg"> Editar
+              </button>
 
-            <button onclick="clonarItem('${item.id}')" class="btn-icon">
-              <img src="img/clonar.svg">
-            </button>
-          </td>
+              <button onclick="clonarItem('${item.id}')">
+                <img src="img/clonar.svg"> Clonar
+              </button>
+
+              <button onclick="excluirItem('${item.id}')">
+                <img src="img/excluir.svg"> Excluir
+              </button>
+            </div>
+          </div>
+        </td>
         </tr>
       `
     })
@@ -315,3 +327,23 @@ window.clonarItem = async function(id) {
   mostrarToast('Item clonado com sucesso')
   document.getElementById('btnBuscar').click()
 }
+
+window.toggleMenu = function(botao) {
+  const menu = botao.nextElementSibling
+
+  // fecha outros menus
+  document.querySelectorAll('.menu-acoes').forEach(m => {
+    if (m !== menu) m.classList.add('hidden')
+  })
+
+  menu.classList.toggle('hidden')
+}
+
+// fecha ao clicar fora
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.acoes')) {
+    document.querySelectorAll('.menu-acoes').forEach(m => {
+      m.classList.add('hidden')
+    })
+  }
+})
