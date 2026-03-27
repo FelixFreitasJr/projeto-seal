@@ -64,48 +64,44 @@ document.addEventListener('DOMContentLoaded', () => {
     else classeStatus = 'inativo'
 
       linhas += `
-        <tr>
-          <td>${item.codigo}</td>
+      <tr>
+        <td data-label="Código">${item.codigo}</td>
 
-          <td>
-            ${item.nome}
-            <div class="info-extra">
-              <span class="status ${classeStatus}">
-                ${item.liberacao || '-'}
-              </span>
+        <td data-label="Nome">
+          ${item.nome}
+          <div class="info-extra">
+            <span class="status ${classeStatus}">
+              ${item.liberacao || '-'}
+            </span>
 
-              ${item.observacao ? `
-                <span class="separador">|</span>
-                <span class="obs">${item.observacao}</span>
-              ` : ''}
-            </div>
-          </td>
+            ${item.observacao ? `
+              <span class="separador">|</span>
+              <span class="obs">${item.observacao}</span>
+            ` : ''}
+          </div>
+        </td>
 
-          <td>${item.endereco_externo || '-'}</td>
-          <td>${item.endereco_satelite || '-'}</td>
+        <td data-label="Externo">${item.endereco_externo || '-'}</td>
+        <td data-label="Satélite">${item.endereco_satelite || '-'}</td>
 
-          <td>
-            <div class="acoes">
-              <button class="btn-menu" onclick="toggleMenu(this)">
-                ⋮
+        <td data-label="Ações">
+          <div class="acoes">
+            <button class="btn-menu" onclick="toggleMenu(this)">⋮</button>
+
+            <div class="menu-acoes hidden">
+              <button onclick="editarItem('${item.id}')">
+                <img src="img/editar.svg"> Editar
               </button>
-
-              <div class="menu-acoes hidden">
-                <button onclick="editarItem('${item.id}')">
-                  <img src="img/editar.svg"> Editar
-                </button>
-
-                <button onclick="clonarItem('${item.id}')">
-                  <img src="img/clonar.svg"> Clonar
-                </button>
-
-                <button onclick="excluirItem('${item.id}')">
-                  <img src="img/excluir.svg"> Excluir
-                </button>
-              </div>
+              <button onclick="clonarItem('${item.id}')">
+                <img src="img/clonar.svg"> Clonar
+              </button>
+              <button onclick="excluirItem('${item.id}')">
+                <img src="img/excluir.svg"> Excluir
+              </button>
             </div>
-          </td>
-        </tr>
+          </div>
+        </td>
+      </tr>
       `
     })
 

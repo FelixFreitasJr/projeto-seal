@@ -392,3 +392,139 @@ tr:hover {
     font-size: 9px;
   }
 }
+
+@media (max-width: 959px) {
+
+  /* some cabeçalho */
+  thead {
+    display: none;
+  }
+
+  table, tbody, tr, td {
+    display: block;
+    width: 100%;
+  }
+
+  tr {
+    background: white;
+    margin: 10px 10px;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+
+  td {
+    border: none;
+    padding: 6px 10px;
+    position: relative;
+  }
+
+  /* cria os títulos tipo "Externo", "Satélite" */
+  td::before {
+    content: attr(data-label);
+    font-size: 11px;
+    color: #777;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* nome mais destacado */
+  td[data-label="Nome"] {
+    font-weight: bold;
+    font-size: 15px;
+  }
+
+  /* código azul como no seu modelo */
+  td[data-label="Código"] {
+    color: #2a5bd7;
+    font-weight: bold;
+  }
+
+  /* ações alinhadas à direita */
+  td[data-label="Ações"] {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+}
+
+@media (max-width: 959px) {
+
+  #btnBuscar,
+  #btnNovo,
+  #btnExportar {
+    width: auto;              /* remove o full width */
+    flex: 1;                  /* divide espaço de forma inteligente */
+    justify-content: center;
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  .barra-topo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .busca-box {
+    grid-column: 1 / -1; /* ocupa linha inteira */
+  }
+
+      .conteudo {
+        margin-top: 190px;
+        padding-bottom: 40px;
+    }
+}
+
+@media (max-width: 959px) {
+
+  .barra-topo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  /* busca ocupa tudo */
+  .busca-box {
+    flex: 1;
+  }
+
+  .busca-box input {
+    width: 100%;
+  }
+
+  /* esconder botão buscar */
+  #btnBuscar {
+    display: none;
+  }
+
+  /* esconder novo item (opcional) */
+  #btnNovo {
+    display: none;
+  }
+
+  /* exportar vira botão pequeno */
+  #btnExportar {
+    padding: 6px;
+    width: auto;
+    min-width: 36px;
+    justify-content: center;
+  }
+
+  #btnExportar span {
+    display: none; /* se tiver texto */
+  }
+
+  #btnExportar img {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* contador no final */
+  .contador {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+}
