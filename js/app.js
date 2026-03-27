@@ -217,23 +217,44 @@ window.editarItem = async function(id) {
 }
 
 window.excluirItem = async function(id) {
-  if (!confirm('Excluir item?')) return
+  if (!confirm('⚠️ Deseja realmente excluir este item?')) return
   await supabase.from('produtos').delete().eq('id', id)
   mostrarToast('Excluído')
   document.getElementById('btnBuscar').click()
 }
 
 window.clonarItem = async function(id) {
-  const { data } = await supabase.from('produtos').select('*').eq('id', id).single()
+  const { data, error } = await supabase
+    .from('produtos')
+    .select('*')
+    .eq('id', id)
+    .single()
 
-  await supabase.from('produtos').insert([{
-    ...data,
-    id: undefined,
+  if (error || !data) {
+    mostrarToast('Erro ao clonar')
+    return
+  }
+
+  const novoItem = {
     codigo: data.codigo + '_COPIA',
-    nome: data.nome + ' (CÓPIA)'
-  }])
+    nome: data.nome + ' (CÓPIA)',
+    observacao: data.observacao,
+    endereco_externo: data.endereco_externo,
+    endereco_satelite: data.endereco_satelite,
+    liberacao: data.liberacao
+  }
 
-  mostrarToast('Clonado')
+  const { error: erroInsert } = await supabase
+    .from('produtos')
+    .insert([novoItem])
+
+  if (erroInsert) {
+    console.error(erroInsert)
+    mostrarToast('Erro ao clonar')
+    return
+  }
+
+  mostrarToast('Item clonado com sucesso')
   document.getElementById('btnBuscar').click()
 }
 
