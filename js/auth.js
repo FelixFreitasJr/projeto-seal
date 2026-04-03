@@ -1,28 +1,39 @@
-// js/auth.js
+function login() {
+  const usuario = document.getElementById("usuario").value
+  const senha = document.getElementById("senha").value
 
-const USERS = ["externo", "satelite", "adm"];
-const PASSWORD = "Almox";
+  if (
+    (usuario === "externo" ||
+     usuario === "satelite" ||
+     usuario === "adm") &&
+    senha === "Almox"
+  ) {
+    localStorage.setItem("user", usuario)
 
-function login(username, password) {
-    if (USERS.includes(username) && password === PASSWORD) {
-        localStorage.setItem("auth", "true");
-        localStorage.setItem("user", username);
-        return true;
-    }
-    return false;
+    // REDIRECIONA CORRETO
+    window.location.href = "../index.html"
+  } else {
+    alert("Usuário ou senha inválidos")
+  }
 }
 
 function logout() {
-    localStorage.clear();
-    window.location.href = "/pages/login.html";
+  localStorage.removeItem("user")
+
+  // REDIRECIONA CORRETO
+  window.location.href = "pages/login.html"
 }
 
 function checkAuth() {
-    if (localStorage.getItem("auth") !== "true") {
-        window.location.href = "/pages/login.html";
-    }
+  const user = localStorage.getItem("user")
+
+  // se NÃO estiver logado
+  if (!user) {
+    // 🔴 AQUI ESTAVA O ERRO
+    window.location.href = "pages/login.html"
+  }
 }
 
 function getUser() {
-    return localStorage.getItem("user");
+  return localStorage.getItem("user")
 }
