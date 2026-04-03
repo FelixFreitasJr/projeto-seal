@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 // =========================
-// ESTOQUE (SEU CÓDIGO)
+// ESTOQUE
 // =========================
 
 function iniciarEstoque() {
@@ -84,11 +84,6 @@ function iniciarEstoque() {
 
     data.forEach(item => {
 
-      let classeStatus = 'inativo'
-
-      if (item.liberacao === 'LIVRE') classeStatus = 'livre'
-      else if (item.liberacao === 'SOMENTE NO EXTERNO') classeStatus = 'externo'
-
       linhas += `
       <tr>
         <td>${item.codigo}</td>
@@ -114,34 +109,34 @@ function iniciarEstoque() {
     tabela.innerHTML = linhas
   }
 
-  document.getElementById('btnBuscar').addEventListener('click', buscar)
+  document.getElementById('btnBuscar')?.addEventListener('click', buscar)
 
-  inputBusca.addEventListener('input', () => {
+  inputBusca?.addEventListener('input', () => {
     clearTimeout(timeout)
     timeout = setTimeout(buscar, 300)
   })
 
-  limparBusca.addEventListener('click', () => {
+  limparBusca?.addEventListener('click', () => {
     inputBusca.value = ''
     buscar()
   })
 
-  document.getElementById('btnNovo').addEventListener('click', () => {
+  document.getElementById('btnNovo')?.addEventListener('click', () => {
     limparFormulario()
     btnSalvar.dataset.id = ''
     modal.classList.remove('hidden')
   })
 
-  document.getElementById('btnExportar').addEventListener('click', () => {
+  document.getElementById('btnExportar')?.addEventListener('click', () => {
     window.print()
   })
 
-  document.getElementById('btnCancelar').addEventListener('click', () => {
+  document.getElementById('btnCancelar')?.addEventListener('click', () => {
     limparFormulario()
     modal.classList.add('hidden')
   })
 
-  btnSalvar.addEventListener('click', async () => {
+  btnSalvar?.addEventListener('click', async () => {
 
     const codigo = document.getElementById('codigo').value.toUpperCase()
     const nome = document.getElementById('nome').value.toUpperCase()
@@ -209,12 +204,9 @@ function iniciarDispensa() {
     let query = supabase.from('colaboradores').select('*')
 
     if (termo) {
-      query = query.or(`
-        cpf.ilike.${termo}%,
-        nome.ilike.%${termo}%,
-        empresa.ilike.%${termo}%,
-        funcao.ilike.%${termo}%
-      `)
+      query = query.or(
+        `cpf.ilike.${termo}%,nome.ilike.%${termo}%,empresa.ilike.%${termo}%,funcao.ilike.%${termo}%`
+      )
     }
 
     const { data, error } = await query
@@ -228,7 +220,7 @@ function iniciarDispensa() {
 
     data.forEach(p => {
 
-      const cpfMascarado = p.cpf.slice(0,6) + '-XX'
+      const cpfMascarado = p.cpf.substring(0, 6) + '-XX'
 
       linhas += `
       <tr>
@@ -238,7 +230,7 @@ function iniciarDispensa() {
         <td>${p.funcao}</td>
 
         <td>
-          <button onclick='dispensar(${JSON.stringify(p)})'>
+          <button onclick="dispensar('${p.id}')">
             Dispensar
           </button>
         </td>
@@ -249,7 +241,7 @@ function iniciarDispensa() {
     tabela.innerHTML = linhas
   }
 
-  inputBusca.addEventListener('input', () => {
+  inputBusca?.addEventListener('input', () => {
     clearTimeout(timeout)
     timeout = setTimeout(buscar, 300)
   })
@@ -261,17 +253,26 @@ function iniciarDispensa() {
 // GLOBAIS
 // =========================
 
-window.dispensar = async function(pessoa) {
+// 🔥 DISPENSAR (CORRIGIDO)
+window.dispensar = async function(id) {
 
   const user = localStorage.getItem("user")
+
+  const { data: pessoa, error: erroBusca } = await supabase
+    .from('colaboradores')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (erroBusca) {
+    mostrarToast('Erro ao buscar colaborador')
+    return
+  }
 
   const { error } = await supabase
     .from('dispensas')
     .insert([{
-      cpf: pessoa.cpf,
-      nome: pessoa.nome,
-      empresa: pessoa.empresa,
-      funcao: pessoa.funcao,
+      colaborador_id: pessoa.id,
       usuario: user,
       data_hora: new Date()
     }])
@@ -283,6 +284,8 @@ window.dispensar = async function(pessoa) {
 
   mostrarToast('Dispensado com sucesso')
 }
+
+// =========================
 
 window.ordenar = function(campo) {
   ordem.asc = ordem.campo === campo ? !ordem.asc : true
