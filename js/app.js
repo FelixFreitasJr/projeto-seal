@@ -5,14 +5,19 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 let ordem = { campo: 'nome', asc: true }
 
+// =========================
+// UTIL
+// =========================
+
 function mostrarToast(msg) {
   const toast = document.getElementById('toast')
+  if (!toast) return
   toast.innerText = msg
   toast.style.display = 'block'
   setTimeout(() => toast.style.display = 'none', 3000)
 }
 
-  function limparFormulario() {
+function limparFormulario() {
   document.getElementById('codigo').value = ''
   document.getElementById('nome').value = ''
   document.getElementById('externo').value = ''
@@ -21,7 +26,29 @@ function mostrarToast(msg) {
   document.getElementById('liberacao').value = 'LIVRE'
 }
 
+// =========================
+// INIT POR PÁGINA
+// =========================
+
 document.addEventListener('DOMContentLoaded', () => {
+
+  const pagina = window.location.pathname
+
+  if (pagina.includes('estoque.html')) {
+    iniciarEstoque()
+  }
+
+  if (pagina.includes('dispensa.html')) {
+    iniciarDispensa()
+  }
+
+})
+
+// =========================
+// ESTOQUE (SEU CÓDIGO)
+// =========================
+
+function iniciarEstoque() {
 
   const tabela = document.getElementById('tabela')
   const total = document.getElementById('totalItens')
@@ -57,47 +84,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     data.forEach(item => {
 
-    let classeStatus = 'inativo'
+      let classeStatus = 'inativo'
 
-    if (item.liberacao === 'LIVRE') classeStatus = 'livre'
-    else if (item.liberacao === 'SOMENTE NO EXTERNO') classeStatus = 'externo'
-    else classeStatus = 'inativo'
+      if (item.liberacao === 'LIVRE') classeStatus = 'livre'
+      else if (item.liberacao === 'SOMENTE NO EXTERNO') classeStatus = 'externo'
 
       linhas += `
       <tr>
-        <td data-label="Código">${item.codigo}</td>
+        <td>${item.codigo}</td>
+        <td>${item.nome}</td>
+        <td>${item.endereco_externo || '-'}</td>
+        <td>${item.endereco_satelite || '-'}</td>
 
-        <td data-label="Nome">
-          ${item.nome}
-          <div class="info-extra">
-            <span class="status ${classeStatus}">
-              ${item.liberacao || '-'}
-            </span>
-
-            ${item.observacao ? `
-              <span class="separador">|</span>
-              <span class="obs">${item.observacao}</span>
-            ` : ''}
-          </div>
-        </td>
-
-        <td data-label="Externo">${item.endereco_externo || '-'}</td>
-        <td data-label="Satélite">${item.endereco_satelite || '-'}</td>
-
-        <td data-label="Ações">
+        <td>
           <div class="acoes">
             <button class="btn-menu" onclick="toggleMenu(this)">⋮</button>
 
             <div class="menu-acoes hidden">
-              <button onclick="editarItem('${item.id}')">
-                <img src="img/editar.svg"> Editar
-              </button>
-              <button onclick="clonarItem('${item.id}')">
-                <img src="img/clonar.svg"> Clonar
-              </button>
-              <button onclick="excluirItem('${item.id}')">
-                <img src="img/excluir.svg"> Excluir
-              </button>
+              <button onclick="editarItem('${item.id}')">Editar</button>
+              <button onclick="clonarItem('${item.id}')">Clonar</button>
+              <button onclick="excluirItem('${item.id}')">Excluir</button>
             </div>
           </div>
         </td>
@@ -124,11 +130,11 @@ document.addEventListener('DOMContentLoaded', () => {
     limparFormulario()
     btnSalvar.dataset.id = ''
     modal.classList.remove('hidden')
-})
+  })
 
   document.getElementById('btnExportar').addEventListener('click', () => {
-  window.print()
-})
+    window.print()
+  })
 
   document.getElementById('btnCancelar').addEventListener('click', () => {
     limparFormulario()
@@ -182,20 +188,106 @@ document.addEventListener('DOMContentLoaded', () => {
     buscar()
   })
 
+  buscar()
+}
 
+// =========================
+// DISPENSA
+// =========================
+
+function iniciarDispensa() {
+
+  const tabela = document.getElementById('tabela')
+  const inputBusca = document.getElementById('busca')
+
+  let timeout = null
+
+  async function buscar() {
+
+    const termo = inputBusca.value.trim()
+
+    let query = supabase.from('colaboradores').select('*')
+
+    if (termo) {
+      query = query.or(`
+        cpf.ilike.${termo}%,
+        nome.ilike.%${termo}%,
+        empresa.ilike.%${termo}%,
+        funcao.ilike.%${termo}%
+      `)
+    }
+
+    const { data, error } = await query
+
+    if (error) {
+      mostrarToast('Erro ao buscar')
+      return
+    }
+
+    let linhas = ''
+
+    data.forEach(p => {
+
+      const cpfMascarado = p.cpf.slice(0,6) + '-XX'
+
+      linhas += `
+      <tr>
+        <td>${cpfMascarado}</td>
+        <td>${p.nome}</td>
+        <td>${p.empresa}</td>
+        <td>${p.funcao}</td>
+
+        <td>
+          <button onclick='dispensar(${JSON.stringify(p)})'>
+            Dispensar
+          </button>
+        </td>
+      </tr>
+      `
+    })
+
+    tabela.innerHTML = linhas
+  }
+
+  inputBusca.addEventListener('input', () => {
+    clearTimeout(timeout)
+    timeout = setTimeout(buscar, 300)
+  })
 
   buscar()
-
-})
+}
 
 // =========================
-// FUNÇÕES GLOBAIS
+// GLOBAIS
 // =========================
+
+window.dispensar = async function(pessoa) {
+
+  const user = localStorage.getItem("user")
+
+  const { error } = await supabase
+    .from('dispensas')
+    .insert([{
+      cpf: pessoa.cpf,
+      nome: pessoa.nome,
+      empresa: pessoa.empresa,
+      funcao: pessoa.funcao,
+      usuario: user,
+      data_hora: new Date()
+    }])
+
+  if (error) {
+    mostrarToast('Erro ao dispensar')
+    return
+  }
+
+  mostrarToast('Dispensado com sucesso')
+}
 
 window.ordenar = function(campo) {
   ordem.asc = ordem.campo === campo ? !ordem.asc : true
   ordem.campo = campo
-  document.getElementById('btnBuscar').click()
+  document.getElementById('btnBuscar')?.click()
 }
 
 window.editarItem = async function(id) {
@@ -213,23 +305,14 @@ window.editarItem = async function(id) {
 }
 
 window.excluirItem = async function(id) {
-  if (!confirm('⚠️ Deseja realmente excluir este item?')) return
+  if (!confirm('Deseja excluir?')) return
   await supabase.from('produtos').delete().eq('id', id)
   mostrarToast('Excluído')
-  document.getElementById('btnBuscar').click()
+  document.getElementById('btnBuscar')?.click()
 }
 
 window.clonarItem = async function(id) {
-  const { data, error } = await supabase
-    .from('produtos')
-    .select('*')
-    .eq('id', id)
-    .single()
-
-  if (error || !data) {
-    mostrarToast('Erro ao clonar')
-    return
-  }
+  const { data } = await supabase.from('produtos').select('*').eq('id', id).single()
 
   const novoItem = {
     codigo: data.codigo + '_COPIA',
@@ -240,18 +323,9 @@ window.clonarItem = async function(id) {
     liberacao: data.liberacao
   }
 
-  const { error: erroInsert } = await supabase
-    .from('produtos')
-    .insert([novoItem])
-
-  if (erroInsert) {
-    console.error(erroInsert)
-    mostrarToast('Erro ao clonar')
-    return
-  }
-
-  mostrarToast('Item clonado com sucesso')
-  document.getElementById('btnBuscar').click()
+  await supabase.from('produtos').insert([novoItem])
+  mostrarToast('Clonado')
+  document.getElementById('btnBuscar')?.click()
 }
 
 window.toggleMenu = function(btn) {
@@ -269,4 +343,3 @@ document.addEventListener('click', (e) => {
     document.querySelectorAll('.menu-acoes').forEach(m => m.classList.add('hidden'))
   }
 })
-

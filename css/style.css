@@ -3,6 +3,7 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
   background: #f5f5f5;
+
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -21,8 +22,16 @@ body {
   color: white;
 
   display: flex;
+  justify-content: space-between;
   align-items: center;
+
   padding: 10px 20px;
+  box-sizing: border-box;
+}
+
+.topo-esquerda {
+  display: flex;
+  align-items: center;
 }
 
 .logo {
@@ -30,32 +39,87 @@ body {
   margin-right: 15px;
 }
 
+.topo-direita {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topo-direita button {
+  background: white;
+  color: #2f7d5b;
+  border-radius: 4px;
+  padding: 6px 10px;
+}
+
+.topo-direita button:hover {
+  background: #e0e0e0;
+}
+
 /* =========================
-   BARRA DE BUSCA
+   BARRA
 ========================= */
 .barra-topo {
   position: fixed;
-  top: 55px;
-  width: 96%;
+  top: 60px;
+  left: 0;
+  width: 100%;
   z-index: 999;
 
   display: flex;
   align-items: center;
   gap: 10px;
 
-  padding: 12px 20px;
+  padding: 10px 20px;
   background: white;
   border-bottom: 1px solid #ddd;
-  flex-wrap: wrap;
-  margin-left: 1%;
 }
 
-.contador {
-  font-size: 13px;
-  color: #666;
+/* =========================
+   CONTEÚDO
+========================= */
+.conteudo {
+  flex: 1;
+  margin-top: 130px;
+  padding: 20px;
+  padding-bottom: 70px; /* espaço pro rodapé */
 }
 
-/* INPUT BUSCA */
+/* =========================
+   LOGIN
+========================= */
+.login-box {
+  background: white;
+  padding: 30px;
+  max-width: 320px;
+  margin: 120px auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.login-box button {
+  width: 100%;
+  background: #2f7d5b;
+  color: white;
+  justify-content: center;
+}
+
+.login-box button:hover {
+  background: #25664a;
+}
+
+/* =========================
+   BUSCA
+========================= */
 .busca-box {
   position: relative;
 }
@@ -63,16 +127,8 @@ body {
 .busca-box input {
   padding: 10px 35px 10px 12px;
   width: 320px;
-
   border: 1px solid #ccc;
   border-radius: 6px;
-  font-size: 14px;
-}
-
-.busca-box input:focus {
-  outline: none;
-  border-color: #2f7d5b;
-  box-shadow: 0 0 4px rgba(47, 125, 91, 0.3);
 }
 
 .limpar {
@@ -80,7 +136,6 @@ body {
   right: 10px;
   top: 8px;
   cursor: pointer;
-  color: #999;
 }
 
 /* =========================
@@ -95,121 +150,26 @@ button {
   border: none;
   border-radius: 6px;
 
-  font-size: 14px;
   cursor: pointer;
-  transition: 0.2s;
-}
-
-/* ÍCONES */
-button img {
-  width: 16px;
-  height: 16px;
-}
-
-/* BOTÕES PRINCIPAIS */
-#btnBuscar {
-  background: #2f7d5b;
-  color: white;
-}
-
-#btnBuscar:hover {
-  background: #25664a;
-}
-
-#btnNovo {
-  background: #007bff;
-  color: white;
-}
-
-#btnNovo:hover {
-  background: #0056b3;
-}
-
-#btnExportar {
-  background-color: #6c757d;
-  color: white;
-}
-
-#btnExportar:hover {
-  background-color: #5a6268;
-}
-
-/* =========================
-   CONTEÚDO
-========================= */
-.conteudo {
-  flex: 1;
-  margin-top: 120px;
-  padding-bottom: 50px;
 }
 
 /* =========================
    TABELA
 ========================= */
 table {
-  width: calc(100% - 40px);
-  margin: 0 20px;
+  width: 100%;
   border-collapse: collapse;
   background: white;
-}
-
-th {
-  background: #f0f0f0;
-  cursor: pointer;
-  font-weight: bold;
 }
 
 th, td {
   padding: 10px;
   border-bottom: 1px solid #ddd;
-  text-align: left;
 }
 
-tr:hover {
-  background: #f7f7f7;
-}
-
-/* =========================
-   STATUS + OBS
-========================= */
-.info-extra {
-  font-size: 12px;
-  margin-top: 4px;
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  color: #666;
-}
-
-.status {
-  padding: 3px 8px;
-  border-radius: 10px;
-  font-size: 11px;
-  font-weight: bold;
-}
-
-.livre {
-  background: #28a745;
-  color: white;
-}
-
-.externo {
-  background: #ffc107;
-  color: black;
-}
-
-.inativo {
-  background: #dc3545;
-  color: white;
-}
-
-.separador {
-  color: #bbb;
-}
-
-.obs {
-  font-size: 12px;
-  color: #666;
+th {
+  background: #f0f0f0;
+  cursor: pointer;
 }
 
 /* =========================
@@ -221,16 +181,7 @@ tr:hover {
 
 .btn-menu {
   background: transparent;
-  border: none;
-  font-size: 20px;
-  color: #333;
-  padding: 4px;
-  margin-left: 15%;
-}
-
-.btn-menu:hover {
-  background: #eee;
-  border-radius: 4px;
+  font-size: 18px;
 }
 
 .menu-acoes {
@@ -242,23 +193,21 @@ tr:hover {
   border: 1px solid #ccc;
   border-radius: 6px;
 
-  min-width: 140px;
   display: flex;
   flex-direction: column;
-
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  z-index: 10;
 }
 
 .menu-acoes button {
   background: none;
   color: #333;
-  padding: 8px;
-  text-align: left;
 }
 
 .menu-acoes button:hover {
-  background: #f0f0f0;
+  background: #eee;
+}
+
+.hidden {
+  display: none;
 }
 
 /* =========================
@@ -270,7 +219,6 @@ tr:hover {
   left: 0;
   width: 100%;
   height: 100%;
-
   background: rgba(0,0,0,0.5);
 
   display: flex;
@@ -278,50 +226,10 @@ tr:hover {
   align-items: center;
 }
 
-.hidden {
-  display: none;
-}
-
 .modal-content {
   background: white;
   padding: 20px;
-  border-radius: 8px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   width: 300px;
-}
-
-.modal-content input,
-.modal-content select {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-#btnCancelar {
-  background-color: #dc3545;
-  color: white;
-}
-
-#btnCancelar:hover {
-  background-color: #b02a37;
-}
-
-#btnSalvar {
-  background-color: #007bff;
-  color: white;
-}
-
-#btnSalvar:hover {
-  background-color: #0056b3;
 }
 
 /* =========================
@@ -329,17 +237,15 @@ tr:hover {
 ========================= */
 .toast {
   position: fixed;
-  bottom: 20px;
+  bottom: 80px;
   right: 20px;
 
   background: #2f7d5b;
   color: white;
-  padding: 10px 14px;
+  padding: 10px;
 
   border-radius: 6px;
   display: none;
-
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
 /* =========================
@@ -348,14 +254,17 @@ tr:hover {
 .rodape {
   position: fixed;
   bottom: 0;
+  left: 0;
   width: 100%;
 
+  background: #eee;
   text-align: center;
   padding: 8px;
 
-  background: #eee;
   font-size: 12px;
   color: #666;
+
+  border-top: 1px solid #ccc;
 }
 
 .rodape a {
@@ -366,165 +275,4 @@ tr:hover {
 
 .rodape a:hover {
   text-decoration: underline;
-}
-
-@media print {
-  .barra-topo,
-  .rodape,
-  .btn-menu,
-  button {
-    display: none !important;
-  }
-
-  body {
-    font-size: 10px;
-  }
-
-  table {
-    font-size: 10px;
-  }
-
-  th, td {
-    padding: 4px 6px;
-  }
-
-  .info-extra {
-    font-size: 9px;
-  }
-}
-
-@media (max-width: 959px) {
-
-  /* some cabeçalho */
-  thead {
-    display: none;
-  }
-
-  table, tbody, tr, td {
-    display: block;
-    width: 100%;
-  }
-
-  tr {
-    background: white;
-    margin: 10px 10px;
-    border-radius: 10px;
-    padding: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  }
-
-  td {
-    border: none;
-    padding: 6px 10px;
-    position: relative;
-  }
-
-  /* cria os títulos tipo "Externo", "Satélite" */
-  td::before {
-    content: attr(data-label);
-    font-size: 11px;
-    color: #777;
-    display: block;
-    margin-bottom: 2px;
-  }
-
-  /* nome mais destacado */
-  td[data-label="Nome"] {
-    font-weight: bold;
-    font-size: 15px;
-  }
-
-  /* código azul como no seu modelo */
-  td[data-label="Código"] {
-    color: #2a5bd7;
-    font-weight: bold;
-  }
-
-  /* ações alinhadas à direita */
-  td[data-label="Ações"] {
-    display: flex;
-    justify-content: flex-end;
-  }
-
-}
-
-@media (max-width: 959px) {
-
-  #btnBuscar,
-  #btnNovo,
-  #btnExportar {
-    width: auto;              /* remove o full width */
-    flex: 1;                  /* divide espaço de forma inteligente */
-    justify-content: center;
-    padding: 8px;
-    font-size: 13px;
-  }
-
-  .barra-topo {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-
-  .busca-box {
-    grid-column: 1 / -1; /* ocupa linha inteira */
-  }
-
-      .conteudo {
-        margin-top: 190px;
-        padding-bottom: 40px;
-    }
-}
-
-@media (max-width: 959px) {
-
-  .barra-topo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px;
-  }
-
-  /* busca ocupa tudo */
-  .busca-box {
-    flex: 1;
-  }
-
-  .busca-box input {
-    width: 100%;
-  }
-
-  /* esconder botão buscar */
-  #btnBuscar {
-    display: none;
-  }
-
-  /* esconder novo item (opcional) */
-  #btnNovo {
-    display: none;
-  }
-
-  /* exportar vira botão pequeno */
-  #btnExportar {
-    padding: 6px;
-    width: auto;
-    min-width: 36px;
-    justify-content: center;
-  }
-
-  #btnExportar span {
-    display: none; /* se tiver texto */
-  }
-
-  #btnExportar img {
-    width: 18px;
-    height: 18px;
-  }
-
-  /* contador no final */
-  .contador {
-    font-size: 12px;
-    white-space: nowrap;
-  }
-
 }

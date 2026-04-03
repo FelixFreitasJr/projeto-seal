@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SEAL - Dispensa</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<!-- TOPO -->
+<div class="topo">
+
+  <div class="topo-esquerda">
+    <img src="../img/logo.png" class="logo">
+    <div class="titulo">
+      <strong>SEAL — Serviço de Almoxarifado - INI / Fiocruz</strong><br>
+      <small>Dispensa de Máscara PFF/N95</small>
+    </div>
+  </div>
+
+  <div class="topo-direita">
+    <span id="usuario"></span>
+
+    <button onclick="ir('../index.html')">Dashboard</button>
+    <button onclick="ir('estoque.html')">Estoque</button>
+    <button onclick="ir('dispensa.html')">Dispensa</button>
+
+    <button onclick="logout()">Sair</button>
+  </div>
+
+</div>
+
+<!-- BARRA -->
+<div class="barra-topo">
+
+  <div class="busca-box">
+    <input id="busca" placeholder="Buscar por CPF (6 dígitos), nome, empresa ou função...">
+    <span id="limparBusca" class="limpar">✖</span>
+  </div>
+
+</div>
+
+<!-- TABELA -->
+<div class="conteudo">
+  <table>
+    <thead>
+      <tr>
+        <th>CPF</th>
+        <th>Nome</th>
+        <th>Empresa</th>
+        <th>Função</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+
+    <tbody id="tabela"></tbody>
+  </table>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<!-- RODAPÉ -->
+<footer class="rodape">
+  Desenvolvido por 
+  <a href="https://github.com/FelixFreitasJr" target="_blank">Felix Freitas Jr</a><br>
+  <a href="https://github.com/FelixFreitasJr/projeto-seal" target="_blank">Documentação</a>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="../js/auth.js"></script>
+
+<script>
+  checkAuth()
+
+  function ir(pagina){
+    window.location.href = pagina
+  }
+
+  document.getElementById("usuario").innerText =
+    "Usuário: " + getUser()
+</script>
+
+<script type="module" src="../js/app.js"></script>
+
+</body>
+</html>
