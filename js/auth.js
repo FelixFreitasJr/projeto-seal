@@ -1,4 +1,9 @@
-async function login() {
+import { SUPABASE_URL, SUPABASE_KEY } from './config.js'
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+export async function login() {
   const usuario = document.getElementById("usuario").value
   const senha = document.getElementById("senha").value
 
@@ -14,12 +19,12 @@ async function login() {
     return
   }
 
-  // salva apenas um token de sessão temporário
+  // salva apenas em sessionStorage (expira ao fechar navegador)
   sessionStorage.setItem("user", data.usuario)
   window.location.href = "../index.html"
 }
 
-function logout() {
+export function logout() {
   sessionStorage.removeItem("user")
   if (window.location.pathname.includes('/pages/')) {
     window.location.href = 'login.html'
@@ -28,7 +33,7 @@ function logout() {
   }
 }
 
-function checkAuth() {
+export function checkAuth() {
   const user = sessionStorage.getItem("user")
   if (!user) {
     if (window.location.pathname.includes('/pages/')) {
@@ -39,6 +44,6 @@ function checkAuth() {
   }
 }
 
-function getUser() {
+export function getUser() {
   return sessionStorage.getItem("user")
 }
