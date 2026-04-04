@@ -47,7 +47,7 @@ export function initEstoque() {
           <div class="acoes">
             <button class="btn-menu" onclick="toggleMenu(this)">⋮</button>
             <div class="menu-acoes hidden">
-              <button onclick="editarItem('${item.id}')">Editar</button>
+              <button onclick="editarProduto('${item.id}')">Editar</button>
               <button onclick="clonarItem('${item.id}')">Clonar</button>
               <button onclick="excluirItem('${item.id}')">Excluir</button>
             </div>

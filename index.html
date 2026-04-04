@@ -72,12 +72,18 @@
   // Exibe usuário logado
   const user = getUser()
   document.getElementById("userInfo").innerText = "Usuário logado: " + user
+    if (user === "ADM") {
+  document.getElementById("btnConfig").classList.remove("hidden")
+}
 
+  
   // Ajusta título para incluir usuário
   const titulo = document.querySelector(".titulo small")
   if (titulo && user) {
     titulo.innerText = titulo.innerText + " | Usuário: " + user
   }
+
+  
 </script>
 
 </body>

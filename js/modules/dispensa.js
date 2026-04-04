@@ -38,7 +38,7 @@ export function initDispensa() {
             <button class="btn-menu" onclick="toggleMenu(this)">⋮</button>
             <div class="menu-acoes hidden">
               <button onclick="dispensarItem('${item.id}')">Dispensar</button>
-              <button onclick="editarItem('${item.id}')">Editar</button>
+              <button onclick="editarColaborador('${item.id}')">Editar</button>
               <button onclick="excluirItem('${item.id}')">Excluir</button>
             </div>
           </div>
