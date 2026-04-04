@@ -9,6 +9,7 @@ function login() {
     senha === "ALMOX"
   ) {
     localStorage.setItem("user", usuario)
+    // Se login.html está dentro de /pages/, volta para raiz
     window.location.href = "../index.html"
   } else {
     alert("Usuário ou senha inválidos")
@@ -17,13 +18,21 @@ function login() {
 
 function logout() {
   localStorage.removeItem("user")
-  window.location.href = "pages/login.html"
+  if (window.location.pathname.includes('/pages/')) {
+    window.location.href = 'login.html'
+  } else {
+    window.location.href = 'pages/login.html'
+  }
 }
 
 function checkAuth() {
   const user = localStorage.getItem("user")
   if (!user) {
-    window.location.href = "pages/login.html"
+    if (window.location.pathname.includes('/pages/')) {
+      window.location.href = 'login.html'
+    } else {
+      window.location.href = 'pages/login.html'
+    }
   }
 }
 
