@@ -397,3 +397,6 @@ td:nth-child(4) { background: #fff3e0; }
   cursor: pointer;
 }
 
+input {
+  text-transform: uppercase;
+}
