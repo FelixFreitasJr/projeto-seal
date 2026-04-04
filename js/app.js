@@ -38,66 +38,8 @@ window.ir = function(pagina) {
 // FUNÇÕES GLOBAIS
 // =========================
 
-// EDITAR ITEM (estoque ou colaborador)
 window.editarItem = async (id) => {
-  const tabela = window.location.href.endsWith("estoque.html") ? 'produtos' : 'colaboradores'
-  const { data, error } = await supabase.from(tabela).select('*').eq('id', id).single()
-  if (error) {
-    alert("Erro ao buscar item")
-    return
-  }
-
-  if (tabela === 'produtos') {
-    // Preenche modal de estoque
-    document.getElementById("codigo").value = data.codigo
-    document.getElementById("nome").value = data.nome
-    document.getElementById("externo").value = data.endereco_externo
-    document.getElementById("satelite").value = data.endereco_satelite
-    document.getElementById("observacao").value = data.observacao
-    document.getElementById("liberacao").value = data.liberacao
-    document.getElementById("modal").classList.remove("hidden")
-
-    document.getElementById("btnSalvar").onclick = async () => {
-      const { error: updateError } = await supabase.from('produtos').update({
-        codigo: document.getElementById("codigo").value,
-        nome: document.getElementById("nome").value,
-        endereco_externo: document.getElementById("externo").value,
-        endereco_satelite: document.getElementById("satelite").value,
-        observacao: document.getElementById("observacao").value,
-        liberacao: document.getElementById("liberacao").value
-      }).eq('id', id)
-
-      if (updateError) {
-        alert("Erro ao atualizar")
-      } else {
-        alert("Item atualizado")
-        location.reload()
-      }
-    }
-  } else {
-    // Preenche modal de colaborador
-    document.getElementById("cpf").value = data.cpf
-    document.getElementById("nome").value = data.nome
-    document.getElementById("empresa").value = data.empresa
-    document.getElementById("funcao").value = data.funcao
-    document.getElementById("modalColaborador").classList.remove("hidden")
-
-    document.getElementById("btnSalvarColaborador").onclick = async () => {
-      const { error: updateError } = await supabase.from('colaboradores').update({
-        cpf: document.getElementById("cpf").value,
-        nome: document.getElementById("nome").value,
-        empresa: document.getElementById("empresa").value,
-        funcao: document.getElementById("funcao").value
-      }).eq('id', id)
-
-      if (updateError) {
-        alert("Erro ao atualizar colaborador")
-      } else {
-        alert("Colaborador atualizado")
-        location.reload()
-      }
-    }
-  }
+  alert("Função editar em desenvolvimento. ID: " + id)
 }
 
 window.clonarItem = async (id) => {
@@ -156,16 +98,6 @@ window.toggleMenu = (btn) => {
   menu.classList.toggle("hidden")
 }
 
-// Fecha menus ao clicar fora
-document.addEventListener('click', (event) => {
-  const menus = document.querySelectorAll('.menu-acoes')
-  menus.forEach(menu => {
-    if (!menu.contains(event.target) && !menu.previousElementSibling.contains(event.target)) {
-      menu.classList.add('hidden')
-    }
-  })
-})
-
 // =========================
 // ESTOQUE - NOVO ITEM
 // =========================
@@ -208,51 +140,107 @@ function validarCPF(cpf) {
   if(cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false
 
   let soma = 0
-  for (let i=0; i<9; iEntendido, Felix. Vou te entregar os dois arquivos **completos e corrigidos**, sem duplicação e sem cortes, prontos para substituir no projeto:
+  for (let i=0; i<9; i++) soma += parseInt(cpf.charAt(i)) * (10 - i)
+  let resto = 11 - (soma % 11)
+  if (resto === 10 || resto === 11) resto = 0
+  if (resto !== parseInt(cpf.charAt(9))) return false
 
----
+  soma = 0
+  for (let i=0; i<10; i++) soma += parseInt(cpf.charAt(i)) * (11 - i)
+  resto = 11 - (soma % 11)
+  if (resto === 10 || resto === 11) resto = 0
+  if (resto !== parseInt(cpf.charAt(10))) return false
 
-## 📂 auth.js
-
-```js
-function login() {
-  const usuario = document.getElementById("usuario").value
-  const senha = document.getElementById("senha").value
-
-  if (
-    (usuario === "EXTERNO" ||
-     usuario === "SATELITE" ||
-     usuario === "ADM") &&
-    senha === "ALMOX"
-  ) {
-    localStorage.setItem("user", usuario)
-    // Se login.html está dentro de /pages/, volta para raiz
-    window.location.href = "../index.html"
-  } else {
-    alert("Usuário ou senha inválidos")
-  }
+  return true
 }
 
-function logout() {
-  localStorage.removeItem("user")
-  if (window.location.pathname.includes('/pages/')) {
-    window.location.href = 'login.html'
-  } else {
-    window.location.href = 'pages/login.html'
-  }
-}
+function initDispensaActions() {
+  document.getElementById("btnNovoColaborador").addEventListener("click", () => {
+    document.getElementById("modalColaborador").classList.remove("hidden")
+  })
 
-function checkAuth() {
-  const user = localStorage.getItem("user")
-  if (!user) {
-    if (window.location.pathname.includes('/pages/')) {
-      window.location.href = 'login.html'
-    } else {
-      window.location.href = 'pages/login.html'
+  document.getElementById("btnCancelarColaborador").addEventListener("click", () => {
+    document.getElementById("modalColaborador").classList.add("hidden")
+  })
+
+  document.getElementById("btnSalvarColaborador").addEventListener("click", async () => {
+    const cpf = document.getElementById("cpf").value
+    const nome = document.getElementById("nome").value
+    const empresa = document.getElementById("empresa").value
+    const funcao = document.getElementById("funcao").value
+
+    if (!validarCPF(cpf)) {
+      alert("CPF inválido")
+      return
     }
-  }
-}
 
-function getUser() {
-  return localStorage.getItem("user")
+    const { data: existente } = await supabase.from('colaboradores').select('cpf').eq('cpf', cpf).single()
+    if (existente) {
+      alert("Já existe colaborador com este CPF")
+      return
+    }
+
+    const { error } = await supabase.from('colaboradores').insert({ cpf, nome, empresa, funcao })
+    if (error) {
+      alert("Erro ao salvar colaborador")
+    } else {
+      alert("Colaborador cadastrado")
+      location.reload()
+    }
+  })
+}
+document.addEventListener('click', (event) => {
+  const menus = document.querySelectorAll('.menu-acoes')
+  menus.forEach(menu => {
+    if (!menu.contains(event.target) && !menu.previousElementSibling.contains(event.target)) {
+      menu.classList.add('hidden')
+    }
+  })
+})
+
+// Mostrar botão de config apenas para ADM
+document.addEventListener('DOMContentLoaded', async () => {
+  const user = getUser()
+  if (user === "ADM") {
+    document.getElementById("btnConfig").classList.remove("hidden")
+
+    document.getElementById("btnConfig").addEventListener("click", async () => {
+      const { data, error } = await supabase.from('usuarios').select('*')
+      if (error) {
+        alert("Erro ao carregar usuários")
+        return
+      }
+
+      let linhas = ''
+      data.forEach(u => {
+        linhas += `
+          <tr>
+            <td>${u.usuario}</td>
+            <td>${u.perfil}</td>
+            <td>
+              <button onclick="alterarSenha('${u.usuario}')">Alterar Senha</button>
+            </td>
+          </tr>`
+      })
+      document.getElementById("tabelaUsuarios").innerHTML = linhas
+      document.getElementById("modalConfig").classList.remove("hidden")
+    })
+
+    document.getElementById("btnFecharConfig").addEventListener("click", () => {
+      document.getElementById("modalConfig").classList.add("hidden")
+    })
+  }
+})
+
+// Função para alterar senha
+window.alterarSenha = async (usuario) => {
+  const novaSenha = prompt("Digite a nova senha para " + usuario)
+  if (!novaSenha) return
+
+  const { error } = await supabase.from('usuarios').update({ senha: novaSenha }).eq('usuario', usuario)
+  if (error) {
+    alert("Erro ao alterar senha")
+  } else {
+    alert("Senha atualizada com sucesso")
+  }
 }

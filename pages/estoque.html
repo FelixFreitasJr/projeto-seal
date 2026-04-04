@@ -18,10 +18,10 @@
   </div>
 
   <div class="topo-direita">
-    <span id="usuario"></span>
     <button onclick="window.location.href='../index.html'">Dashboard</button>
     <button onclick="window.location.href='estoque.html'">Estoque</button>
     <button onclick="window.location.href='dispensa.html'">Dispensa</button>
+        <button id="btnConfig" class="hidden">⚙️</button>
     <button onclick="logout()">Sair</button>
   </div>
 </div>
@@ -73,6 +73,25 @@
       <button id="btnSalvar">
         <img src="../img/salvar.svg"> Salvar
       </button>
+    </div>
+  </div>
+</div>
+
+<div id="modalConfig" class="modal hidden">
+  <div class="modal-content">
+    <h3>Gerenciar Usuários</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Usuário</th>
+          <th>Perfil</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaUsuarios"></tbody>
+    </table>
+    <div class="modal-actions">
+      <button id="btnFecharConfig">Fechar</button>
     </div>
   </div>
 </div>

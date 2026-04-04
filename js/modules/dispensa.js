@@ -68,3 +68,12 @@ function mascararCPF(cpf) {
          'XXX' + '-' +
          cpf.substring(9,11)
 }
+document.getElementById('limparBusca')?.addEventListener('click', () => {
+  busca.value = ''
+  tabela.innerHTML = '' // limpa a tabela
+})
+
+// Após editar ou dispensar:
+await supabase.from('colaboradores').update(...)
+// ou insert em 'dispensas'
+buscar() // chama novamente a busca para atualizar a lista

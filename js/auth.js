@@ -1,23 +1,26 @@
-function login() {
+async function login() {
   const usuario = document.getElementById("usuario").value
   const senha = document.getElementById("senha").value
 
-  if (
-    (usuario === "EXTERNO" ||
-     usuario === "SATELITE" ||
-     usuario === "ADM") &&
-    senha === "ALMOX"
-  ) {
-    localStorage.setItem("user", usuario)
-    // Se login.html está dentro de /pages/, volta para raiz
-    window.location.href = "../index.html"
-  } else {
+  const { data, error } = await supabase
+    .from('usuarios')
+    .select('*')
+    .eq('usuario', usuario)
+    .eq('senha', senha)
+    .single()
+
+  if (error || !data) {
     alert("Usuário ou senha inválidos")
+    return
   }
+
+  // salva apenas um token de sessão temporário
+  sessionStorage.setItem("user", data.usuario)
+  window.location.href = "../index.html"
 }
 
 function logout() {
-  localStorage.removeItem("user")
+  sessionStorage.removeItem("user")
   if (window.location.pathname.includes('/pages/')) {
     window.location.href = 'login.html'
   } else {
@@ -26,7 +29,7 @@ function logout() {
 }
 
 function checkAuth() {
-  const user = localStorage.getItem("user")
+  const user = sessionStorage.getItem("user")
   if (!user) {
     if (window.location.pathname.includes('/pages/')) {
       window.location.href = 'login.html'
@@ -37,5 +40,5 @@ function checkAuth() {
 }
 
 function getUser() {
-  return localStorage.getItem("user")
+  return sessionStorage.getItem("user")
 }
