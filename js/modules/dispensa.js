@@ -28,7 +28,7 @@ export function initDispensa() {
     data.forEach(item => {
       linhas += `
       <tr>
-        <td>${item.cpf}</td>
+        <td>${mascararCPF(item.cpf)}</td>
         <td>${item.nome}</td>
         <td>${item.empresa}</td>
         <td>${item.funcao}</td>
@@ -55,6 +55,16 @@ export function initDispensa() {
 
   document.getElementById('limparBusca')?.addEventListener('click', () => {
     busca.value = ''
-    tabela.innerHTML = ''
+    tabela.innerHTML = '' // limpa a tabela ao terminar busca
   })
+}
+
+// Função para mascarar CPF
+function mascararCPF(cpf) {
+  cpf = cpf.replace(/[^\d]/g, '')
+  if (cpf.length !== 11) return cpf
+  return cpf.substring(0,3) + '.' +
+         cpf.substring(3,6) + '.' +
+         'XXX' + '-' +
+         cpf.substring(9,11)
 }

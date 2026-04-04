@@ -15,6 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (pagina.endsWith("dispensa.html")) {
     initDispensa()
+    initDispensaActions()
+  }
+
+  // Ajusta título da página para incluir usuário logado
+  const user = getUser()
+  const titulo = document.querySelector(".titulo small")
+  if (titulo && user) {
+    titulo.innerText = titulo.innerText + " | Usuário: " + user
   }
 })
 
@@ -30,12 +38,10 @@ window.ir = function(pagina) {
 // FUNÇÕES GLOBAIS
 // =========================
 
-// Editar item (estoque ou colaborador)
 window.editarItem = async (id) => {
   alert("Função editar em desenvolvimento. ID: " + id)
 }
 
-// Clonar item (estoque)
 window.clonarItem = async (id) => {
   const { data, error } = await supabase.from('produtos').select('*').eq('id', id).single()
   if (error) {
@@ -52,7 +58,6 @@ window.clonarItem = async (id) => {
   }
 }
 
-// Excluir item (estoque ou colaborador)
 window.excluirItem = async (id) => {
   const tabela = window.location.href.endsWith("estoque.html") ? 'produtos' : 'colaboradores'
   const { error } = await supabase.from(tabela).delete().eq('id', id)
@@ -64,7 +69,6 @@ window.excluirItem = async (id) => {
   }
 }
 
-// Dispensar colaborador
 window.dispensarItem = async (id) => {
   const user = getUser()
   const { data: colaborador, error } = await supabase.from('colaboradores').select('*').eq('id', id).single()
@@ -89,7 +93,6 @@ window.dispensarItem = async (id) => {
   }
 }
 
-// Abrir/fechar menu de ações
 window.toggleMenu = (btn) => {
   const menu = btn.nextElementSibling
   menu.classList.toggle("hidden")
@@ -171,7 +174,6 @@ function initDispensaActions() {
       return
     }
 
-    // Verifica duplicidade
     const { data: existente } = await supabase.from('colaboradores').select('cpf').eq('cpf', cpf).single()
     if (existente) {
       alert("Já existe colaborador com este CPF")
@@ -187,10 +189,3 @@ function initDispensaActions() {
     }
   })
 }
-
-// Ativar junto com initDispensa
-if (pagina.endsWith("dispensa.html")) {
-  initDispensa()
-  initDispensaActions()
-}
-

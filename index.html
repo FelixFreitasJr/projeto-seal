@@ -3,7 +3,6 @@
 <head>
   <title>SEAL - Dashboard</title>
   <link rel="stylesheet" href="css/style.css">
-
   <script src="js/auth.js"></script>
 </head>
 
@@ -11,33 +10,26 @@
 
 <!-- TOPO -->
 <div class="topo">
-
   <div class="topo-esquerda">
     <img src="img/logo.png" class="logo">
     <div class="titulo">
       <strong>SEAL — Serviço de Almoxarifado - INI / Fiocruz</strong><br>
-      <small>Painel de Controle</small>
+      <small>Painel de Controle | Usuário</small><span id="usuario"></span>
     </div>
   </div>
 
   <div class="topo-direita">
-    <span id="usuario"></span>
-
-    <button onclick="window.location.href='../index.html'">Dashboard</button>
+    <button onclick="window.location.href='index.html'">Dashboard</button>
     <button onclick="window.location.href='pages/estoque.html'">Estoque</button>
     <button onclick="window.location.href='pages/dispensa.html'">Dispensa</button>
-
     <button onclick="logout()">Sair</button>
   </div>
-
 </div>
 
 <!-- CONTEÚDO -->
 <div class="conteudo">
   <h1>Dashboard</h1>
-
   <p id="userInfo"></p>
-
   <p>Bem-vindo ao sistema SEAL.</p>
   <p>Use o menu acima para navegar.</p>
 </div>
@@ -50,19 +42,21 @@
 </footer>
 
 <!-- SCRIPTS -->
-<!-- <script>
+<script>
+  // Verifica login
   checkAuth();
 
-  function ir(pagina){
-    window.location.href = pagina;
+  // Exibe usuário logado
+  const user = getUser();
+  document.getElementById("usuario").innerText = "Usuário: " + user;
+  document.getElementById("userInfo").innerText = "Usuário logado: " + user;
+
+  // Ajusta título para incluir usuário
+  const titulo = document.querySelector(".titulo small");
+  if (titulo && user) {
+    titulo.innerText = titulo.innerText + " | Usuário: " + user;
   }
-
-  document.getElementById("usuario").innerText =
-    "Usuário: " + getUser();
-
-  document.getElementById("userInfo").innerText =
-    "Usuário logado: " + getUser();
-</script> -->
+</script>
 
 </body>
 </html>

@@ -9,48 +9,32 @@
 
 <!-- TOPO -->
 <div class="topo">
-
   <div class="topo-esquerda">
     <img src="../img/logo.png" class="logo">
     <div class="titulo">
       <strong>SEAL — Serviço de Almoxarifado - INI / Fiocruz</strong><br>
-      <small>Localizador de Estoque</small>
+      <small>Controle de Estoque | Usuário</small><span id="usuario"></span>
     </div>
   </div>
 
   <div class="topo-direita">
-    <span id="usuario"></span>
-
-      <button onclick="window.location.href='../index.html'">Dashboard</button>
-      <button onclick="window.location.href='estoque.html'">Estoque</button>
-      <button onclick="window.location.href='dispensa.html'">Dispensa</button>
-
-      <button onclick="logout()">Sair</button>
+    <button onclick="window.location.href='../index.html'">Dashboard</button>
+    <button onclick="window.location.href='estoque.html'">Estoque</button>
+    <button onclick="window.location.href='dispensa.html'">Dispensa</button>
+    <button onclick="logout()">Sair</button>
   </div>
-
 </div>
 
 <!-- BARRA -->
 <div class="barra-topo">
-
   <div class="busca-box">
-    <input id="busca" placeholder="Pesquisar por código, nome ou observação...">
+    <input id="busca" placeholder="Buscar por código, nome, observação ou status...">
     <span id="limparBusca" class="limpar">✖</span>
   </div>
-
-  <button id="btnBuscar">
-    <img src="../img/buscar.svg"> Buscar
-  </button>
 
   <button id="btnNovo">
     <img src="../img/novo.svg"> Novo Item
   </button>
-
-  <button id="btnExportar">
-    <img src="../img/baixar.svg"> Exportar PDF
-  </button>
-
-  <span id="totalItens" class="contador"></span>
 </div>
 
 <!-- TABELA -->
@@ -58,10 +42,10 @@
   <table>
     <thead>
       <tr>
-        <th onclick="ordenar('codigo')">Código</th>
-        <th onclick="ordenar('nome')">Nome</th>
-        <th onclick="ordenar('endereco_externo')">Externo</th>
-        <th onclick="ordenar('endereco_satelite')">Satélite</th>
+        <th>Código</th>
+        <th>Nome</th>
+        <th>Externo</th>
+        <th>Satélite</th>
         <th>Ações</th>
       </tr>
     </thead>
@@ -69,41 +53,28 @@
   </table>
 </div>
 
-<!-- MODAL -->
+<!-- MODAL NOVO ITEM -->
 <div id="modal" class="modal hidden">
   <div class="modal-content">
     <h3>Novo Item</h3>
 
     <input id="codigo" placeholder="Código">
     <input id="nome" placeholder="Nome">
-    <input id="externo" placeholder="Externo">
-    <input id="satelite" placeholder="Satélite">
+    <input id="externo" placeholder="Endereço Externo">
+    <input id="satelite" placeholder="Endereço Satélite">
     <input id="observacao" placeholder="Observação">
-
-    <select id="liberacao">
-      <option value="LIVRE">LIVRE</option>
-      <option value="SOMENTE NO EXTERNO">SOMENTE NO EXTERNO</option>
-      <option value="INATIVO">INATIVO</option>
-      <option value="SOB SUPERVISAO">SOB SUPERVISAO</option>
-      <option value="SOMENTE PACIENTE">SOMENTE PACIENTE</option>
-      <option value="SOMENTE SATELITE">SOMENTE SATELITE</option>
-      <option value="SOMENTE CME">SOMENTE CME</option>
-    </select>
+    <input id="liberacao" placeholder="Liberação">
 
     <div class="modal-actions">
       <button id="btnCancelar">
         <img src="../img/excluir.svg"> Cancelar
       </button>
-
       <button id="btnSalvar">
         <img src="../img/salvar.svg"> Salvar
       </button>
     </div>
   </div>
 </div>
-
-<!-- TOAST -->
-<div id="toast" class="toast"></div>
 
 <!-- RODAPÉ -->
 <footer class="rodape">
@@ -112,11 +83,17 @@
   <a href="https://github.com/FelixFreitasJr/projeto-seal" target="_blank">Documentação</a>
 </footer>
 
-<script type="module" src="../js/app.js"></script>
+<!-- SCRIPTS -->
 <script src="../js/auth.js"></script>
+<script type="module" src="../js/app.js"></script>
 <script>
   checkAuth();
-  document.getElementById("usuario").innerText = "Usuário: " + getUser();
+  const user = getUser();
+  document.getElementById("usuario").innerText = "Usuário: " + user;
+  const titulo = document.querySelector(".titulo small");
+  if (titulo && user) {
+    titulo.innerText = titulo.innerText + " | Usuário: " + user;
+  }
 </script>
 
 </body>
