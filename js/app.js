@@ -266,7 +266,6 @@ function validarCPF(cpf) {
   if (!cpf) return false; // evita erro se vier undefined ou vazio
   cpf = String(cpf).replace(/[^\d]+/g, ''); // força string e remove não dígitos
 
-  if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
   if(cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false
 
   let soma = 0
