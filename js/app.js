@@ -70,14 +70,14 @@ window.ir = function(pagina) {
   }
 }
 
-window.editarItem = async (id) => {
+// Editar produto (estoque)
+window.editarProduto = async (id) => {
   const { data, error } = await supabase.from('produtos').select('*').eq('id', id).single()
-  if (error) {
-    alert("Erro ao carregar item")
+  if (error || !data) {
+    alert("Item não localizado")
     return
   }
 
-  // Preenche campos do modal
   document.getElementById("codigo").value = data.codigo
   document.getElementById("nome").value = data.nome
   document.getElementById("externo").value = data.endereco_externo
@@ -85,10 +85,8 @@ window.editarItem = async (id) => {
   document.getElementById("observacao").value = data.observacao || ''
   document.getElementById("liberacao").value = data.liberacao || ''
 
-  // Mostra modal
   document.getElementById("modal").classList.remove("hidden")
 
-  // Ajusta botão salvar para atualizar
   document.getElementById("btnSalvar").onclick = async () => {
     const { error: updateError } = await supabase.from('produtos').update({
       codigo: document.getElementById("codigo").value,
@@ -110,23 +108,21 @@ window.editarItem = async (id) => {
   }
 }
 
-window.editarItem = async (id) => {
+// Editar colaborador (dispensa)
+window.editarColaborador = async (id) => {
   const { data, error } = await supabase.from('colaboradores').select('*').eq('id', id).single()
-  if (error) {
-    alert("Erro ao carregar colaborador")
+  if (error || !data) {
+    alert("Colaborador não localizado")
     return
   }
 
-  // Preenche campos do modal
   document.getElementById("cpf").value = data.cpf
   document.getElementById("nome").value = data.nome
   document.getElementById("empresa").value = data.empresa
   document.getElementById("funcao").value = data.funcao
 
-  // Mostra modal
   document.getElementById("modalColaborador").classList.remove("hidden")
 
-  // Ajusta botão salvar para atualizar
   document.getElementById("btnSalvarColaborador").onclick = async () => {
     const { error: updateError } = await supabase.from('colaboradores').update({
       cpf: document.getElementById("cpf").value,
@@ -145,6 +141,7 @@ window.editarItem = async (id) => {
     }
   }
 }
+
 
 function limparCamposColaborador() {
   document.querySelectorAll("#modalColaborador input").forEach(i => i.value = "")
