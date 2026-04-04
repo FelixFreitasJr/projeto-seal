@@ -71,8 +71,90 @@ window.ir = function(pagina) {
 }
 
 window.editarItem = async (id) => {
-  alert("Função editar em desenvolvimento. ID: " + id)
+  const { data, error } = await supabase.from('produtos').select('*').eq('id', id).single()
+  if (error) {
+    alert("Erro ao carregar item")
+    return
+  }
+
+  // Preenche campos do modal
+  document.getElementById("codigo").value = data.codigo
+  document.getElementById("nome").value = data.nome
+  document.getElementById("externo").value = data.endereco_externo
+  document.getElementById("satelite").value = data.endereco_satelite
+  document.getElementById("observacao").value = data.observacao || ''
+  document.getElementById("liberacao").value = data.liberacao || ''
+
+  // Mostra modal
+  document.getElementById("modal").classList.remove("hidden")
+
+  // Ajusta botão salvar para atualizar
+  document.getElementById("btnSalvar").onclick = async () => {
+    const { error: updateError } = await supabase.from('produtos').update({
+      codigo: document.getElementById("codigo").value,
+      nome: document.getElementById("nome").value,
+      endereco_externo: document.getElementById("externo").value,
+      endereco_satelite: document.getElementById("satelite").value,
+      observacao: document.getElementById("observacao").value,
+      liberacao: document.getElementById("liberacao").value
+    }).eq('id', id)
+
+    if (updateError) {
+      alert("Erro ao atualizar")
+    } else {
+      alert("Item atualizado")
+      window.atualizarEstoque?.()
+      document.getElementById("modal").classList.add("hidden")
+      limparCampos()
+    }
+  }
 }
+
+window.editarItem = async (id) => {
+  const { data, error } = await supabase.from('colaboradores').select('*').eq('id', id).single()
+  if (error) {
+    alert("Erro ao carregar colaborador")
+    return
+  }
+
+  // Preenche campos do modal
+  document.getElementById("cpf").value = data.cpf
+  document.getElementById("nome").value = data.nome
+  document.getElementById("empresa").value = data.empresa
+  document.getElementById("funcao").value = data.funcao
+
+  // Mostra modal
+  document.getElementById("modalColaborador").classList.remove("hidden")
+
+  // Ajusta botão salvar para atualizar
+  document.getElementById("btnSalvarColaborador").onclick = async () => {
+    const { error: updateError } = await supabase.from('colaboradores').update({
+      cpf: document.getElementById("cpf").value,
+      nome: document.getElementById("nome").value,
+      empresa: document.getElementById("empresa").value,
+      funcao: document.getElementById("funcao").value
+    }).eq('id', id)
+
+    if (updateError) {
+      alert("Erro ao atualizar colaborador")
+    } else {
+      alert("Colaborador atualizado")
+      window.atualizarDispensa?.()
+      document.getElementById("modalColaborador").classList.add("hidden")
+      limparCamposColaborador()
+    }
+  }
+}
+
+function limparCamposColaborador() {
+  document.querySelectorAll("#modalColaborador input").forEach(i => i.value = "")
+}
+
+
+function limparCampos() {
+  document.querySelectorAll("#modal input").forEach(i => i.value = "")
+}
+
 
 window.clonarItem = async (id) => {
   const { data, error } = await supabase.from('produtos').select('*').eq('id', id).single()
@@ -116,7 +198,7 @@ window.dispensarItem = async (id) => {
     empresa: colaborador.empresa,
     funcao: colaborador.funcao,
     usuario: user,
-    datahora: new Date().toISOString()
+    data_hora: new Date().toISOString()
   })
 
   if (insertError) {

@@ -46,3 +46,5 @@ export function checkAuth() {
 export function getUser() {
   return sessionStorage.getItem("user")
 }
+
+window.logout = logout
