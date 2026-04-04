@@ -50,7 +50,10 @@ https://felixfreitasjr.github.io/projeto-seal/
 │   ├── app.js           
 │   ├── estoque.js       
 │   ├── dispensa.js      
-│   └── config.js        
+│   ├── config.js
+│   └── modules/
+│      ├── dispensa.js
+│      └── estoque.js     
 ├── pages/
 │   ├── estoque.html     
 │   ├── dispensa.html    
