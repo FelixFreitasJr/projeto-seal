@@ -332,22 +332,6 @@ window.alterarSenha = async (usuario) => {
   }
 }
 
-function showToast(msg) {
-  const toast = document.createElement("div")
-  toast.className = "toast"
-  toast.innerText = msg
-  document.body.appendChild(toast)
-  toast.style.display = "block"
-
-   // força animação
-  setTimeout(() => toast.classList.add("show"), 10)
-
-  setTimeout(() => {
-    toast.style.display = "none"
-    toast.remove()
-  }, 3000)
-}
-
 // =========================
 // FUNÇÕES AUXILIARES
 // =========================
@@ -362,7 +346,6 @@ function showToast(msg) {
   document.body.appendChild(toast)
   toast.style.display = "block"
 
-  // força animação
   setTimeout(() => toast.classList.add("show"), 10)
   
   setTimeout(() => {
