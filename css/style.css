@@ -215,21 +215,27 @@ td:nth-child(4) { background: #fff3e0; }
 
 .menu-acoes {
   position: absolute;
-  left: 0;
-  top: 25px;
-
+  left: 20px;   /* unidade corrigida */
+  top: 10px;    /* distância ajustada */
+  
   background: white;
   border: 1px solid #ccc;
   border-radius: 6px;
 
   display: flex;
   flex-direction: column;
+  z-index: 1000; /* garante que fique acima da tabela */
+  min-width: 120px; /* largura mínima */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15); /* sombra para destacar */
 }
 
 .menu-acoes button {
   background: none;
   color: #333;
   text-align: left;
+  padding: 8px 12px;
+  border: none;
+  cursor: pointer;
 }
 
 .menu-acoes button:hover {
@@ -262,6 +268,7 @@ td:nth-child(4) { background: #fff3e0; }
   width: 400px; /* largura maior */
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  text-transform: uppercase;
 }
 
 .modal-content h3 {
@@ -319,6 +326,10 @@ td:nth-child(4) { background: #fff3e0; }
 
   border-radius: 6px;
   display: none;
+}
+
+.toast.show {
+  opacity: 1;
 }
 
 /* =========================

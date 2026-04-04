@@ -74,7 +74,7 @@ window.ir = function(pagina) {
 window.editarProduto = async (id) => {
   const { data, error } = await supabase.from('produtos').select('*').eq('id', id).single()
   if (error || !data) {
-    alert("Item não localizado")
+     showToast("Item não localizado")
     return
   }
 
@@ -98,9 +98,9 @@ window.editarProduto = async (id) => {
     }).eq('id', id)
 
     if (updateError) {
-      alert("Erro ao atualizar")
+       showToast("Erro ao atualizar")
     } else {
-      alert("Item atualizado")
+       showToast("Item atualizado")
       window.atualizarEstoque?.()
       document.getElementById("modal").classList.add("hidden")
       limparCampos()
@@ -112,7 +112,7 @@ window.editarProduto = async (id) => {
 window.editarColaborador = async (id) => {
   const { data, error } = await supabase.from('colaboradores').select('*').eq('id', id).single()
   if (error || !data) {
-    alert("Colaborador não localizado")
+    showToast("Colaborador não localizado")
     return
   }
 
@@ -132,9 +132,9 @@ window.editarColaborador = async (id) => {
     }).eq('id', id)
 
     if (updateError) {
-      alert("Erro ao atualizar colaborador")
+       showToast("Erro ao atualizar colaborador")
     } else {
-      alert("Colaborador atualizado")
+       showToast("Colaborador atualizado")
       window.atualizarDispensa?.()
       document.getElementById("modalColaborador").classList.add("hidden")
       limparCamposColaborador()
@@ -156,15 +156,15 @@ function limparCampos() {
 window.clonarItem = async (id) => {
   const { data, error } = await supabase.from('produtos').select('*').eq('id', id).single()
   if (error) {
-    alert("Erro ao clonar")
+     showToast("Erro ao clonar")
     return
   }
   const clone = { ...data, id: undefined }
   const { error: insertError } = await supabase.from('produtos').insert(clone)
   if (insertError) {
-    alert("Erro ao salvar clone")
+     showToast("Erro ao salvar clone")
   } else {
-    alert("Item clonado")
+    showToast("Item clonado")
     window.atualizarEstoque?.()
   }
 }
@@ -173,9 +173,9 @@ window.excluirItem = async (id) => {
   const tabela = window.location.href.endsWith("estoque.html") ? 'produtos' : 'colaboradores'
   const { error } = await supabase.from(tabela).delete().eq('id', id)
   if (error) {
-    alert("Erro ao excluir")
+     showToast("Erro ao excluir")
   } else {
-    alert("Item excluído")
+     showToast("Item excluído")
     if (tabela === 'produtos') window.atualizarEstoque?.()
     else window.atualizarDispensa?.()
   }
@@ -185,7 +185,7 @@ window.dispensarItem = async (id) => {
   const user = getUser()
   const { data: colaborador, error } = await supabase.from('colaboradores').select('*').eq('id', id).single()
   if (error) {
-    alert("Erro ao buscar colaborador")
+     showToast("Erro ao buscar colaborador")
     return
   }
 
@@ -199,9 +199,9 @@ window.dispensarItem = async (id) => {
   })
 
   if (insertError) {
-    alert("Erro ao dispensar")
+     showToast("Erro ao dispensar")
   } else {
-    alert("Dispensa registrada")
+     showToast("Dispensa registrada")
     window.atualizarDispensa?.()
   }
 }
@@ -237,9 +237,9 @@ function initEstoqueActions() {
     })
 
     if (error) {
-      alert("Erro ao salvar")
+       showToast("Erro ao salvar")
     } else {
-      alert("Item salvo")
+       showToast("Item salvo")
       window.atualizarEstoque?.()
       document.getElementById("modal").classList.add("hidden")
     }
@@ -284,21 +284,21 @@ function initDispensaActions() {
     const funcao = document.getElementById("funcao").value
 
     if (!validarCPF(cpf)) {
-      alert("CPF inválido")
+       showToast("CPF inválido")
       return
     }
 
     const { data: existente } = await supabase.from('colaboradores').select('cpf').eq('cpf', cpf).single()
     if (existente) {
-      alert("Já existe colaborador com este CPF")
+       showToast("Já existe colaborador com este CPF")
       return
     }
 
     const { error } = await supabase.from('colaboradores').insert({ cpf, nome, empresa, funcao })
     if (error) {
-      alert("Erro ao salvar colaborador")
+       showToast("Erro ao salvar colaborador")
     } else {
-      alert("Colaborador cadastrado")
+       showToast("Colaborador cadastrado")
       window.atualizarDispensa?.()
       document.getElementById("modalColaborador").classList.add("hidden")
     }
@@ -324,8 +324,25 @@ window.alterarSenha = async (usuario) => {
 
   const { error } = await supabase.from('usuarios').update({ senha: novaSenha }).eq('usuario', usuario)
   if (error) {
-    alert("Erro ao alterar senha")
+     showToast("Erro ao alterar senha")
   } else {
-    alert("Senha atualizada com sucesso")
+     showToast("Senha atualizada com sucesso")
   }
 }
+
+function showToast(msg) {
+  const toast = document.createElement("div")
+  toast.className = "toast"
+  toast.innerText = msg
+  document.body.appendChild(toast)
+  toast.style.display = "block"
+
+   // força animação
+  setTimeout(() => toast.classList.add("show"), 10)
+  
+  setTimeout(() => {
+    toast.style.display = "none"
+    toast.remove()
+  }, 3000)
+}
+
