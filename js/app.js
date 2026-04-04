@@ -147,6 +147,10 @@ window.editarColaborador = async (id) => {
 
 function limparCamposColaborador() {
   document.querySelectorAll("#modalColaborador input").forEach(i => i.value = "")
+  document.getElementById("cpf").value = ""
+  document.getElementById("nome").value = ""
+  document.getElementById("empresa").value = ""
+  document.getElementById("funcao").value = ""
 }
 
 
@@ -259,7 +263,10 @@ function initEstoqueActions() {
 // DISPENSA - NOVO COLABORADOR
 // =========================
 function validarCPF(cpf) {
-  cpf = cpf.replace(/[^\d]+/g,'')
+  if (!cpf) return false; // evita erro se vier undefined ou vazio
+  cpf = String(cpf).replace(/[^\d]+/g, ''); // força string e remove não dígitos
+
+  if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
   if(cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false
 
   let soma = 0

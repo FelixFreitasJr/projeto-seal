@@ -61,7 +61,7 @@ body {
 ========================= */
 .barra-topo {
   position: fixed;
-  top: 60px;
+  top: 55px;
   left: 0;
   width: 100%;
   z-index: 999;
