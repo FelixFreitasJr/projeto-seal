@@ -21,7 +21,7 @@ function logout() {
   localStorage.removeItem("user")
 
   // REDIRECIONA CORRETO
-  window.location.href = "pages/login.html"
+ window.location.href = "/projeto-seal/pages/login.html"
 }
 
 function checkAuth() {
@@ -30,7 +30,7 @@ function checkAuth() {
   // se NÃO estiver logado
   if (!user) {
     // 🔴 AQUI ESTAVA O ERRO
-    window.location.href = "pages/login.html"
+    window.location.href = "/projeto-seal/pages/login.html"
   }
 }
 
