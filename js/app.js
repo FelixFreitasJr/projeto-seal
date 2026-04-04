@@ -116,7 +116,7 @@ window.editarColaborador = async (id) => {
     return
   }
 
-  document.getElementById("cpf").value = data.cpf
+  document.getElementById("cpf").value = data.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")
   document.getElementById("nome").value = data.nome
   document.getElementById("empresa").value = data.empresa
   document.getElementById("funcao").value = data.funcao
@@ -124,17 +124,19 @@ window.editarColaborador = async (id) => {
   document.getElementById("modalColaborador").classList.remove("hidden")
 
   document.getElementById("btnSalvarColaborador").onclick = async () => {
+    const cpfLimpo = limparCPF(document.getElementById("cpf").value)
+
     const { error: updateError } = await supabase.from('colaboradores').update({
-      cpf: document.getElementById("cpf").value,
+      cpf: cpfLimpo,
       nome: document.getElementById("nome").value,
       empresa: document.getElementById("empresa").value,
       funcao: document.getElementById("funcao").value
     }).eq('id', id)
 
     if (updateError) {
-       showToast("Erro ao atualizar colaborador")
+      showToast("Erro ao atualizar colaborador")
     } else {
-       showToast("Colaborador atualizado")
+      showToast("Colaborador atualizado")
       window.atualizarDispensa?.()
       document.getElementById("modalColaborador").classList.add("hidden")
       limparCamposColaborador()
@@ -278,7 +280,7 @@ function initDispensaActions() {
   })
 
   document.getElementById("btnSalvarColaborador").addEventListener("click", async () => {
-    const cpf = document.getElementById("cpf").value
+    const cpfLimpo = limparCPF(document.getElementById("cpf").value)
     const nome = document.getElementById("nome").value
     const empresa = document.getElementById("empresa").value
     const funcao = document.getElementById("funcao").value
@@ -339,10 +341,32 @@ function showToast(msg) {
 
    // força animação
   setTimeout(() => toast.classList.add("show"), 10)
-  
+
   setTimeout(() => {
     toast.style.display = "none"
     toast.remove()
   }, 3000)
 }
 
+// =========================
+// FUNÇÕES AUXILIARES
+// =========================
+function limparCPF(cpf) {
+  return cpf.replace(/[^\d]/g, '') // remove pontos e traço
+}
+
+function showToast(msg) {
+  const toast = document.createElement("div")
+  toast.className = "toast"
+  toast.innerText = msg
+  document.body.appendChild(toast)
+  toast.style.display = "block"
+
+  // força animação
+  setTimeout(() => toast.classList.add("show"), 10)
+  
+  setTimeout(() => {
+    toast.classList.remove("show")
+    setTimeout(() => toast.remove(), 300)
+  }, 3000)
+}
