@@ -3,14 +3,12 @@ function login() {
   const senha = document.getElementById("senha").value
 
   if (
-    (usuario === "externo" ||
-     usuario === "satelite" ||
-     usuario === "adm") &&
-    senha === "Almox"
+    (usuario === "EXTERNO" ||
+     usuario === "SATELITE" ||
+     usuario === "ADM") &&
+    senha === "ALMOX"
   ) {
     localStorage.setItem("user", usuario)
-
-    // REDIRECIONA CORRETO
     window.location.href = "../index.html"
   } else {
     alert("Usuário ou senha inválidos")
@@ -19,18 +17,13 @@ function login() {
 
 function logout() {
   localStorage.removeItem("user")
-
-  // REDIRECIONA CORRETO
- window.location.href = "/projeto-seal/pages/login.html"
+  window.location.href = "pages/login.html"
 }
 
 function checkAuth() {
   const user = localStorage.getItem("user")
-
-  // se NÃO estiver logado
   if (!user) {
-    // 🔴 AQUI ESTAVA O ERRO
-    window.location.href = "/projeto-seal/pages/login.html"
+    window.location.href = "pages/login.html"
   }
 }
 
