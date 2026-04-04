@@ -27,20 +27,15 @@ function limparFormulario() {
 }
 
 // =========================
-// INIT POR PÁGINA
+// INIT
 // =========================
 
 document.addEventListener('DOMContentLoaded', () => {
 
   const pagina = window.location.pathname
 
-  if (pagina.includes('estoque.html')) {
-    iniciarEstoque()
-  }
-
-  if (pagina.includes('dispensa.html')) {
-    iniciarDispensa()
-  }
+  if (pagina.includes('estoque.html')) iniciarEstoque()
+  if (pagina.includes('dispensa.html')) iniciarDispensa()
 
 })
 
@@ -201,13 +196,16 @@ function iniciarDispensa() {
 
     const termo = inputBusca.value.trim()
 
+    if (!termo) {
+      tabela.innerHTML = ''
+      return
+    }
+
     let query = supabase.from('colaboradores').select('*')
 
-    if (termo) {
-      query = query.or(
-        `cpf.ilike.${termo}%,nome.ilike.%${termo}%,empresa.ilike.%${termo}%,funcao.ilike.%${termo}%`
-      )
-    }
+    query = query.or(
+      `cpf.ilike.${termo}%,nome.ilike.%${termo}%,empresa.ilike.%${termo}%,funcao.ilike.%${termo}%`
+    )
 
     const { data, error } = await query
 
@@ -246,17 +244,16 @@ function iniciarDispensa() {
     timeout = setTimeout(buscar, 300)
   })
 
-  buscar()
+  tabela.innerHTML = ''
 }
 
 // =========================
 // GLOBAIS
 // =========================
 
-// 🔥 DISPENSAR (CORRIGIDO)
 window.dispensar = async function(id) {
 
-  const user = localStorage.getItem("user")
+  const user = localStorage.getItem("user") || 'sem_login'
 
   const { data: pessoa, error: erroBusca } = await supabase
     .from('colaboradores')
@@ -284,8 +281,6 @@ window.dispensar = async function(id) {
 
   mostrarToast('Dispensado com sucesso')
 }
-
-// =========================
 
 window.ordenar = function(campo) {
   ordem.asc = ordem.campo === campo ? !ordem.asc : true
