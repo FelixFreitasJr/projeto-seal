@@ -36,6 +36,7 @@
   <button id="btnNovo">
     <img src="../img/novo.svg"> Novo Item
   </button>
+  <span id="contadorEstoque"></span>
 </div>
 
 <!-- TABELA -->
@@ -43,14 +44,15 @@
   <table>
     <thead>
       <tr>
-        <th>Código</th>
-        <th>Nome</th>
-        <th>Externo</th>
-        <th>Satélite</th>
+        <th onclick="ordenarTabela('produtos','codigo')">Código</th>
+        <th onclick="ordenarTabela('produtos','nome')">Nome</th>
+        <th onclick="ordenarTabela('produtos', 'endereco_externo')">Externo</th>
+        <th onclick="ordenarTabela('produtos','endereco_satelite')">Satélite</th>
         <th>Ações</th>
       </tr>
     </thead>
     <tbody id="tabela"></tbody>
+    <tbody id="tabelaEstoque"></tbody>
   </table>
   <p id="userInfo"></p>
 </div>

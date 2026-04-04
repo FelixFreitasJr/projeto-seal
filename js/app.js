@@ -353,3 +353,54 @@ function showToast(msg) {
     setTimeout(() => toast.remove(), 300)
   }, 3000)
 }
+
+window.ordenarTabela = async (tabela, campo) => {
+  const { data, error } = await supabase.from(tabela).select('*').order(campo, { ascending: true })
+  if (error) {
+    showToast("Erro ao ordenar")
+    return
+  }
+  if (tabela === 'produtos') {
+    renderTabelaEstoque(data)
+  } else {
+    renderTabelaColaboradores(data)
+  }
+}
+
+async function atualizarEstoque() {
+  const { data, error } = await supabase.from('produtos').select('*')
+  if (error) {
+    showToast("Erro ao carregar estoque")
+    return
+  }
+  document.getElementById("contadorEstoque").innerText = "Itens: " + data.length
+  renderTabelaEstoque(data)
+}
+
+async function atualizarDispensa() {
+  const { data, error } = await supabase.from('colaboradores').select('*')
+  if (error) {
+    showToast("Erro ao carregar colaboradores")
+    return
+  }
+  document.getElementById("contadorColaboradores").innerText = "Colaboradores: " + data.length
+  renderTabelaColaboradores(data)
+}
+
+async function carregarDashboard() {
+  const { data: produtos } = await supabase.from('produtos').select('id')
+  const { data: colaboradores } = await supabase.from('colaboradores').select('id')
+  const { data: dispensas } = await supabase.from('dispensas').select('id')
+
+  document.getElementById("totalProdutos").innerText = produtos.length
+  document.getElementById("totalColaboradores").innerText = colaboradores.length
+  document.getElementById("totalDispensas").innerText = dispensas.length
+}
+
+if (window.location.href.endsWith("index.html")) {
+  carregarDashboard()
+}
+
+// document.getElementById("contadorEstoque").innerText = "Itens: " + data.length
+// document.getElementById("contadorColaboradores").innerText = "Colaboradores: " + data.length
+
