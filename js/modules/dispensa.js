@@ -3,24 +3,16 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-export function iniciarDispensa() {
+export function initDispensa() {
 
   const tabela = document.getElementById('tabela')
-  const inputBusca = document.getElementById('busca')
+  const busca = document.getElementById('busca')
 
   let timeout = null
 
-  function mostrarToast(msg) {
-    const toast = document.getElementById('toast')
-    if (!toast) return
-    toast.innerText = msg
-    toast.style.display = 'block'
-    setTimeout(() => toast.style.display = 'none', 3000)
-  }
-
   async function buscar() {
 
-    const termo = inputBusca.value.trim()
+    const termo = busca.value.trim()
 
     if (!termo) {
       tabela.innerHTML = ''
@@ -29,54 +21,77 @@ export function iniciarDispensa() {
 
     let query = supabase.from('colaboradores').select('*')
 
-    query = query.or(`
-      cpf.ilike.${termo}%,
-      nome.ilike.%${termo}%,
-      empresa.ilike.%${termo}%
-    `)
+    query = query.or(
+      `cpf.ilike.${termo}%,nome.ilike.%${termo}%`
+    )
 
     const { data, error } = await query
 
     if (error) {
-      mostrarToast('Erro')
+      console.error(error)
       return
     }
 
-    tabela.innerHTML = data.map(p => `
+    let linhas = ''
+
+    data.forEach(p => {
+
+      const cpf = p.cpf.substring(0,6) + '-XX'
+
+      linhas += `
       <tr>
-        <td>${p.cpf.substring(0,6)}-XX</td>
+        <td>${cpf}</td>
         <td>${p.nome}</td>
         <td>${p.empresa}</td>
         <td>${p.funcao}</td>
+
         <td>
-          <button onclick="dispensar('${p.id}')">Dispensar</button>
+          <div class="acoes">
+            <button class="btn-menu" onclick="toggleMenu(this)">⋮</button>
+
+            <div class="menu-acoes hidden">
+              <button onclick="dispensar('${p.id}')">Dispensar</button>
+              <button onclick="editarColaborador('${p.id}')">Editar</button>
+              <button onclick="excluirColaborador('${p.id}')">Excluir</button>
+            </div>
+          </div>
         </td>
       </tr>
-    `).join('')
+      `
+    })
+
+    tabela.innerHTML = linhas
   }
 
-  inputBusca?.addEventListener('input', () => {
+  busca.addEventListener('input', () => {
     clearTimeout(timeout)
     timeout = setTimeout(buscar, 300)
   })
 
-  window.dispensar = async function(id) {
-
-    const user = localStorage.getItem("user") || 'sem_login'
-
-    const { error } = await supabase
-      .from('dispensas')
-      .insert([{
-        colaborador_id: id,
-        usuario: user,
-        data_hora: new Date()
-      }])
-
-    if (error) {
-      mostrarToast('Erro ao dispensar')
-      return
-    }
-
-    mostrarToast('Dispensado')
-  }
 }
+
+// GLOBAL
+window.dispensar = async function(id) {
+
+  const user = localStorage.getItem("user") || 'externo'
+
+  const { error } = await supabase
+    .from('dispensas')
+    .insert([{
+      colaborador_id: id,
+      usuario: user,
+      data_hora: new Date()
+    }])
+
+  if (error) {
+    alert('Erro ao dispensar')
+    return
+  }
+
+  alert('Dispensado com sucesso')
+}
+
+document.getElementById('limparBusca')?.addEventListener('click', () => {
+  busca.value = ''
+  tabela.innerHTML = ''
+})
