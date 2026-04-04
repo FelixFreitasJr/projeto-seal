@@ -153,6 +153,12 @@ button {
   cursor: pointer;
 }
 
+button img {
+  width: 16px !important;
+  height: 16px !important;
+  object-fit: contain;
+}
+
 /* =========================
    TABELA
 ========================= */
@@ -207,7 +213,7 @@ th {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 /* =========================
@@ -277,6 +283,3 @@ th {
   text-decoration: underline;
 }
 
-.hidden {
-  display: none !important;
-}

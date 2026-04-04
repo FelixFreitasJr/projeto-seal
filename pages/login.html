@@ -23,7 +23,7 @@
     <h2>Login</h2>
 
     <input id="usuario" placeholder="Usuário">
-    <input id="senha" type="password" placeholder="Senha">
+    <input id="senha" type="password" placeholder="Senha" onkeypress="if(event.key==='Enter') login()">
 
     <button onclick="login()">Entrar</button>
 
