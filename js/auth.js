@@ -19,7 +19,6 @@ export async function login() {
     return
   }
 
-  // salva apenas em sessionStorage (expira ao fechar navegador)
   sessionStorage.setItem("user", data.usuario)
   window.location.href = "../index.html"
 }

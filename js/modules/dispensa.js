@@ -6,7 +6,6 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 export function initDispensa() {
   const tabela = document.getElementById('tabela')
   const busca = document.getElementById('busca')
-
   let timeout = null
 
   async function buscar() {
@@ -14,8 +13,10 @@ export function initDispensa() {
     let query = supabase.from('colaboradores').select('*')
 
     if (termo) {
-      // busca pelos 6 primeiros dígitos do CPF, nome, empresa ou função
-      query = query.or(`cpf.ilike.%${termo}%,nome.ilike.%${termo}%,empresa.ilike.%${termo}%,funcao.ilike.%${termo}%`)
+      // busca por CPF, nome, empresa ou função
+      query = query.or(
+        `cpf.ilike.%${termo}%,nome.ilike.%${termo}%,empresa.ilike.%${termo}%,funcao.ilike.%${termo}%`
+      )
     }
 
     const { data, error } = await query
@@ -48,32 +49,33 @@ export function initDispensa() {
     tabela.innerHTML = linhas
   }
 
+  // busca automática ao digitar
   busca.addEventListener('input', () => {
     clearTimeout(timeout)
     timeout = setTimeout(buscar, 300)
   })
 
+  // limpar busca
   document.getElementById('limparBusca')?.addEventListener('click', () => {
     busca.value = ''
-    tabela.innerHTML = '' // limpa a tabela ao terminar busca
+    tabela.innerHTML = ''
   })
+
+  // expõe função para atualizar lista após ações
+  window.atualizarDispensa = buscar
 }
 
 // Função para mascarar CPF
 function mascararCPF(cpf) {
   cpf = cpf.replace(/[^\d]/g, '')
   if (cpf.length !== 11) return cpf
-  return cpf.substring(0,3) + '.' +
-         cpf.substring(3,6) + '.' +
-         'XXX' + '-' +
-         cpf.substring(9,11)
+  return (
+    cpf.substring(0, 3) +
+    '.' +
+    cpf.substring(3, 6) +
+    '.' +
+    'XXX' +
+    '-' +
+    cpf.substring(9, 11)
+  )
 }
-document.getElementById('limparBusca')?.addEventListener('click', () => {
-  busca.value = ''
-  tabela.innerHTML = '' // limpa a tabela
-})
-
-// Após editar ou dispensar:
-await supabase.from('colaboradores').update(...)
-// ou insert em 'dispensas'
-buscar() // chama novamente a busca para atualizar a lista

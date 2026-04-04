@@ -18,17 +18,16 @@
 </div>
 
 <div class="conteudo">
-
   <div class="login-box">
     <h2>Login</h2>
 
     <input id="usuario" placeholder="Usuário" oninput="this.value = this.value.toUpperCase()">
-    <input id="senha" type="password" placeholder="Senha" oninput="this.value = this.value.toUpperCase()" onkeypress="if(event.key==='Enter') login()">
+    <input id="senha" type="password" placeholder="Senha" 
+           oninput="this.value = this.value.toUpperCase()" 
+           onkeypress="if(event.key==='Enter') login()">
 
     <button onclick="login()">Entrar</button>
-
   </div>
-
 </div>
 
 <div id="toast" class="toast"></div>
@@ -40,7 +39,12 @@
   <a href="https://github.com/FelixFreitasJr/projeto-seal" target="_blank">Documentação</a>
 </footer>
 
-<script src="../js/auth.js"></script>
+<!-- SCRIPTS -->
+<script type="module">
+  import { login } from '../js/auth.js'
+  // expõe login no escopo global para funcionar com onclick
+  window.login = login
+</script>
 
 </body>
 </html>

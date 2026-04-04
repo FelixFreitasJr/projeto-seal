@@ -21,7 +21,7 @@
     <button onclick="window.location.href='../index.html'">Dashboard</button>
     <button onclick="window.location.href='estoque.html'">Estoque</button>
     <button onclick="window.location.href='dispensa.html'">Dispensa</button>
-        <button id="btnConfig" class="hidden">⚙️</button>
+    <button id="btnConfig" class="hidden">⚙️</button>
     <button onclick="logout()">Sair</button>
   </div>
 </div>
@@ -75,6 +75,7 @@
   </div>
 </div>
 
+<!-- MODAL CONFIGURAÇÃO -->
 <div id="modalConfig" class="modal hidden">
   <div class="modal-content">
     <h3>Gerenciar Usuários</h3>
@@ -102,15 +103,21 @@
 </footer>
 
 <!-- SCRIPTS -->
-<script src="../js/auth.js"></script>
 <script type="module" src="../js/app.js"></script>
-<script>
-  checkAuth();
-  const user = getUser();
-  document.getElementById("usuario").innerText = "Usuário: " + user;
-  const titulo = document.querySelector(".titulo small");
+<script type="module">
+  import { checkAuth, getUser } from '../js/auth.js'
+
+  // Verifica login
+  checkAuth()
+
+  // Exibe usuário logado
+  const user = getUser()
+  document.getElementById("userInfo")?.innerText = "Usuário logado: " + user
+
+  // Ajusta título para incluir usuário
+  const titulo = document.querySelector(".titulo small")
   if (titulo && user) {
-    titulo.innerText = titulo.innerText + " | Usuário: " + user;
+    titulo.innerText = titulo.innerText + " | Usuário: " + user
   }
 </script>
 

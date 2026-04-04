@@ -3,7 +3,7 @@
 <head>
   <title>SEAL - Dashboard</title>
   <link rel="stylesheet" href="css/style.css">
-  <script src="js/auth.js"></script>
+  <script type="module" src="js/auth.js"></script>
 </head>
 
 <body>
@@ -35,6 +35,7 @@
   <p>Use o menu acima para navegar.</p>
 </div>
 
+<!-- MODAL CONFIGURAÇÃO -->
 <div id="modalConfig" class="modal hidden">
   <div class="modal-content">
     <h3>Gerenciar Usuários</h3>
@@ -54,7 +55,6 @@
   </div>
 </div>
 
-
 <!-- RODAPÉ -->
 <footer class="rodape">
   Desenvolvido por 
@@ -63,19 +63,20 @@
 </footer>
 
 <!-- SCRIPTS -->
-<script>
+<script type="module">
+  import { checkAuth, getUser } from './js/auth.js'
+
   // Verifica login
-  checkAuth();
+  checkAuth()
 
   // Exibe usuário logado
-  const user = getUser();
-  document.getElementById("usuario").innerText = "Usuário: " + user;
-  document.getElementById("userInfo").innerText = "Usuário logado: " + user;
+  const user = getUser()
+  document.getElementById("userInfo").innerText = "Usuário logado: " + user
 
   // Ajusta título para incluir usuário
-  const titulo = document.querySelector(".titulo small");
+  const titulo = document.querySelector(".titulo small")
   if (titulo && user) {
-    titulo.innerText = titulo.innerText + " | Usuário: " + user;
+    titulo.innerText = titulo.innerText + " | Usuário: " + user
   }
 </script>
 

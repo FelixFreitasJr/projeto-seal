@@ -2,6 +2,7 @@ import { initEstoque } from './modules/estoque.js'
 import { initDispensa } from './modules/dispensa.js'
 import { SUPABASE_URL, SUPABASE_KEY } from './config.js'
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+import { getUser } from './auth.js'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
@@ -24,7 +25,42 @@ document.addEventListener('DOMContentLoaded', () => {
   if (titulo && user) {
     titulo.innerText = titulo.innerText + " | Usuário: " + user
   }
+
+  // Mostrar botão de config apenas para ADM
+  if (user === "ADM") {
+    document.getElementById("btnConfig").classList.remove("hidden")
+
+    document.getElementById("btnConfig").addEventListener("click", async () => {
+      const { data, error } = await supabase.from('usuarios').select('*')
+      if (error) {
+        alert("Erro ao carregar usuários")
+        return
+      }
+
+      let linhas = ''
+      data.forEach(u => {
+        linhas += `
+          <tr>
+            <td>${u.usuario}</td>
+            <td>${u.perfil}</td>
+            <td>
+              <button onclick="alterarSenha('${u.usuario}')">Alterar Senha</button>
+            </td>
+          </tr>`
+      })
+      document.getElementById("tabelaUsuarios").innerHTML = linhas
+      document.getElementById("modalConfig").classList.remove("hidden")
+    })
+
+    document.getElementById("btnFecharConfig").addEventListener("click", () => {
+      document.getElementById("modalConfig").classList.add("hidden")
+    })
+  }
 })
+
+// =========================
+// FUNÇÕES GLOBAIS
+// =========================
 
 window.ir = function(pagina) {
   if (window.location.pathname.includes('/pages/')) {
@@ -33,10 +69,6 @@ window.ir = function(pagina) {
     window.location.href = 'pages/' + pagina
   }
 }
-
-// =========================
-// FUNÇÕES GLOBAIS
-// =========================
 
 window.editarItem = async (id) => {
   alert("Função editar em desenvolvimento. ID: " + id)
@@ -54,7 +86,7 @@ window.clonarItem = async (id) => {
     alert("Erro ao salvar clone")
   } else {
     alert("Item clonado")
-    location.reload()
+    window.atualizarEstoque?.()
   }
 }
 
@@ -65,7 +97,8 @@ window.excluirItem = async (id) => {
     alert("Erro ao excluir")
   } else {
     alert("Item excluído")
-    location.reload()
+    if (tabela === 'produtos') window.atualizarEstoque?.()
+    else window.atualizarDispensa?.()
   }
 }
 
@@ -90,6 +123,7 @@ window.dispensarItem = async (id) => {
     alert("Erro ao dispensar")
   } else {
     alert("Dispensa registrada")
+    window.atualizarDispensa?.()
   }
 }
 
@@ -127,7 +161,8 @@ function initEstoqueActions() {
       alert("Erro ao salvar")
     } else {
       alert("Item salvo")
-      location.reload()
+      window.atualizarEstoque?.()
+      document.getElementById("modal").classList.add("hidden")
     }
   })
 }
@@ -185,10 +220,15 @@ function initDispensaActions() {
       alert("Erro ao salvar colaborador")
     } else {
       alert("Colaborador cadastrado")
-      location.reload()
+      window.atualizarDispensa?.()
+      document.getElementById("modalColaborador").classList.add("hidden")
     }
   })
 }
+
+// =========================
+// FECHAR MENUS AO CLICAR FORA
+// =========================
 document.addEventListener('click', (event) => {
   const menus = document.querySelectorAll('.menu-acoes')
   menus.forEach(menu => {
@@ -196,40 +236,6 @@ document.addEventListener('click', (event) => {
       menu.classList.add('hidden')
     }
   })
-})
-
-// Mostrar botão de config apenas para ADM
-document.addEventListener('DOMContentLoaded', async () => {
-  const user = getUser()
-  if (user === "ADM") {
-    document.getElementById("btnConfig").classList.remove("hidden")
-
-    document.getElementById("btnConfig").addEventListener("click", async () => {
-      const { data, error } = await supabase.from('usuarios').select('*')
-      if (error) {
-        alert("Erro ao carregar usuários")
-        return
-      }
-
-      let linhas = ''
-      data.forEach(u => {
-        linhas += `
-          <tr>
-            <td>${u.usuario}</td>
-            <td>${u.perfil}</td>
-            <td>
-              <button onclick="alterarSenha('${u.usuario}')">Alterar Senha</button>
-            </td>
-          </tr>`
-      })
-      document.getElementById("tabelaUsuarios").innerHTML = linhas
-      document.getElementById("modalConfig").classList.remove("hidden")
-    })
-
-    document.getElementById("btnFecharConfig").addEventListener("click", () => {
-      document.getElementById("modalConfig").classList.add("hidden")
-    })
-  }
 })
 
 // Função para alterar senha

@@ -6,7 +6,6 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 export function initEstoque() {
   const tabela = document.getElementById('tabela')
   const busca = document.getElementById('busca')
-
   let timeout = null
 
   async function buscar() {
@@ -14,7 +13,9 @@ export function initEstoque() {
     let query = supabase.from('produtos').select('*')
 
     if (termo) {
-      query = query.or(`codigo.ilike.%${termo}%,nome.ilike.%${termo}%,observacao.ilike.%${termo}%,liberacao.ilike.%${termo}%`)
+      query = query.or(
+        `codigo.ilike.%${termo}%,nome.ilike.%${termo}%,observacao.ilike.%${termo}%,liberacao.ilike.%${termo}%`
+      )
     }
 
     const { data, error } = await query
@@ -58,15 +59,21 @@ export function initEstoque() {
     tabela.innerHTML = linhas
   }
 
+  // busca automática ao digitar
   busca.addEventListener('input', () => {
     clearTimeout(timeout)
     timeout = setTimeout(buscar, 300)
   })
 
+  // limpar busca
   document.getElementById('limparBusca')?.addEventListener('click', () => {
     busca.value = ''
     tabela.innerHTML = ''
   })
 
+  // carrega lista inicial
   buscar()
+
+  // expõe função para atualizar lista após ações
+  window.atualizarEstoque = buscar
 }
