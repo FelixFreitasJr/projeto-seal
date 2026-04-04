@@ -201,11 +201,18 @@ window.dispensarItem = async (id) => {
   })
 
   if (insertError) {
-     showToast("Erro ao dispensar")
-  } else {
-     showToast("Dispensa registrada")
-    window.atualizarDispensa?.()
-  }
+  showToast("Erro ao dispensar")
+} else {
+  showToast("Dispensa registrada")
+  window.atualizarDispensa?.()
+}
+
+// em ambos os casos, limpa e foca o campo
+const campoBusca = document.getElementById("campoBusca")
+if (campoBusca) {
+  campoBusca.value = ""
+  campoBusca.focus()
+}
 }
 
 window.toggleMenu = (btn) => {
@@ -354,12 +361,21 @@ function showToast(msg) {
   }, 3000)
 }
 
+let ordemAsc = true
+
 window.ordenarTabela = async (tabela, campo) => {
-  const { data, error } = await supabase.from(tabela).select('*').order(campo, { ascending: true })
+  const { data, error } = await supabase
+    .from(tabela)
+    .select('*')
+    .order(campo, { ascending: ordemAsc })
+
   if (error) {
     showToast("Erro ao ordenar")
     return
   }
+
+  ordemAsc = !ordemAsc // alterna a cada clique
+
   if (tabela === 'produtos') {
     renderTabelaEstoque(data)
   } else {
@@ -401,6 +417,18 @@ if (window.location.href.endsWith("index.html")) {
   carregarDashboard()
 }
 
-// document.getElementById("contadorEstoque").innerText = "Itens: " + data.length
-// document.getElementById("contadorColaboradores").innerText = "Colaboradores: " + data.length
-
+function renderTabelaEstoque(data) {
+  const tbody = document.getElementById("tabelaEstoque")
+  tbody.innerHTML = "" // limpa antes
+  data.forEach(item => {
+    const tr = document.createElement("tr")
+    tr.innerHTML = `
+      <td>${item.codigo}</td>
+      <td>${item.nome}</td>
+      <td>${item.endereco_externo}</td>
+      <td>${item.endereco_satelite}</td>
+      <td>...</td>
+    `
+    tbody.appendChild(tr)
+  })
+}
