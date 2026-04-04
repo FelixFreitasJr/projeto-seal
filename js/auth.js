@@ -19,12 +19,14 @@ export async function login() {
     return
   }
 
-  sessionStorage.setItem("user", data.usuario)
+  // Salva usuário no localStorage
+  localStorage.setItem("usuarioLogado", data.usuario)
   window.location.href = "../index.html"
 }
 
 export function logout() {
-  sessionStorage.removeItem("user")
+  // Remove usuário do localStorage
+  localStorage.removeItem("usuarioLogado")
   if (window.location.pathname.includes('/pages/')) {
     window.location.href = 'login.html'
   } else {
@@ -33,7 +35,7 @@ export function logout() {
 }
 
 export function checkAuth() {
-  const user = sessionStorage.getItem("user")
+  const user = localStorage.getItem("usuarioLogado")
   if (!user) {
     if (window.location.pathname.includes('/pages/')) {
       window.location.href = 'login.html'
@@ -44,7 +46,8 @@ export function checkAuth() {
 }
 
 export function getUser() {
-  return sessionStorage.getItem("user")
+  return localStorage.getItem("usuarioLogado")
 }
 
+// expõe logout para ser usado nos botões
 window.logout = logout

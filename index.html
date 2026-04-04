@@ -69,22 +69,25 @@
   // Verifica login
   checkAuth()
 
-  // Exibe usuário logado
+  // Exibe usuário logado (se existir o elemento)
   const user = getUser()
-  document.getElementById("userInfo").innerText = "Usuário logado: " + user
-    if (user === "ADM") {
-  document.getElementById("btnConfig").classList.remove("hidden")
-}
+  const userInfo = document.getElementById("userInfo")
+  if (userInfo && user) {
+    userInfo.innerText = "Usuário logado: " + user
+  }
 
-  
   // Ajusta título para incluir usuário
   const titulo = document.querySelector(".titulo small")
   if (titulo && user) {
     titulo.innerText = titulo.innerText + " | Usuário: " + user
   }
 
-  
+  // Mostrar botão de config apenas para ADM
+  if (user === "ADM") {
+    document.getElementById("btnConfig").classList.remove("hidden")
+  }
 </script>
+
 
 </body>
 </html>
