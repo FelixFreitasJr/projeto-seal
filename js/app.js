@@ -413,9 +413,10 @@ async function carregarDashboard() {
   document.getElementById("totalDispensas").innerText = dispensas.length
 }
 
-if (window.location.href.endsWith("index.html")) {
+if (window.location.pathname.endsWith("/") || window.location.pathname.endsWith("index.html")) {
   carregarDashboard()
 }
+
 
 function renderTabelaEstoque(data) {
   const tbody = document.getElementById("tabelaEstoque")
