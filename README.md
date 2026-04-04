@@ -1,12 +1,11 @@
 # Projeto SEAL - Consulta de Estoque
 
-Sistema web simples para consulta de itens de estoque, com busca por código ou nome.
+Sistema web para consulta e gestão de estoque e colaboradores, com funcionalidades de busca, cadastro, dispensa e dashboard de acompanhamento.
 
 ## 🚀 Tecnologias utilizadas
-- HTML
-- CSS
-- JavaScript
-- Supabase (banco de dados)
+
+- Frontend: HTML5, CSS3, JavaScript (Vanilla)
+- Backend: Supabase (Banco de dados e API)
 
 ## 🔍 Funcionalidades
 - 🔍 Busca inteligente por:
@@ -14,30 +13,25 @@ Sistema web simples para consulta de itens de estoque, com busca por código ou 
   - Nome
   - Observação
 
-- 📋 Listagem dinâmica de itens
+- 📋 Listagem dinâmica de produtos e colaboradores
 
-- ➕ Cadastro de novos itens
+- ➕ Cadastro de novos itens e colaboradores
 
 - ✏️ Edição de itens existentes
 
-- 🗑️ Exclusão de itens
+- ✔ Dispensa de colaboradores com confirmação
 
-- 📄 Clonagem de itens
+- 🗑️ Exclusão de itens e colaboradores
 
-- 🔤 Ordenação automática por nome
+- 📄 Clonagem de itens e colaboradores
+
+- 🔤 Ordenação automática por colunas (Código, nome e endereços)
 
 - ⚡ Busca automática ao digitar
 
 - 🔒 Validação para evitar códigos duplicados
 
----
-
-## 🧱 Tecnologias utilizadas
-
-- HTML5
-- CSS3
-- JavaScript (Vanilla)
-- Supabase (Banco de dados e API)
+- 📊 Dashboard com cards de resumo (Produtos, Colaboradores, Dispensas)
 
 ---
 
@@ -49,22 +43,31 @@ https://felixfreitasjr.github.io/projeto-seal/
 ```shell
 /projeto-seal
 │
-├── index.html
+├── index.html           
 ├── css/
-│ └── style.css
+│   └── style.css        
 ├── js/
-│ ├── app.js
-│ └── config.js
+│   ├── app.js           
+│   ├── estoque.js       
+│   ├── dispensa.js      
+│   └── config.js        
+├── pages/
+│   ├── estoque.html     
+│   ├── dispensa.html    
+│   └── colaboradores.html 
 ├── img/
-│ ├── logo.png
+│   └── logo.png
 └── README.md
+
 ```
 
-## ⚠️ Observações
-Projeto em desenvolvimento, com melhorias contínuas planejadas:
-- Layout mais profissional
-- Sistema de login
-- Controle de saída de materiais
+## ⚠️ Melhorias planejadas
+
+- 🎨 Layout mais profissional e responsivo
+- 🔑 Sistema de login e autenticação
+- 📦 Controle de saída de materiais com histórico
+- 📈 Relatórios e exportação de dados
+- 🖱️ Cards do dashboard clicáveis para navegação direta
 
 ## 👨‍💻 Autor
 

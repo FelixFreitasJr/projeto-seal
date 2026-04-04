@@ -428,8 +428,11 @@ function renderTabelaEstoque(data) {
       <td>${item.nome}</td>
       <td>${item.endereco_externo}</td>
       <td>${item.endereco_satelite}</td>
-      <td>...</td>
+      <td>
+        <button class="menu-btn" onclick="dispensarItem(${item.id})">⋮</button>
+      </td>
     `
     tbody.appendChild(tr)
   })
 }
+
