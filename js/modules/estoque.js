@@ -37,30 +37,32 @@ export function initEstoque() {
   }
 
   function renderTabela(data) {
-    let linhas = ''
+  let linhas = ''
 
-    data.forEach(item => {
-      linhas += `
-      <tr>
-        <td>${item.codigo}</td>
-        <td>${item.nome}</td>
-        <td>${item.endereco_externo}</td>
-        <td>${item.endereco_satelite}</td>
-        <td>
-          <div class="acoes">
-            <button class="btn-menu" onclick="toggleMenu(this)">⋮</button>
-            <div class="menu-acoes hidden">
-              <button onclick="editarProduto('${item.id}')">Editar</button>
-              <button onclick="clonarItem('${item.id}')">Clonar</button>
-              <button onclick="excluirProduto('${item.id}')">Excluir</button>
-            </div>
+  data.forEach(item => {
+    linhas += `
+    <tr>
+      <td>${item.codigo}</td>
+      <td>${item.nome}</td>
+      <td>${item.endereco_externo}</td>
+      <td>${item.endereco_satelite}</td>
+      <td>${item.liberacao || '-'}</td>
+      <td>${item.observacao || '-'}</td>
+      <td>
+        <div class="acoes">
+          <button class="btn-menu" onclick="toggleMenu(this)">⋮</button>
+          <div class="menu-acoes hidden">
+            <button onclick="editarProduto('${item.id}')">Editar</button>
+            <button onclick="clonarItem('${item.id}')">Clonar</button>
+            <button onclick="excluirProduto('${item.id}')">Excluir</button>
           </div>
-        </td>
-      </tr>`
-    })
+        </div>
+      </td>
+    </tr>`
+  })
 
-    tabela.innerHTML = linhas
-  }
+  tabela.innerHTML = linhas
+}
 
   function atualizarContador(qtd) {
     const contador = document.getElementById("contadorEstoque")

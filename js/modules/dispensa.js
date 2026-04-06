@@ -18,12 +18,16 @@ export function initDispensa() {
   async function buscar() {
     const termo = busca.value.trim()
 
-    let query = supabase.from('colaboradores').select('*')
+    let query = supabase.from('colaboradores').select('*').order('nome', { ascending: true })
 
     if (termo) {
       query = query.or(
         `cpf.ilike.%${termo}%,nome.ilike.%${termo}%,empresa.ilike.%${termo}%,funcao.ilike.%${termo}%`
       )
+    } else {
+      // 🔥 NÃO mostra nada se não digitou
+      tabela.innerHTML = ''
+      return
     }
 
     const { data, error } = await query
@@ -72,7 +76,7 @@ export function initDispensa() {
 
   document.getElementById('limparBusca')?.addEventListener('click', () => {
     busca.value = ''
-    buscar()
+    tabela.innerHTML = ''
   })
 
   document.getElementById("btnNovoColaborador")?.addEventListener("click", () => {
@@ -85,10 +89,8 @@ export function initDispensa() {
 
   document.getElementById("btnSalvarColaborador")?.addEventListener("click", salvarColaborador)
 
-  // primeira carga
-  buscar()
+  // ❌ REMOVIDO buscar() automático
 
-  // expõe global
   window.atualizarDispensa = buscar
 }
 
@@ -217,6 +219,7 @@ async function dispensarItem(id) {
     showToast("Dispensa registrada")
   }
 
+  // 🔥 FALTAVA ISSO
   window.atualizarDispensa?.()
 }
 
@@ -250,7 +253,14 @@ function formatarCPF(cpf) {
 
 function mascararCPF(cpf) {
   cpf = limparCPF(cpf)
-  return cpf.substring(0, 3) + '.***.***-' + cpf.substring(9, 11)
+  if (cpf.length !== 11) return cpf
+
+  return (
+    cpf.substring(0, 3) + '.' +
+    cpf.substring(3, 6) + '.' +
+    'XXX' + '-' +
+    cpf.substring(9, 11)
+  )
 }
 
 function validarCPF(cpf) {
@@ -274,7 +284,7 @@ function showToast(msg) {
 }
 
 // =========================
-// GLOBAL (HTML usa onclick)
+// GLOBAL
 // =========================
 window.editarColaborador = editarColaborador
 window.excluirItem = excluirItem
