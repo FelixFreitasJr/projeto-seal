@@ -17,11 +17,11 @@ export function initEstoque() {
   async function buscar() {
     const termo = busca?.value?.trim() || ''
 
-    let query = supabase.from('produtos').select('*')
+    let query = supabase.from('produtos').select('*').order('nome', { ascending: true })
 
     if (termo) {
       query = query.or(
-        `codigo.ilike.%${termo}%,nome.ilike.%${termo}%,endereco_externo.ilike.%${termo}%,endereco_satelite.ilike.%${termo}%`
+        `codigo.ilike.%${termo}%,nome.ilike.%${termo}%,endereco_externo.ilike.%${termo}%,endereco_satelite.ilike.%${termo}%,liberacao.ilike.%${termo}%,observacao.ilike.%${termo}%`
       )
     }
 
@@ -37,32 +37,32 @@ export function initEstoque() {
   }
 
   function renderTabela(data) {
-  let linhas = ''
+    let linhas = ''
 
-  data.forEach(item => {
-    linhas += `
-    <tr>
-      <td>${item.codigo}</td>
-      <td>${item.nome}</td>
-      <td>${item.endereco_externo}</td>
-      <td>${item.endereco_satelite}</td>
-      <td>${item.liberacao || '-'}</td>
-      <td>${item.observacao || '-'}</td>
-      <td>
-        <div class="acoes">
-          <button class="btn-menu" onclick="toggleMenu(this)">⋮</button>
-          <div class="menu-acoes hidden">
-            <button onclick="editarProduto('${item.id}')">Editar</button>
-            <button onclick="clonarItem('${item.id}')">Clonar</button>
-            <button onclick="excluirProduto('${item.id}')">Excluir</button>
+    data.forEach(item => {
+      linhas += `
+      <tr>
+        <td>${item.codigo}</td>
+        <td>${item.nome}</td>
+        <td>${item.endereco_externo}</td>
+        <td>${item.endereco_satelite}</td>
+        <td>${item.liberacao || ''}</td>
+        <td>${item.observacao || ''}</td>
+        <td>
+          <div class="acoes">
+            <button class="btn-menu" onclick="toggleMenu(this)">⋮</button>
+            <div class="menu-acoes hidden">
+              <button onclick="editarProduto('${item.id}')">Editar</button>
+              <button onclick="clonarItem('${item.id}')">Clonar</button>
+              <button onclick="excluirProduto('${item.id}')">Excluir</button>
+            </div>
           </div>
-        </div>
-      </td>
-    </tr>`
-  })
+        </td>
+      </tr>`
+    })
 
-  tabela.innerHTML = linhas
-}
+    tabela.innerHTML = linhas
+  }
 
   function atualizarContador(qtd) {
     const contador = document.getElementById("contadorEstoque")
@@ -91,13 +91,11 @@ export function initEstoque() {
   })
 
   document.getElementById("btnCancelar")?.addEventListener("click", fecharModal)
-
   document.getElementById("btnSalvar")?.addEventListener("click", salvarProduto)
 
   // primeira carga
   buscar()
 
-  // expõe global
   window.atualizarEstoque = buscar
 }
 
@@ -254,7 +252,7 @@ function showToast(msg) {
 }
 
 // =========================
-// GLOBAL (HTML usa onclick)
+// GLOBAL
 // =========================
 window.editarProduto = editarProduto
 window.excluirProduto = excluirProduto
