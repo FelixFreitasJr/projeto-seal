@@ -400,3 +400,11 @@ td:nth-child(4) { background: #fff3e0; }
 input {
   text-transform: uppercase;
 }
+
+/* Cabeçalho fixo para todas as tabelas */
+.conteudo table thead th {
+  position: sticky;
+  top: 0;
+  background: #f0f0f0; /* mantém cor atual do cabeçalho */
+  z-index: 5;
+}

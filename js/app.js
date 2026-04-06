@@ -150,3 +150,22 @@ window.showToast = function(msg) {
     setTimeout(() => toast.remove(), 300)
   }, 3000)
 }
+
+// app.js
+
+function setFavicon(svgPath) {
+  // Remove favicon antigo se existir
+  const oldFavicon = document.querySelector("link[rel='icon']");
+  if (oldFavicon) oldFavicon.remove();
+
+  // Cria novo favicon
+  const link = document.createElement("link");
+  link.rel = "icon";
+  link.type = "image/svg+xml";
+  link.href = svgPath;
+
+  document.head.appendChild(link);
+}
+
+// Usa a função passando o caminho do seu SVG
+setFavicon("img/favicon.svg");
