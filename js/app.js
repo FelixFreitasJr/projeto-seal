@@ -297,8 +297,9 @@ function validarCPF(cpf) {
 
 function initDispensaActions() {
   document.getElementById("btnNovoColaborador").addEventListener("click", () => {
-    document.getElementById("modalColaborador").classList.remove("hidden")
-  })
+  limparCamposColaborador() // 🔥 ADICIONA ISSO
+  document.getElementById("modalColaborador").classList.remove("hidden")
+})
 
   document.getElementById("btnCancelarColaborador").addEventListener("click", () => {
     document.getElementById("modalColaborador").classList.add("hidden")
@@ -422,13 +423,21 @@ async function atualizarDispensa() {
 }
 
 async function carregarDashboard() {
-  const { data: produtos } = await supabase.from('produtos').select('id')
-  const { data: colaboradores } = await supabase.from('colaboradores').select('id')
-  const { data: dispensas } = await supabase.from('dispensas').select('id')
+  const { count: produtos } = await supabase
+  .from('produtos')
+  .select('*', { count: 'exact', head: true })
 
-  document.getElementById("totalProdutos").innerText = produtos.length
-  document.getElementById("totalColaboradores").innerText = colaboradores.length
-  document.getElementById("totalDispensas").innerText = dispensas.length
+const { count: colaboradores } = await supabase
+  .from('colaboradores')
+  .select('*', { count: 'exact', head: true })
+
+const { count: dispensas } = await supabase
+  .from('dispensas')
+  .select('*', { count: 'exact', head: true })
+
+  document.getElementById("totalProdutos").innerText = produtos || 0
+document.getElementById("totalColaboradores").innerText = colaboradores || 0
+document.getElementById("totalDispensas").innerText = dispensas || 0
 }
 
 if (window.location.pathname.endsWith("/") || window.location.pathname.endsWith("index.html")) {
