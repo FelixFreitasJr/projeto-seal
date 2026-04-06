@@ -56,7 +56,7 @@ export function initEstoque() {
       </tr>`
     })
 
-    tabelaEstoque.innerHTML = linhas
+    tabela.innerHTML = linhas
   }
 
   // busca automática ao digitar

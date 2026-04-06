@@ -87,7 +87,13 @@ window.editarProduto = async (id) => {
 
   document.getElementById("modal").classList.remove("hidden")
 
-  document.getElementById("btnSalvar").onclick = async () => {
+const btnSalvar = document.getElementById("btnSalvar")
+
+btnSalvar.replaceWith(btnSalvar.cloneNode(true)) // remove eventos antigos
+
+const novoBtnSalvar = document.getElementById("btnSalvar")
+
+novoBtnSalvar.onclick = async () => {
     const { error: updateError } = await supabase.from('produtos').update({
       codigo: document.getElementById("codigo").value,
       nome: document.getElementById("nome").value,
@@ -123,7 +129,13 @@ window.editarColaborador = async (id) => {
 
   document.getElementById("modalColaborador").classList.remove("hidden")
 
-  document.getElementById("btnSalvarColaborador").onclick = async () => {
+ const btn = document.getElementById("btnSalvarColaborador")
+
+btn.replaceWith(btn.cloneNode(true))
+
+const novoBtn = document.getElementById("btnSalvarColaborador")
+
+novoBtn.onclick = async () => {
     const cpfLimpo = limparCPF(document.getElementById("cpf").value)
 
     const { error: updateError } = await supabase.from('colaboradores').update({
@@ -298,18 +310,18 @@ function initDispensaActions() {
     const empresa = document.getElementById("empresa").value
     const funcao = document.getElementById("funcao").value
 
-    if (!validarCPF(cpf)) {
+    if (!validarCPF(cpfLimpo)) {
        showToast("CPF inválido")
       return
     }
 
-    const { data: existente } = await supabase.from('colaboradores').select('cpf').eq('cpf', cpf).single()
+    const { data: existente } = await supabase.from('colaboradores').select('cpf').eq('cpf', cpfLimpo).single()
     if (existente) {
        showToast("Já existe colaborador com este CPF")
       return
     }
 
-    const { error } = await supabase.from('colaboradores').insert({ cpf, nome, empresa, funcao })
+    const { error } = await supabase.from('colaboradores').insert({ cpf:cpfLimpo, nome, empresa, funcao })
     if (error) {
        showToast("Erro ao salvar colaborador")
     } else {
@@ -442,14 +454,16 @@ function renderTabelaEstoque(data) {
   })
 }
 
-document.getElementById("cpf").addEventListener("input", function(e) {
-  let value = e.target.value.replace(/\D/g, "")
-  if (value.length > 11) value = value.slice(0, 11)
+const cpfInput = document.getElementById("cpf")
+if (cpfInput) {
+  cpfInput.addEventListener("input", function(e) {
+    let value = e.target.value.replace(/\D/g, "")
+    if (value.length > 11) value = value.slice(0, 11)
 
-  // aplica máscara: 000.000.000-00
-  value = value.replace(/(\d{3})(\d)/, "$1.$2")
-  value = value.replace(/(\d{3})(\d)/, "$1.$2")
-  value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2")
+    value = value.replace(/(\d{3})(\d)/, "$1.$2")
+    value = value.replace(/(\d{3})(\d)/, "$1.$2")
+    value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2")
 
-  e.target.value = value
-})
+    e.target.value = value
+  })
+}
