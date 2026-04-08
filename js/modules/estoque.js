@@ -44,10 +44,12 @@ export function initEstoque() {
       <tr>
         <td>${item.codigo}</td>
         <td>${item.nome}</td>
+          <div class="info-extra">
+          ${item.liberacao || ''} | ${item.observacao || ''}
+          </div>
         <td>${item.endereco_externo}</td>
         <td>${item.endereco_satelite}</td>
-        <td>${item.liberacao || ''}</td>
-        <td>${item.observacao || ''}</td>
+        
         <td>
           <div class="acoes">
             <button class="btn-menu" onclick="toggleMenu(this)">⋮</button>
