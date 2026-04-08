@@ -151,21 +151,21 @@ window.showToast = function(msg) {
   }, 3000)
 }
 
-// app.js
+// // app.js
 
-function setFavicon(svgPath) {
-  // Remove favicon antigo se existir
-  const oldFavicon = document.querySelector("link[rel='icon']");
-  if (oldFavicon) oldFavicon.remove();
+// function setFavicon(svgPath) {
+//   // Remove favicon antigo se existir
+//   const oldFavicon = document.querySelector("link[rel='icon']");
+//   if (oldFavicon) oldFavicon.remove();
 
-  // Cria novo favicon
-  const link = document.createElement("link");
-  link.rel = "icon";
-  link.type = "image/svg+xml";
-  link.href = svgPath;
+//   // Cria novo favicon
+//   const link = document.createElement("link");
+//   link.rel = "icon";
+//   link.type = "image/svg+xml";
+//   link.href = svgPath;
 
-  document.head.appendChild(link);
-}
+//   document.head.appendChild(link);
+// }
 
-// Usa a função passando o caminho do seu SVG
-setFavicon("img/favicon.svg");
+// // Usa a função passando o caminho do seu SVG
+// setFavicon("img/favicon.svg");
