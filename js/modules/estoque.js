@@ -42,7 +42,7 @@ function renderTabela(data) {
   data.forEach(item => {
     linhas += `
     <tr>
-      <td>${item.codigo || ''}</td>
+      <td class="codigo">${item.codigo || ''}</td>
       
 
       <td>
@@ -50,9 +50,13 @@ function renderTabela(data) {
           ${item.nome || ''}
         </div>
 
-        <div style="font-size: 12px; color: #666;">
-          ${item.liberacao || '-'} | ${item.observacao || '-'}
-        </div>
+       <div class="status ${formatarStatusClasse(item.liberacao)}">
+        ${item.liberacao || '-'}
+      </div>
+
+      <div class="info-extra">
+        ${item.observacao || '-'}
+      </div>
       </td>
 
       <td>${item.endereco_externo || ''}</td>
@@ -261,9 +265,23 @@ function showToast(msg) {
   }, 3000)
 }
 
+function formatarStatusClasse(status) {
+  if (!status) return ''
+
+  status = status.toLowerCase()
+
+  if (status.includes('livre')) return 'livre'
+  if (status.includes('externo')) return 'externo'
+  if (status.includes('satélite') || status.includes('satelite')) return 'satelite'
+  if (status.includes('inativo')) return 'inativo'
+
+  return ''
+}
+
 // =========================
 // GLOBAL
 // =========================
 window.editarProduto = editarProduto
 window.excluirProduto = excluirProduto
 window.clonarItem = clonarItem
+window.formatarStatusClasse = formatarStatusClasse

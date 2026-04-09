@@ -217,3 +217,6 @@ async function carregarHistorico(cpf) {
     tbody.appendChild(tr)
   })
 }
+
+window.carregarHistorico = carregarHistorico
+

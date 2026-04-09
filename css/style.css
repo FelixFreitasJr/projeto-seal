@@ -442,3 +442,7 @@ input {
 #listaDispensados tr:hover {
   background: #f5f5f5;
 }
+
+.codigo {
+  font-weight: bold;
+}
