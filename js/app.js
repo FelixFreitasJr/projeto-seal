@@ -151,21 +151,69 @@ window.showToast = function(msg) {
   }, 3000)
 }
 
-// // app.js
+window.abrirModalDispensados = async function () {
+  document.getElementById("modalDispensados").classList.remove("hidden")
 
-// function setFavicon(svgPath) {
-//   // Remove favicon antigo se existir
-//   const oldFavicon = document.querySelector("link[rel='icon']");
-//   if (oldFavicon) oldFavicon.remove();
+  const { data, error } = await supabase
+    .from('dispensas')
+    .select('*')
 
-//   // Cria novo favicon
-//   const link = document.createElement("link");
-//   link.rel = "icon";
-//   link.type = "image/svg+xml";
-//   link.href = svgPath;
+  if (error) return
 
-//   document.head.appendChild(link);
-// }
+  const mapa = {}
 
-// // Usa a função passando o caminho do seu SVG
-// setFavicon("img/favicon.svg");
+  data.forEach(item => {
+    if (!mapa[item.cpf]) {
+      mapa[item.cpf] = {
+        cpf: item.cpf,
+        nome: item.nome,
+        empresa: item.empresa,
+        local: item.usuario,
+        quantidade: 0
+      }
+    }
+
+    mapa[item.cpf].quantidade += 1
+  })
+
+  const tbody = document.getElementById("listaDispensados")
+  tbody.innerHTML = ''
+
+  Object.values(mapa).forEach(p => {
+    const tr = document.createElement("tr")
+
+    tr.innerHTML = `
+      <td>${p.cpf}</td>
+      <td>${p.nome}</td>
+      <td>${p.empresa}</td>
+      <td>${p.local}</td>
+      <td>${p.quantidade}</td>
+    `
+
+    tr.style.cursor = "pointer"
+    tr.onclick = () => carregarHistorico(p.cpf)
+
+    tbody.appendChild(tr)
+  })
+}
+
+async function carregarHistorico(cpf) {
+  const { data } = await supabase
+    .from('dispensas')
+    .select('*')
+    .eq('cpf', cpf)
+    .order('data_hora', { ascending: false })
+
+  const tbody = document.getElementById("historicoDispensa")
+  tbody.innerHTML = ''
+
+  data.forEach(item => {
+    const tr = document.createElement("tr")
+
+    tr.innerHTML = `
+      <td>${new Date(item.data_hora).toLocaleString()}</td>
+    `
+
+    tbody.appendChild(tr)
+  })
+}
