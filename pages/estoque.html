@@ -68,7 +68,15 @@
     <input id="externo" placeholder="Endereço Externo">
     <input id="satelite" placeholder="Endereço Satélite">
     <input id="observacao" placeholder="Observação">
-    <input id="liberacao" placeholder="Liberação">
+    <select id="liberacao">
+      <option value="Livre">Livre</option>
+      <option value="Somente no externo">Somente no externo</option>
+      <option value="Somente no satélite">Somente no satélite</option>
+      <option value="Somente CME">Somente CME</option>
+      <option value="Sob supervisão">Sob supervisão</option>
+      <option value="Somente paciente">Somente paciente</option>
+      <option value="Inativo">Inativo</option>
+    </select>
 
     <div class="modal-actions">
       <button id="btnCancelar">

@@ -36,35 +36,45 @@ export function initEstoque() {
     atualizarContador(data.length)
   }
 
-  function renderTabela(data) {
-    let linhas = ''
+function renderTabela(data) {
+  let linhas = ''
 
-    data.forEach(item => {
-      linhas += `
-      <tr>
-        <td>${item.codigo}</td>
-        <td>${item.nome}</td>
-          <div class="info-extra">
-          ${item.liberacao || ''} | ${item.observacao || ''}
-          </div>
-        <td>${item.endereco_externo}</td>
-        <td>${item.endereco_satelite}</td>
-        
-        <td>
-          <div class="acoes">
-            <button class="btn-menu" onclick="toggleMenu(this)">⋮</button>
-            <div class="menu-acoes hidden">
-              <button onclick="editarProduto('${item.id}')">Editar</button>
-              <button onclick="clonarItem('${item.id}')">Clonar</button>
-              <button onclick="excluirProduto('${item.id}')">Excluir</button>
-            </div>
-          </div>
-        </td>
-      </tr>`
-    })
+  data.forEach(item => {
+    linhas += `
+    <tr>
+      // <td>${item.codigo_mv || ''}</td>
+      // <td>${item.codigo_sga || ''}</td>
+      <td>${item.codigo || ''}</td>
+      
 
-    tabela.innerHTML = linhas
-  }
+      <td>
+        <div style="font-weight: bold;">
+          ${item.nome || ''}
+        </div>
+
+        <div style="font-size: 12px; color: #666;">
+          ${item.liberacao || '-'} | ${item.observacao || '-'}
+        </div>
+      </td>
+
+      <td>${item.endereco_externo || ''}</td>
+      <td>${item.endereco_satelite || ''}</td>
+      
+      <td>
+        <div class="acoes">
+          <button class="btn-menu" onclick="toggleMenu(this)">⋮</button>
+          <div class="menu-acoes hidden">
+            <button onclick="editarProduto('${item.id}')">Editar</button>
+            <button onclick="clonarItem('${item.id}')">Clonar</button>
+            <button onclick="excluirProduto('${item.id}')">Excluir</button>
+          </div>
+        </div>
+      </td>
+    </tr>`
+  })
+
+  tabela.innerHTML = linhas
+}
 
   function atualizarContador(qtd) {
     const contador = document.getElementById("contadorEstoque")
