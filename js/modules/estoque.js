@@ -42,8 +42,6 @@ function renderTabela(data) {
   data.forEach(item => {
     linhas += `
     <tr>
-      // <td>${item.codigo_mv || ''}</td>
-      // <td>${item.codigo_sga || ''}</td>
       <td>${item.codigo || ''}</td>
       
 

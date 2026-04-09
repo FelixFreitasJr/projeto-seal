@@ -278,7 +278,7 @@ td:nth-child(4) { background: #fff3e0; }
   color: #2f7d5b;
 }
 
-.modal-content input {
+.modal-content input select{
   width: 100%;
   padding: 10px;
   margin-bottom: 12px;
