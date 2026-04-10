@@ -20,7 +20,8 @@ export async function login() {
   }
 
   // compara senha com hash
-  const senhaValida = bcrypt.compareSync(senha, data.senha)
+  const senhaValida = window.bcrypt.compareSync(senha, data.senha)
+
 
   if (!senhaValida) {
     alert("Usuário ou senha inválidos")
