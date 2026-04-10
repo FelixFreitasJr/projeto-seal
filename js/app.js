@@ -20,14 +20,12 @@ document.addEventListener('DOMContentLoaded', () => {
     initDispensa()
   }
 
-  // Usuário no título
   const user = getUser()
   const titulo = document.querySelector(".titulo small")
   if (titulo && user) {
     titulo.innerText += " | Usuário: " + user
   }
 
-  // Config ADM
   if (user === "ADM") {
     const btn = document.getElementById("btnConfig")
     if (btn) btn.classList.remove("hidden")
@@ -70,14 +68,13 @@ window.ir = function(pagina) {
 }
 
 // =========================
-// MENU AÇÕES (⋮)
+// MENU AÇÕES
 // =========================
 window.toggleMenu = (btn) => {
   const menu = btn.nextElementSibling
   menu.classList.toggle("hidden")
 }
 
-// Fecha menus ao clicar fora
 document.addEventListener('click', (event) => {
   const menus = document.querySelectorAll('.menu-acoes')
   menus.forEach(menu => {
@@ -127,13 +124,6 @@ async function carregarDashboard() {
   document.getElementById("totalDispensas").innerText = dispensas || 0
 }
 
-if (
-  window.location.pathname.endsWith("/") ||
-  window.location.pathname.endsWith("index.html")
-) {
-  carregarDashboard()
-}
-
 // =========================
 // TOAST
 // =========================
@@ -151,6 +141,9 @@ window.showToast = function(msg) {
   }, 3000)
 }
 
+// =========================
+// MODAL DISPENSADOS
+// =========================
 window.abrirModalDispensados = async function () {
   document.getElementById("modalDispensados").classList.remove("hidden")
 
@@ -197,6 +190,10 @@ window.abrirModalDispensados = async function () {
   })
 }
 
+window.fecharModalDispensados = function () {
+  document.getElementById("modalDispensados").classList.add("hidden")
+}
+
 async function carregarHistorico(cpf) {
   const { data } = await supabase
     .from('dispensas')
@@ -218,58 +215,103 @@ async function carregarHistorico(cpf) {
   })
 }
 
+// =========================
+// GRÁFICOS
+// =========================
+let graficoPizza = null
+let graficoBarra = null
+
+function destruirGraficos() {
+  if (graficoPizza) {
+    graficoPizza.destroy()
+    graficoPizza = null
+  }
+
+  if (graficoBarra) {
+    graficoBarra.destroy()
+    graficoBarra = null
+  }
+}
+
 async function carregarGraficos() {
-  const { data, error } = await supabase
-    .from('dispensas')
-    .select('usuario')
 
-  if (error) return
+  destruirGraficos()
 
-  const mapa = {
+  const inicio = document.getElementById("dataInicio")?.value
+  const fim = document.getElementById("dataFim")?.value
+
+  let query = supabase.from('dispensas').select('*')
+
+  if (inicio) query = query.gte('data_hora', inicio)
+  if (fim) query = query.lte('data_hora', fim)
+
+  const { data, error } = await query
+
+  if (error || !data) return
+
+  // 📊 PIZZA (LOCAL)
+  const mapaLocal = {
     ADM: 0,
     EXTERNO: 0,
     SATELITE: 0
   }
 
   data.forEach(d => {
-    if (mapa[d.usuario] !== undefined) {
-      mapa[d.usuario]++
+    if (mapaLocal[d.usuario] !== undefined) {
+      mapaLocal[d.usuario]++
     }
   })
 
-  const labels = Object.keys(mapa)
-  const valores = Object.values(mapa)
-
-  // PIZZA
-  new Chart(document.getElementById("graficoPizza"), {
+  graficoPizza = new Chart(document.getElementById("graficoPizza"), {
     type: 'pie',
     data: {
-      labels: labels,
+      labels: Object.keys(mapaLocal),
       datasets: [{
-        data: valores
+        data: Object.values(mapaLocal),
+        backgroundColor: [
+        '#4CAF50', // verde (ADM)
+        '#2196F3', // azul (EXTERNO)
+        '#FF9800'  // laranja (SATELITE)
+      ]
       }]
     }
   })
 
-  // BARRA
-  new Chart(document.getElementById("graficoBarra"), {
+  // 📊 BARRA (MÊS A MÊS)
+  const mapaMes = {}
+
+  data.forEach(d => {
+    const dataObj = new Date(d.data_hora)
+    const chave = `${dataObj.getFullYear()}-${dataObj.getMonth()}`
+
+    if (!mapaMes[chave]) {
+      mapaMes[chave] = {
+        label: dataObj.toLocaleString('pt-BR', { month: 'short', year: 'numeric' }),
+        total: 0
+      }
+    }
+
+    mapaMes[chave].total++
+  })
+
+  const mesesOrdenados = Object.values(mapaMes)
+
+  graficoBarra = new Chart(document.getElementById("graficoBarra"), {
     type: 'bar',
     data: {
-      labels: labels,
+      labels: mesesOrdenados.map(m => m.label),
       datasets: [{
-        label: 'Dispensas',
-        data: valores
+        label: 'Dispensas por mês',
+        data: mesesOrdenados.map(m => m.total),
+        backgroundColor: '#2196F3'
       }]
     }
   })
 }
 
-window.carregarHistorico = carregarHistorico
-window.abrirModalDispensados = abrirModalDispensados
-window.fecharModalDispensados = function () {
-  document.getElementById("modalDispensados").classList.add("hidden")
-}
-
+// =========================
+// LOAD DASHBOARD
+// =========================
 if (
   window.location.pathname.endsWith("/") ||
   window.location.pathname.endsWith("index.html")
@@ -277,4 +319,3 @@ if (
   carregarDashboard()
   carregarGraficos()
 }
-

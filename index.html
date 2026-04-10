@@ -4,11 +4,11 @@
   <title>SEAL - Dashboard</title>
   <link rel="stylesheet" href="css/style.css">
 
-  <script type="module" src="js/auth.js"></script>
-  <script type="module" src="js/app.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/app.js"></script>
 
   <link rel="icon" type="image/x-icon" href="img/favicon.svg">
 </head>
@@ -39,7 +39,6 @@
 
   <div class="dashboard-header">
     <h1>Dashboard</h1>
-    <p id="userInfo"></p>
     <p class="subtitulo">Visão geral do sistema SEAL</p>
   </div>
 
@@ -64,24 +63,32 @@
     <p>Use o menu superior para navegar entre os módulos do sistema.</p>
   </div>
 
-</div>
 
-<!-- GRAFICOS -->
+<!-- FILTRO GRAFICO -->
 
-<div class="graficos">
-
-  <div class="grafico-box">
-    <h3>Dispensas por Local</h3>
-    <canvas id="graficoPizza"></canvas>
+  <div class="filtro">
+    <input type="date" id="dataInicio">
+    <input type="date" id="dataFim">
+    <button onclick="carregarGraficos()">Filtrar</button>
   </div>
 
-  <div class="grafico-box">
-    <h3>Comparativo</h3>
-    <canvas id="graficoBarra"></canvas>
+  <!-- GRAFICOS -->
+
+  <div class="graficos">
+
+    <div class="grafico-box">
+      <h3>Dispensas por Local</h3>
+      <canvas id="graficoPizza"></canvas>
+    </div>
+
+    <div class="grafico-box">
+      <h3>Comparativo</h3>
+      <canvas id="graficoBarra"></canvas>
+    </div>
+
   </div>
 
 </div>
-
 
 <!-- MODAL CONFIGURAÇÃO -->
 <div id="modalConfig" class="modal hidden">
