@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SEAL - Dashboard</title>
+  <link rel="stylesheet" href="../css/style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/jspdf"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
+  <script type="module" src="../js/auth.js"></script>
+  <script type="module" src="../js/app.js"></script>
+
+  <link rel="icon" type="image/x-icon" href="../img/favicon.svg">
+</head>
+
+<body>
+
+<!-- TOPO -->
+<div class="topo">
+  <div class="topo-esquerda">
+    <img src="../img/logo.png" class="logo">
+    <div class="titulo">
+      <strong>SEAL — Serviço de Almoxarifado - INI / Fiocruz</strong><br>
+      <small>Pedidos</small>
+    </div>
+  </div>
+
+  <div class="topo-direita">
+    <button onclick="window.location.href='../index.html'">Dashboard</button>
+    <button onclick="window.location.href='estoque.html'">Estoque</button>
+    <button onclick="window.location.href='dispensa.html'">Dispensa</button>
+    <button id="btnPedidos" class="hidden" onclick="window.location.href='pedidos.html'">Pedidos</button>
+    <button id="btnConfig" class="hidden">⚙️</button>
+    <button onclick="logout()">Sair</button>
+  </div>
+</div>
+
+
+<div class="conteudo">
+  <h1>Pedidos</h1>
+
+  <div id="areaPedidos">
+    Em construção...
+  </div>
+</div>
+
+</body>
+</html>

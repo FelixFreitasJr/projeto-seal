@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (user === "ADM") {
+    document.getElementById("btnPedidos")?.classList.remove("hidden")
     const btn = document.getElementById("btnConfig")
     if (btn) btn.classList.remove("hidden")
 
@@ -54,6 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById("modalConfig").classList.add("hidden")
     })
   }
+
+  if (window.location.pathname.includes("pedidos.html")) {
+  if (getUser() !== "ADM") {
+    alert("Acesso restrito")
+    window.location.href = "../index.html"
+  }
+}
 
   // =========================
 // LOAD DASHBOARD
@@ -226,7 +234,9 @@ async function carregarHistorico(cpf) {
     const tr = document.createElement("tr")
 
     tr.innerHTML = `
-      <td>${new Date(item.data_hora).toLocaleString()}</td>
+      <td>${new Date(item.data_hora).toLocaleString('pt-BR', {
+        timeZone: 'America/Sao_Paulo'
+      })}</td>
     `
 
     tbody.appendChild(tr)
@@ -309,7 +319,11 @@ async function carregarGraficos() {
   const mapaMes = {}
 
   data.forEach(d => {
-    const dataObj = new Date(d.data_hora)
+    const dataObj = new Date(
+      new Date(d.data_hora).toLocaleString('en-US', {
+        timeZone:'America/Sao_Paulo'
+      })
+    )
     const chave = `${dataObj.getFullYear()}-${dataObj.getMonth()}`
 
     if (!mapaMes[chave]) {
@@ -322,9 +336,13 @@ async function carregarGraficos() {
     mapaMes[chave].total++
   })
 
-  const mesesOrdenados = Object.values(mapaMes)
-  .sort((a, b) => new Date(a[0]) - new Date(b[0]))
-  .map(item => item[1])
+  const mesesOrdenados = Object.entries(mapaMes)
+    .sort((a, b) => {
+      const [anoA, mesA] = a[0].split('-').map(Number)
+      const [anoB, mesB] = b[0].split('-').map(Number)
+      return new Date(anoA, mesA) - new Date(anoB, mesB)
+    })
+    .map(item => item[1])
 
   graficoBarra = new Chart(document.getElementById("graficoBarra"), {
     type: 'bar',
@@ -355,3 +373,30 @@ window.toggleFiltroPersonalizado = function() {
   document.getElementById("filtroCustom").classList.toggle("hidden")
 }
 
+window.exportarListaPDF = async function () {
+  const elemento = document.getElementById("listaDispensados")
+
+  const canvas = await html2canvas(elemento)
+  const imgData = canvas.toDataURL("image/png")
+
+  const pdf = new jspdf.jsPDF('p', 'mm', 'a4')
+  const largura = 190
+  const altura = (canvas.height * largura) / canvas.width
+
+  pdf.addImage(imgData, 'PNG', 10, 10, largura, altura)
+  pdf.save("lista_dispensados.pdf")
+}
+
+window.exportarHistoricoPDF = async function () {
+  const elemento = document.getElementById("historicoDispensa")
+
+  const canvas = await html2canvas(elemento)
+  const imgData = canvas.toDataURL("image/png")
+
+  const pdf = new jspdf.jsPDF('p', 'mm', 'a4')
+  const largura = 190
+  const altura = (canvas.height * largura) / canvas.width
+
+  pdf.addImage(imgData, 'PNG', 10, 10, largura, altura)
+  pdf.save("historico.pdf")
+}

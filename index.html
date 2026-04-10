@@ -29,6 +29,7 @@
     <button onclick="window.location.href='index.html'">Dashboard</button>
     <button onclick="window.location.href='pages/estoque.html'">Estoque</button>
     <button onclick="window.location.href='pages/dispensa.html'">Dispensa</button>
+    <button id="btnPedidos" class="hidden" onclick="window.location.href='pages/pedidos.html'">Pedidos</button>
     <button id="btnConfig" class="hidden">⚙️</button>
     <button onclick="logout()">Sair</button>
   </div>
@@ -154,8 +155,8 @@
     </table>
 
     <div class="modal-actions">
-      <button onclick="exportarListaPDF()">Exportar Lista</button>
-      <button onclick="exportarHistoricoPDF()">Exportar Histórico</button>
+      <button id="btnExportarLista" onclick="exportarListaPDF()">Exportar Lista</button>
+      <button id="btnExportarHistorico" onclick="exportarHistoricoPDF()">Exportar Histórico</button>
       <button onclick="fecharModalDispensados()">Fechar</button>
     </div>
 
