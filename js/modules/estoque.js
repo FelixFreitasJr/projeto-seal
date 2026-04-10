@@ -1,5 +1,6 @@
 import { SUPABASE_URL, SUPABASE_KEY } from '../config.js'
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+import { getUser } from '../js/auth.js'   // ✅ import no topo
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
@@ -10,6 +11,11 @@ export function initEstoque() {
   const tabela = document.getElementById('tabelaEstoque')
   const busca = document.getElementById('busca')
   let timeout = null
+
+  if (getUser() === "ADM") {
+    document.getElementById("colSGA")?.classList.remove("hidden")
+  }
+
 
   // =========================
   // BUSCAR / LISTAR
@@ -39,13 +45,13 @@ export function initEstoque() {
 
 function renderTabela(data) {
   let linhas = ''
+  const user = getUser()
 
   data.forEach(item => {
     linhas += `
     <tr>
       <td class="codigo">${item.codigo_mv || ''}</td>
-      <td class="codigo">${item.codigo_sga || ''}</td>
-      
+      ${user === "ADM" ? `<td class="codigo">${item.codigo_sga || ''}</td>` : ""}    
 
       <td>
       <div style="font-weight: bold;">
@@ -63,8 +69,8 @@ function renderTabela(data) {
       </div>
     </td>
 
-      <td>${item.endereco_externo || ''}</td>
-      <td>${item.endereco_satelite || ''}</td>
+      <td class="externo">${item.endereco_externo || ''}</td>
+      <td class="satelite">${item.endereco_satelite || ''}</td>
       
       <td>
         <div class="acoes">
