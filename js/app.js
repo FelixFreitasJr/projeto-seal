@@ -110,10 +110,12 @@ window.alterarSenha = async (usuario) => {
   const novaSenha = prompt("Digite a nova senha para " + usuario)
   if (!novaSenha) return
 
+  const hash = bcrypt.hashSync(novaSenha, 10)
+
   const { error } = await supabase
     .from('usuarios')
-    .update({ senha: novaSenha })
-    .eq('usuario', usuario)
+    .update({ senha: hash })
+    .eq('usuarios', usuario)
 
   if (error) {
     showToast("Erro ao alterar senha")

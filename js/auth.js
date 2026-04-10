@@ -11,7 +11,6 @@ export async function login() {
     .from('usuarios')
     .select('*')
     .eq('usuario', usuario)
-    .eq('senha', senha)
     .single()
 
   if (error || !data) {
@@ -19,10 +18,19 @@ export async function login() {
     return
   }
 
+  // compara senha com hash
+  const senhaValida = bcrypt.compareSync(senha, data.senha)
+
+  if(!senhaValida){
+    alert("Usuário ou senha inválidos")
+    return
+  }
+
   // Salva usuário no localStorage
-  localStorage.setItem("usuarioLogado", data.usuario)
+  localStorage.setItem("usuarioLogado", JSON.stringify(data))
   window.location.href = "../index.html"
 }
+
 
 export function logout() {
   // Remove usuário do localStorage
@@ -35,7 +43,8 @@ export function logout() {
 }
 
 export function checkAuth() {
-  const user = localStorage.getItem("usuarioLogado")
+  const user = JSON.parse(localStorage.getItem("usuarioLogado"))
+
   if (!user) {
     if (window.location.pathname.includes('/pages/')) {
       window.location.href = 'login.html'
@@ -46,7 +55,7 @@ export function checkAuth() {
 }
 
 export function getUser() {
-  return localStorage.getItem("usuarioLogado")
+  return JSON.parse(localStorage.getItem("usuarioLogado"))
 }
 
 // expõe logout para ser usado nos botões
