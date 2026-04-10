@@ -20,10 +20,11 @@ export function initEstoque() {
     let query = supabase.from('produtos').select('*').order('nome', { ascending: true })
 
     if (termo) {
-      query = query.or(
-        `codigo.ilike.%${termo}%,nome.ilike.%${termo}%,endereco_externo.ilike.%${termo}%,endereco_satelite.ilike.%${termo}%,liberacao.ilike.%${termo}%,observacao.ilike.%${termo}%`
-      )
-    }
+    query = query.or(
+      `codigo_mv.ilike.%${termo}%,codigo_sga.ilike.%${termo}%,nome.ilike.%${termo}%,endereco_externo.ilike.%${termo}%,endereco_satelite.ilike.%${termo}%,liberacao.ilike.%${termo}%,observacao.ilike.%${termo}%`
+    )
+  }
+
 
     const { data, error } = await query
 
@@ -42,7 +43,8 @@ function renderTabela(data) {
   data.forEach(item => {
     linhas += `
     <tr>
-      <td class="codigo">${item.codigo || ''}</td>
+      <td class="codigo">${item.codigo_mv || ''}</td>
+      <td class="codigo">${item.codigo_sga || ''}</td>
       
 
       <td>
@@ -120,21 +122,23 @@ function renderTabela(data) {
 // =========================
 
 async function salvarProduto() {
-  const codigo = document.getElementById("codigo").value
+  const codigo_mv = document.getElementById("codigo_mv").value
+  const codigo_sga = document.getElementById("codigo_sga").value
   const nome = document.getElementById("nome").value
   const externo = document.getElementById("externo").value
   const satelite = document.getElementById("satelite").value
   const observacao = document.getElementById("observacao").value
   const liberacao = document.getElementById("liberacao").value
 
-  if (!codigo || !nome) {
-    showToast("Preencha código e nome")
+  if (!codigo_mv || !nome) {
+    showToast("Preencha código MV e nome")
     return
   }
 
   if (modoEdicaoProduto) {
     const { error } = await supabase.from('produtos').update({
-      codigo,
+      codigo_mv,
+      codigo_sga,
       nome,
       endereco_externo: externo,
       endereco_satelite: satelite,
@@ -152,7 +156,8 @@ async function salvarProduto() {
 
   } else {
     const { error } = await supabase.from('produtos').insert({
-      codigo,
+      codigo_mv,
+      codigo_sga,
       nome,
       endereco_externo: externo,
       endereco_satelite: satelite,
@@ -187,7 +192,8 @@ async function editarProduto(id) {
     return
   }
 
-  document.getElementById("codigo").value = data.codigo
+  document.getElementById("codigo_mv").value = data.codigo_mv
+  document.getElementById("codigo_sga").value = data.codigo_sga
   document.getElementById("nome").value = data.nome
   document.getElementById("externo").value = data.endereco_externo
   document.getElementById("satelite").value = data.endereco_satelite
@@ -238,6 +244,12 @@ async function clonarItem(id) {
 // =========================
 
 function abrirModal() {
+  const tituloModal = document.querySelector("#modal h3")
+  if (modoEdicaoProduto) {
+    tituloModal.innerText = "Atualizar Item"
+  } else {
+    tituloModal.innerText = "Novo Item"
+  }
   document.getElementById("modal").classList.remove("hidden")
 }
 

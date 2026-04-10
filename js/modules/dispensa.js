@@ -226,11 +226,18 @@ async function dispensarItem(id) {
 // =========================
 
 function abrirModal() {
+  const tituloModal = document.querySelector("#modalColaborador h3")
+  if (modoEdicaoColaborador) {
+    tituloModal.innerText = "Atualizar Colaborador"
+  } else {
+    tituloModal.innerText = "Novo Colaborador"
+  }
   document.getElementById("modalColaborador").classList.remove("hidden")
 }
 
 function fecharModal() {
   document.getElementById("modalColaborador").classList.add("hidden")
+  modoEdicaoColaborador = null
 }
 
 function limparCampos() {
