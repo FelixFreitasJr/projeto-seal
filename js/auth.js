@@ -55,7 +55,8 @@ export function checkAuth() {
 }
 
 export function getUser() {
-  return JSON.parse(localStorage.getItem("usuarioLogado"))
+  const user = JSON.parse(localStorage.getItem("usuarioLogado"))
+  return user ? user.usuario : null
 }
 
 // expõe logout para ser usado nos botões
