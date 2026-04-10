@@ -39,7 +39,6 @@ export function initEstoque() {
 
 function renderTabela(data) {
   let linhas = ''
-  const user = getUser()
 
   data.forEach(item => {
     linhas += `
