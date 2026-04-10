@@ -219,4 +219,5 @@ async function carregarHistorico(cpf) {
 }
 
 window.carregarHistorico = carregarHistorico
+window.abrirModalDispensados = abrirModalDispensados
 
