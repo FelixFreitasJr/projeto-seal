@@ -11,7 +11,6 @@ export async function login() {
     .from('usuarios')
     .select('*')
     .eq('usuario', usuario)
-    .eq('senha', senha)
     .single()
 
   if (error || !data) {
@@ -20,8 +19,7 @@ export async function login() {
   }
 
   // compara senha com hash
-  const senhaValida = 
-  (senha, data.senha)
+  const senhaValida = bcrypt.compareSync(senha, data.senha)
 
   if(!senhaValida){
     alert("Usuário ou senha inválidos")
