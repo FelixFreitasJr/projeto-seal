@@ -11,6 +11,7 @@ export async function login() {
     .from('usuarios')
     .select('*')
     .eq('usuario', usuario)
+    .eq('senha', senha)
     .single()
 
   if (error || !data) {
