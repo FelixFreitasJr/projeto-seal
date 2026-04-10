@@ -8,6 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
   <script type="module" src="../js/auth.js"></script>
   <script type="module" src="../js/app.js"></script>
+  <script type="module" src="../js/modules/pedidos.js"></script>
 
   <link rel="icon" type="image/x-icon" href="../img/favicon.svg">
 </head>
@@ -36,12 +37,54 @@
 
 
 <div class="conteudo">
-  <h1>Pedidos</h1>
-
-  <div id="areaPedidos">
-    Em construção...
+<div id="areaPedidos">
+  <!-- Parte 1: Formulário -->
+  <div class="formulario-pedido">
+    <input id="codigo" placeholder="Código MV ou SGA">
+    <div id="previewItem"></div>
+    <input id="quantidade" type="number" placeholder="Quantidade">
+    <button id="btnIncluir">Incluir</button>
   </div>
+
+  <!-- Parte 2: Lista de pedidos -->
+  <h3>Itens do Pedido</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Nome</th>
+        <th>Quantidade</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="listaPedidos"></tbody>
+  </table>
+
+  <!-- Finalizar -->
+  <button id="btnFinalizar">Finalizar Pedido</button>
+  <button id="btnPDF">Exportar PDF</button>
 </div>
 
+</div>
+
+<script type="module" src="../js/app.js"></script>
+<script type="module">
+  import { checkAuth, getUser } from '../js/auth.js'
+
+  // Verifica login
+  checkAuth()
+
+  // Exibe usuário logado (se existir o elemento)
+  const user = getUser()
+  const userInfo = document.getElementById("userInfo")
+  if (userInfo && user) {
+    userInfo.innerText = "Usuário logado: " + user
+  }
+
+  // Mostrar botão de config apenas para ADM
+  if (user === "ADM") {
+    document.getElementById("btnConfig").classList.remove("hidden")
+  }
+</script>
 </body>
 </html>
