@@ -18,11 +18,8 @@ export async function login() {
     return
   }
 
-  // compara senha com hash
-  const senhaValida = window.bcrypt.compareSync(senha, data.senha)
-
-
-  if (!senhaValida) {
+  // compara senha em texto puro
+  if (senha !== data.senha) {
     alert("Usuário ou senha inválidos")
     return
   }
@@ -30,6 +27,10 @@ export async function login() {
   localStorage.setItem("usuarioLogado", JSON.stringify(data))
   window.location.href = "../index.html"
 }
+
+window.login = login
+window.logout = logout
+
 
 export function logout() {
   // Remove usuário do localStorage

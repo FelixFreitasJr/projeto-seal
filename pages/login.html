@@ -5,8 +5,7 @@
   <link rel="stylesheet" href="../css/style.css">
   <link rel="icon" type="image/x-icon" href="../img/favicon.svg">
 
-<script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
-<script type="module" src="../js/auth.js"></script>
+  <script type="module" src="../js/auth.js"></script>
 
 
 </head>
@@ -32,7 +31,7 @@
 
     <input id="usuario" placeholder="Usuário" oninput="this.value = this.value.toUpperCase()">
     <input id="senha" type="password" placeholder="Senha" 
-           oninput="this.value = this.value" 
+           oninput="this.value = this.value.toUpperCase()" 
            onkeypress="if(event.key==='Enter') login()">
 
     <button onclick="login()">Entrar</button>
