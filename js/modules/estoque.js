@@ -1,6 +1,5 @@
 import { SUPABASE_URL, SUPABASE_KEY } from '../config.js'
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-import { getUser } from '../js/auth.js'   // ✅ import no topo
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
@@ -12,12 +11,7 @@ export function initEstoque() {
   const busca = document.getElementById('busca')
   let timeout = null
 
-  if (getUser() === "ADM") {
-    document.getElementById("colSGA")?.classList.remove("hidden")
-  }
-
-
-  // =========================
+   // =========================
   // BUSCAR / LISTAR
   // =========================
   async function buscar() {
@@ -51,7 +45,7 @@ function renderTabela(data) {
     linhas += `
     <tr>
       <td class="codigo">${item.codigo_mv || ''}</td>
-      ${user === "ADM" ? `<td class="codigo">${item.codigo_sga || ''}</td>` : ""}    
+      <td class="codigo">${item.codigo_sga || ''}</td>    
 
       <td>
       <div style="font-weight: bold;">
