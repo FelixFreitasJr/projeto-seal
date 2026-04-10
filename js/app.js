@@ -54,6 +54,17 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById("modalConfig").classList.add("hidden")
     })
   }
+
+  // =========================
+// LOAD DASHBOARD
+// =========================
+if (
+  window.location.pathname.endsWith("/") ||
+  window.location.pathname.endsWith("index.html")
+) {
+  carregarDashboard()
+  carregarGraficos()
+}
 })
 
 // =========================
@@ -172,11 +183,18 @@ window.abrirModalDispensados = async function () {
   const tbody = document.getElementById("listaDispensados")
   tbody.innerHTML = ''
 
-  Object.values(mapa).forEach(p => {
-    const tr = document.createElement("tr")
+  Object.values(mapa)
+    .sort((a, b) => b.quantidade - a.quantidade)
+    .forEach(p => {
+      
 
+    const tr = document.createElement("tr")
+      if (p.quantidade > 15) {
+              tr.style.background = "#ffe0e0"
+              tr.style.fontWeight = "bold"
+            }
     tr.innerHTML = `
-      <td>${p.cpf}</td>
+      <td>${mascararCPF(p.cpf)}</td>
       <td>${p.nome}</td>
       <td>${p.empresa}</td>
       <td>${p.local}</td>
@@ -213,6 +231,16 @@ async function carregarHistorico(cpf) {
 
     tbody.appendChild(tr)
   })
+}
+
+function mascararCPF(cpf) {
+  cpf = cpf.replace(/[^\d]/g, '')
+
+  if (cpf.length !== 11) return cpf
+
+  return cpf.substring(0, 3) + '.' +
+         cpf.substring(3, 6) + '.XXX-' +
+         cpf.substring(9, 11)
 }
 
 // =========================
@@ -295,6 +323,8 @@ async function carregarGraficos() {
   })
 
   const mesesOrdenados = Object.values(mapaMes)
+  .sort((a, b) => new Date(a[0]) - new Date(b[0]))
+  .map(item => item[1])
 
   graficoBarra = new Chart(document.getElementById("graficoBarra"), {
     type: 'bar',
@@ -309,13 +339,19 @@ async function carregarGraficos() {
   })
 }
 
-// =========================
-// LOAD DASHBOARD
-// =========================
-if (
-  window.location.pathname.endsWith("/") ||
-  window.location.pathname.endsWith("index.html")
-) {
-  carregarDashboard()
+window.filtrarPeriodo = function(dias) {
+  const hoje = new Date()
+  const inicio = new Date()
+
+  inicio.setDate(hoje.getDate() - dias)
+
+  document.getElementById("dataInicio").value = inicio.toISOString().split('T')[0]
+  document.getElementById("dataFim").value = hoje.toISOString().split('T')[0]
+
   carregarGraficos()
 }
+
+window.toggleFiltroPersonalizado = function() {
+  document.getElementById("filtroCustom").classList.toggle("hidden")
+}
+

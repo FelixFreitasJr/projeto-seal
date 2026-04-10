@@ -66,11 +66,22 @@
 
 <!-- FILTRO GRAFICO -->
 
-  <div class="filtro">
+<div class="filtro">
+
+  <button onclick="filtrarPeriodo(7)">7 dias</button>
+  <button onclick="filtrarPeriodo(15)">15 dias</button>
+  <button onclick="filtrarPeriodo(30)">30 dias</button>
+  <button onclick="filtrarPeriodo(60)">60 dias</button>
+
+  <button onclick="toggleFiltroPersonalizado()">Outro período</button>
+
+  <div id="filtroCustom" class="hidden">
     <input type="date" id="dataInicio">
     <input type="date" id="dataFim">
-    <button onclick="carregarGraficos()">Filtrar</button>
+    <button onclick="carregarGraficos()">Aplicar</button>
   </div>
+
+</div>
 
   <!-- GRAFICOS -->
 
