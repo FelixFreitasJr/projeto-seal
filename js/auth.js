@@ -1,10 +1,12 @@
 import { SUPABASE_URL, SUPABASE_KEY } from './config.js'
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js'
+
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 export async function login() {
-  const usuario = document.getElementById("usuario").value
+  const usuario = document.getElementById("usuario").value.trim().toUpperCase()
   const senha = document.getElementById("senha").value
 
   const { data, error } = await supabase
