@@ -1,6 +1,5 @@
 import { SUPABASE_URL, SUPABASE_KEY } from './config.js'
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
@@ -59,4 +58,5 @@ export function getUser() {
 }
 
 // expõe logout para ser usado nos botões
+window.login = login
 window.logout = logout
