@@ -2,7 +2,6 @@ import { SUPABASE_URL, SUPABASE_KEY } from './config.js'
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js'
 
-
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 export async function login() {
@@ -23,16 +22,14 @@ export async function login() {
   // compara senha com hash
   const senhaValida = bcrypt.compareSync(senha, data.senha)
 
-  if(!senhaValida){
+  if (!senhaValida) {
     alert("Usuário ou senha inválidos")
     return
   }
 
-  // Salva usuário no localStorage
   localStorage.setItem("usuarioLogado", JSON.stringify(data))
   window.location.href = "../index.html"
 }
-
 
 export function logout() {
   // Remove usuário do localStorage
