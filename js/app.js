@@ -218,6 +218,63 @@ async function carregarHistorico(cpf) {
   })
 }
 
+async function carregarGraficos() {
+  const { data, error } = await supabase
+    .from('dispensas')
+    .select('usuario')
+
+  if (error) return
+
+  const mapa = {
+    ADM: 0,
+    EXTERNO: 0,
+    SATELITE: 0
+  }
+
+  data.forEach(d => {
+    if (mapa[d.usuario] !== undefined) {
+      mapa[d.usuario]++
+    }
+  })
+
+  const labels = Object.keys(mapa)
+  const valores = Object.values(mapa)
+
+  // PIZZA
+  new Chart(document.getElementById("graficoPizza"), {
+    type: 'pie',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: valores
+      }]
+    }
+  })
+
+  // BARRA
+  new Chart(document.getElementById("graficoBarra"), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Dispensas',
+        data: valores
+      }]
+    }
+  })
+}
+
 window.carregarHistorico = carregarHistorico
 window.abrirModalDispensados = abrirModalDispensados
+window.fecharModalDispensados = function () {
+  document.getElementById("modalDispensados").classList.add("hidden")
+}
+
+if (
+  window.location.pathname.endsWith("/") ||
+  window.location.pathname.endsWith("index.html")
+) {
+  carregarDashboard()
+  carregarGraficos()
+}
 

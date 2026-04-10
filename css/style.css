@@ -179,6 +179,12 @@ th {
   cursor: pointer;
 }
 
+.status-container {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
 .info-extra {
   font-size: 12px;
   color: #666;
@@ -260,6 +266,8 @@ td:nth-child(4) { background: #fff3e0; }
   display: flex;
   justify-content: center;
   align-items: center;
+
+  z-index: 9999;
 }
 
 .modal-content {
@@ -269,6 +277,9 @@ td:nth-child(4) { background: #fff3e0; }
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   text-transform: uppercase;
+
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .modal-content h3 {
@@ -406,6 +417,8 @@ input {
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 
   transition: transform 0.2s, box-shadow 0.2s;
+
+  cursor: pointer;
 }
 
 .card h3 {
@@ -418,6 +431,14 @@ input {
   font-size: 2em;
   font-weight: bold;
   margin: 0;
+}
+
+.cards a,
+.cards a:visited,
+.cards a:hover,
+.cards a:active {
+  text-decoration: none;
+  color: inherit;
 }
 
 .card:hover {
@@ -445,4 +466,18 @@ input {
 
 .codigo {
   font-weight: bold;
+}
+
+.graficos {
+  display: flex;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.grafico-box {
+  flex: 1;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }

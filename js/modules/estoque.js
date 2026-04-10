@@ -46,18 +46,20 @@ function renderTabela(data) {
       
 
       <td>
-        <div style="font-weight: bold;">
-          ${item.nome || ''}
+      <div style="font-weight: bold;">
+        ${item.nome || ''}
+      </div>
+
+      <div class="status-container">
+        <div class="status ${formatarStatusClasse(item.liberacao)}">
+          ${item.liberacao || '-'}
         </div>
 
-       <div class="status ${formatarStatusClasse(item.liberacao)}">
-        ${item.liberacao || '-'}
+        <div class="info-extra">
+          | ${item.observacao || '-'}
+        </div>
       </div>
-
-      <div class="info-extra">
-        ${item.observacao || '-'}
-      </div>
-      </td>
+    </td>
 
       <td>${item.endereco_externo || ''}</td>
       <td>${item.endereco_satelite || ''}</td>
