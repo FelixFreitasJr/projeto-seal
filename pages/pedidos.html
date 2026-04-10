@@ -40,7 +40,7 @@
 <div id="areaPedidos">
   <!-- Parte 1: Formulário -->
   <div class="formulario-pedido">
-    <input id="codigo" placeholder="Código MV ou SGA">
+    <input id="codigo" placeholder="Código MV ou SGA" oninput="previewCodigo(this.value)">
     <div id="previewItem"></div>
     <input id="quantidade" type="number" placeholder="Quantidade">
     <button id="btnIncluir">Incluir</button>
