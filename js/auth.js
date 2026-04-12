@@ -84,14 +84,13 @@ function aplicarPermissoes(user) {
   if (!edicao.includes("excluirColaborador")) {
     document.querySelectorAll(".btnExcluirColaborador").forEach(el => el.classList.add("hidden"))
   }
-}
-
 // Adicione no app.js ou auth.js
 document.querySelector(".menu-toggle")?.addEventListener("click", () => {
   const menu = document.querySelector(".menu-suspenso")
   menu.style.display = menu.style.display === "flex" ? "none" : "flex"
 })
 
+}
 
 window.login = login
 window.logout = logout
