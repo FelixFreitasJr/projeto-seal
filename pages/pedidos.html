@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SEAL - Pedidos</title>
   <link rel="stylesheet" href="../css/style.css">
-  <link rel="icon" type="image/x-icon" href="../img/favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
 
   <!-- Bibliotecas para PDF -->
   <script src="https://cdn.jsdelivr.net/npm/jspdf"></script>
@@ -21,7 +21,7 @@
 
 <header class="topo">
   <div class="topo-esquerda">
-    <img src="../img/logo.svg" class="logo" alt="Logo SEAL">
+    <img src="../img/logo.png" class="logo" alt="Logo SEAL">
     <div class="titulo">
       <strong>SEAL — Serviço de Almoxarifado - INI / Fiocruz</strong><br>
       <small>Pedidos</small>
@@ -65,8 +65,11 @@
     </div>
 
     <!-- Finalizar -->
-    <button id="btnFinalizar">Finalizar Pedido</button>
-    <button id="btnPDF">Exportar PDF</button>
+    <div class="actions">
+      <button id="btnFinalizar">Finalizar Pedido</button>
+      <button id="btnPDF">Exportar PDF</button>
+    </div>
+
   </div>
 </main>
 
@@ -79,22 +82,15 @@
 <script type="module">
   import { checkAuth, getUser } from '../js/auth.js'
 
-  // Verifica login
   checkAuth()
 
   const user = getUser()
-
-  // Exibe usuário logado (se existir o elemento)
   const userInfo = document.getElementById("userInfo")
   if (userInfo && user) {
     userInfo.innerText = "Usuário logado: " + user
   }
-
-  // Mostrar botão de config apenas para ADM
-  if (user === "ADM") {
-    document.getElementById("btnConfig").classList.remove("hidden")
-  }
 </script>
+
 
 </body>
 </html>

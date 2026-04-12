@@ -39,6 +39,7 @@ header.topo {
   position: fixed; top: 55px; left: 0; width: 100%; z-index: 999;
   display: flex; align-items: center; gap: 10px;
   padding: 10px 20px; background: var(--white); border-bottom: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* Main */
@@ -222,3 +223,34 @@ main.conteudo table thead th { position: sticky; top: 0; background: #f0f0f0; z-
 #listaPedidos tr:hover { background: #f9f9f9; }
 #btnFinalizar, #btnPDF { margin-top: 20px; background: var(--primary); color: var(--white); }
 #btnFinalizar:hover, #btnPDF:hover { background: var(--primary-dark); }
+
+.tabela-container {
+  max-height: 60vh;   /* altura proporcional à largura da tela */
+  overflow-y: auto;   /* rolagem apenas dentro da tabela */
+  margin-top: 20px;   /* espaço para não colar em outros elementos */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabela-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabela-container th,
+.tabela-container td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+#areaPedidos .actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+#areaPedidos .actions button {
+  flex: none;
+  min-width: 150px;
+}

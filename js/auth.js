@@ -5,7 +5,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 export async function login() {
   const usuario = document.getElementById("usuario").value.trim().toUpperCase()
-  const senha = document.getElementById("senha").value
+  const senha = document.getElementById("senha").value.trim().toUpperCase()
 
   const { data, error } = await supabase
     .from('usuarios')
@@ -18,22 +18,17 @@ export async function login() {
     return
   }
 
-  // compara senha em texto puro
   if (senha !== data.senha) {
     alert("Usuário ou senha inválidos")
     return
   }
 
+  // salva todos os dados do usuário (perfil, acesso, edicao)
   localStorage.setItem("usuarioLogado", JSON.stringify(data))
   window.location.href = "../index.html"
 }
 
-window.login = login
-window.logout = logout
-
-
 export function logout() {
-  // Remove usuário do localStorage
   localStorage.removeItem("usuarioLogado")
   if (window.location.pathname.includes('/pages/')) {
     window.location.href = 'login.html'
@@ -51,6 +46,8 @@ export function checkAuth() {
     } else {
       window.location.href = 'pages/login.html'
     }
+  } else {
+    aplicarPermissoes(user)
   }
 }
 
@@ -59,6 +56,35 @@ export function getUser() {
   return user ? user.usuario : null
 }
 
-// expõe logout para ser usado nos botões
+// Função para aplicar permissões conforme perfil/acesso/edicao
+function aplicarPermissoes(user) {
+  const perfil = user.perfil
+  const acesso = user.acesso || []
+  const edicao = user.edicao || []
+
+  // Configurações e pedidos só para ADM
+  if (perfil !== "ADM") {
+    document.getElementById("btnConfig")?.classList.add("hidden")
+    document.getElementById("btnPedidos")?.classList.add("hidden")
+  }
+
+  // Exportar PDF/histórico só para ADM
+  if (perfil !== "ADM") {
+    document.getElementById("btnExportarLista")?.classList.add("hidden")
+    document.getElementById("btnExportarHistorico")?.classList.add("hidden")
+    document.getElementById("btnPDF")?.classList.add("hidden")
+  }
+
+  // Estoque: só consulta se não tiver permissão de edição
+  if (!edicao.includes("estoque")) {
+    document.querySelectorAll(".acoes").forEach(el => el.classList.add("hidden"))
+  }
+
+  // Dispensa: pode cadastrar e editar, mas não excluir
+  if (!edicao.includes("excluirColaborador")) {
+    document.querySelectorAll(".btnExcluirColaborador").forEach(el => el.classList.add("hidden"))
+  }
+}
+
 window.login = login
 window.logout = logout
