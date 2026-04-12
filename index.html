@@ -1,19 +1,13 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SEAL - Dashboard</title>
   <link rel="stylesheet" href="css/style.css">
 
-  <!-- Bibliotecas externas -->
   <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Scripts principais -->
   <script type="module" src="js/auth.js"></script>
   <script type="module" src="js/app.js"></script>
 
@@ -23,9 +17,9 @@
 <body>
 
 <!-- TOPO -->
-<header class="topo">
+<div class="topo">
   <div class="topo-esquerda">
-    <img src="img/logo.png" class="logo" alt="Logo SEAL">
+    <img src="img/logo.png" class="logo">
     <div class="titulo">
       <strong>SEAL — Serviço de Almoxarifado - INI / Fiocruz</strong><br>
       <small>Painel de Controle</small>
@@ -37,20 +31,20 @@
     <button onclick="window.location.href='pages/estoque.html'">Estoque</button>
     <button onclick="window.location.href='pages/dispensa.html'">Dispensa</button>
     <button id="btnPedidos" class="hidden" onclick="window.location.href='pages/pedidos.html'">Pedidos</button>
-    <button id="btnConfig" class="hidden" aria-label="Configurações">⚙️</button>
+    <button id="btnConfig" class="hidden">⚙️</button>
     <button onclick="logout()">Sair</button>
   </div>
-</header>
+</div>
 
 <!-- CONTEÚDO -->
-<main class="conteudo">
+<div class="conteudo">
 
   <div class="dashboard-header">
     <h1>Dashboard</h1>
     <p class="subtitulo">Visão geral do sistema SEAL</p>
   </div>
 
-  <section class="cards">
+  <div class="cards">
     <a href="pages/estoque.html" class="card">
       <h3>Produtos</h3>
       <p id="totalProdutos">0</p>
@@ -65,43 +59,52 @@
       <h3>Dispensas</h3>
       <p id="totalDispensas">0</p>
     </div>
-  </section>
+  </div>
 
   <div class="dashboard-info">
     <p>Use o menu superior para navegar entre os módulos do sistema.</p>
   </div>
 
-  <!-- FILTRO GRAFICO -->
-  <section class="filtro">
-    <button onclick="filtrarPeriodo(7)">7 dias</button>
-    <button onclick="filtrarPeriodo(15)">15 dias</button>
-    <button onclick="filtrarPeriodo(30)">30 dias</button>
-    <button onclick="filtrarPeriodo(60)">60 dias</button>
-    <button onclick="toggleFiltroPersonalizado()">Outro período</button>
 
-    <div id="filtroCustom" class="hidden">
-      <input type="date" id="dataInicio">
-      <input type="date" id="dataFim">
-      <button onclick="carregarGraficos()">Aplicar</button>
-    </div>
-  </section>
+<!-- FILTRO GRAFICO -->
+
+<div class="filtro">
+
+  <button onclick="filtrarPeriodo(7)">7 dias</button>
+  <button onclick="filtrarPeriodo(15)">15 dias</button>
+  <button onclick="filtrarPeriodo(30)">30 dias</button>
+  <button onclick="filtrarPeriodo(60)">60 dias</button>
+
+  <button onclick="toggleFiltroPersonalizado()">Outro período</button>
+
+  <div id="filtroCustom" class="hidden">
+    <input type="date" id="dataInicio">
+    <input type="date" id="dataFim">
+    <button onclick="carregarGraficos()">Aplicar</button>
+  </div>
+
+</div>
 
   <!-- GRAFICOS -->
-  <section class="graficos">
+
+  <div class="graficos">
+
     <div class="grafico-box">
       <h3>Dispensas por Local</h3>
       <canvas id="graficoPizza"></canvas>
     </div>
+
     <div class="grafico-box">
       <h3>Comparativo</h3>
       <canvas id="graficoBarra"></canvas>
     </div>
-  </section>
 
-</main>
+  </div>
+
+</div>
 
 <!-- MODAL CONFIGURAÇÃO -->
-<div id="modalConfig" class="modal hidden" role="dialog" aria-modal="true">
+<div id="modalConfig" class="modal hidden">
   <div class="modal-content">
     <h3>Gerenciar Usuários</h3>
     <table>
@@ -121,9 +124,11 @@
 </div>
 
 <!-- MODAL DISPENSADOS -->
-<div id="modalDispensados" class="modal hidden" role="dialog" aria-modal="true">
+<div id="modalDispensados" class="modal hidden">
   <div class="modal-content" style="width: 750px;">
+
     <h3>Colaboradores com Dispensas</h3>
+
     <table>
       <thead>
         <tr>
@@ -140,6 +145,7 @@
     <hr>
 
     <h4>Histórico</h4>
+
     <table>
       <thead>
         <tr>
@@ -154,6 +160,7 @@
       <button id="btnExportarHistorico" onclick="exportarHistoricoPDF()">Exportar Histórico</button>
       <button onclick="fecharModalDispensados()">Fechar</button>
     </div>
+
   </div>
 </div>
 
@@ -168,17 +175,28 @@
 <script type="module">
   import { checkAuth, getUser } from './js/auth.js'
 
+  // Verifica login
   checkAuth()
+
+  // Exibe usuário logado (se existir o elemento)
   const user = getUser()
   const userInfo = document.getElementById("userInfo")
   if (userInfo && user) {
     userInfo.innerText = "Usuário logado: " + user
   }
 
+  // // Ajusta título para incluir usuário
+  // const titulo = document.querySelector(".titulo small")
+  // if (titulo && user) {
+  //   titulo.innerText = titulo.innerText + " | Usuário: " + user
+  // }
+
+  // Mostrar botão de config apenas para ADM
   if (user === "ADM") {
     document.getElementById("btnConfig").classList.remove("hidden")
   }
 </script>
+
 
 </body>
 </html>

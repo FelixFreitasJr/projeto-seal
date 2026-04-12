@@ -5,19 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SEAL - Login</title>
   <link rel="stylesheet" href="../css/style.css">
-
-  <!-- Supabase -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Script de autenticação -->
-  <script type="module" src="../js/auth.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
 </head>
+
 <body>
 
 <header class="topo">
   <div class="topo-esquerda">
-    <img src="../img/logo.png" class="logo" alt="Logo SEAL">
+    <img src="../img/logo.svg" class="logo" alt="Logo SEAL">
     <div class="titulo">
-      <strong>SEAL — Almoxarifado INI / Fiocruz</strong><br>
+      <strong>SEAL — Serviço de Almoxarifado - INI / Fiocruz</strong><br>
       <small>Login</small>
     </div>
   </div>
@@ -25,48 +22,30 @@
 
 <main class="conteudo">
   <div class="login-box">
+    <!-- Imagem da caixa de login -->
+    <img src="../img/login.svg" alt="Login" class="login-img">
+
     <h2>Acesso ao Sistema</h2>
-    <input type="text" id="email" placeholder="Email">
-    <input type="password" id="senha" placeholder="Senha">
-    <button id="btnLogin">Entrar</button>
-    <p id="loginMsg" style="color:red; font-size:13px;"></p>
+    <form onsubmit="login(); return false;">
+      <label for="usuario">Usuário</label>
+      <input type="text" id="usuario" placeholder="Digite seu usuário">
+
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" placeholder="Digite sua senha">
+
+      <button type="submit">Entrar</button>
+    </form>
   </div>
 </main>
 
 <footer class="rodape">
   Desenvolvido por 
-  <a href="https://github.com/FelixFreitasJr" target="_blank">Felix Freitas Jr</a>
+  <a href="https://github.com/FelixFreitasJr" target="_blank">Felix Freitas Jr</a><br>
+  <a href="https://github.com/FelixFreitasJr/projeto-seal" target="_blank">Documentação</a>
 </footer>
 
-<script type="module">
-  import { supabase } from '../js/auth.js'
-
-  const btnLogin = document.getElementById("btnLogin")
-  const msg = document.getElementById("loginMsg")
-
-  btnLogin.addEventListener("click", async () => {
-    const email = document.getElementById("email").value.trim()
-    const senha = document.getElementById("senha").value.trim()
-
-    if (!email || !senha) {
-      msg.textContent = "Preencha todos os campos."
-      return
-    }
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: senha
-    })
-
-    if (error) {
-      msg.textContent = "Login inválido: " + error.message
-    } else {
-      msg.style.color = "green"
-      msg.textContent = "Login realizado com sucesso!"
-      window.location.href = "../index.html"
-    }
-  })
-</script>
+<!-- Scripts -->
+<script type="module" src="../js/auth.js"></script>
 
 </body>
 </html>
