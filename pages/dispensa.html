@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SEAL - Dispensa</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="icon" type="image/x-icon" href="../img/favicon.svg">
@@ -8,10 +10,9 @@
 
 <body>
 
-<!-- TOPO -->
-<div class="topo">
+<header class="topo">
   <div class="topo-esquerda">
-    <img src="../img/logo.png" class="logo">
+    <img src="../img/logo.png" class="logo" alt="Logo SEAL">
     <div class="titulo">
       <strong>SEAL — Serviço de Almoxarifado - INI / Fiocruz</strong><br>
       <small>Dispensa de Máscara PFF/N95</small>
@@ -23,12 +24,11 @@
     <button onclick="window.location.href='estoque.html'">Estoque</button>
     <button onclick="window.location.href='dispensa.html'">Dispensa</button>
     <button id="btnPedidos" class="hidden" onclick="window.location.href='pedidos.html'">Pedidos</button>
-    <button id="btnConfig" class="hidden">⚙️</button>
+    <button id="btnConfig" class="hidden" aria-label="Configurações">⚙️</button>
     <button onclick="logout()">Sair</button>
   </div>
-</div>
+</header>
 
-<!-- BARRA -->
 <div class="barra-topo">
   <div class="busca-box">
     <input id="busca" placeholder="Buscar por CPF (6 dígitos), nome, empresa ou função...">
@@ -36,30 +36,30 @@
   </div>
 
   <button id="btnNovoColaborador">
-    <img src="../img/novo.svg"> Novo Colaborador
+    <img src="../img/novo.svg" alt="Novo"> Novo Colaborador
   </button>
   <span id="contadorColaboradores"></span>
 </div>
 
-<!-- TABELA -->
-<div class="conteudo">
-  <table>
-    <thead>
-      <tr>
-        <th>CPF</th>
-        <th>Nome</th>
-        <th>Empresa</th>
-        <th>Função</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody id="tabela"></tbody>
-  </table>
-  <!-- <p id="userInfo"></p> -->
-</div>
+<main class="conteudo">
+  <div class="tabela-container">
+    <table>
+      <thead>
+        <tr>
+          <th>CPF</th>
+          <th>Nome</th>
+          <th>Empresa</th>
+          <th>Função</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tabela"></tbody>
+    </table>
+  </div>
+</main>
 
-<!-- MODAL NOVO COLABORADOR -->
-<div id="modalColaborador" class="modal hidden">
+<!-- Modal novo colaborador -->
+<div id="modalColaborador" class="modal hidden" role="dialog" aria-modal="true">
   <div class="modal-content">
     <h3>Novo Colaborador</h3>
 
@@ -70,17 +70,17 @@
 
     <div class="modal-actions">
       <button id="btnCancelarColaborador">
-        <img src="../img/excluir.svg"> Cancelar
+        <img src="../img/excluir.svg" alt="Cancelar"> Cancelar
       </button>
       <button id="btnSalvarColaborador">
-        <img src="../img/salvar.svg"> Salvar
+        <img src="../img/salvar.svg" alt="Salvar"> Salvar
       </button>
     </div>
   </div>
 </div>
 
-<!-- MODAL CONFIGURAÇÃO -->
-<div id="modalConfig" class="modal hidden">
+<!-- Modal configuração -->
+<div id="modalConfig" class="modal hidden" role="dialog" aria-modal="true">
   <div class="modal-content">
     <h3>Gerenciar Usuários</h3>
     <table>
@@ -99,14 +99,12 @@
   </div>
 </div>
 
-<!-- RODAPÉ -->
 <footer class="rodape">
   Desenvolvido por 
   <a href="https://github.com/FelixFreitasJr" target="_blank">Felix Freitas Jr</a><br>
   <a href="https://github.com/FelixFreitasJr/projeto-seal" target="_blank">Documentação</a>
 </footer>
 
-<!-- SCRIPTS -->
 <script type="module" src="../js/app.js"></script>
 <script type="module">
   import { checkAuth, getUser } from '../js/auth.js'
@@ -114,8 +112,9 @@
   // Verifica login
   checkAuth()
 
-  // Exibe usuário logado (se existir o elemento)
   const user = getUser()
+
+  // Exibe usuário logado (se existir o elemento)
   const userInfo = document.getElementById("userInfo")
   if (userInfo && user) {
     userInfo.innerText = "Usuário logado: " + user
@@ -126,7 +125,6 @@
     document.getElementById("btnConfig").classList.remove("hidden")
   }
 </script>
-
 
 </body>
 </html>

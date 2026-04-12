@@ -1,57 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SEAL - Login</title>
   <link rel="stylesheet" href="../css/style.css">
-  <link rel="icon" type="image/x-icon" href="../img/favicon.svg">
 
+  <!-- Supabase -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Script de autenticação -->
   <script type="module" src="../js/auth.js"></script>
-
-
 </head>
-
 <body>
 
-<div class="topo">
+<header class="topo">
   <div class="topo-esquerda">
-    <img src="../img/logo.png" class="logo">
+    <img src="../img/logo.png" class="logo" alt="Logo SEAL">
     <div class="titulo">
-      <strong>SEAL — Serviço de Almoxarifado - INI / Fiocruz</strong><br>
-      <small>Acesso ao Sistema</small>
+      <strong>SEAL — Almoxarifado INI / Fiocruz</strong><br>
+      <small>Login</small>
     </div>
   </div>
-</div>
+</header>
 
-<div class="conteudo">
+<main class="conteudo">
   <div class="login-box">
-    <div style="text-align:center;">
-      <img src="../img/login.svg" style="width:80px;">
-      <h2>Acesso</h2>
-    </div>
-
-    <input id="usuario" placeholder="Usuário" oninput="this.value = this.value.toUpperCase()">
-    <input id="senha" type="password" placeholder="Senha" 
-           oninput="this.value = this.value.toUpperCase()" 
-           onkeypress="if(event.key==='Enter') login()">
-
-    <button onclick="login()">Entrar</button>
+    <h2>Acesso ao Sistema</h2>
+    <input type="text" id="email" placeholder="Email">
+    <input type="password" id="senha" placeholder="Senha">
+    <button id="btnLogin">Entrar</button>
+    <p id="loginMsg" style="color:red; font-size:13px;"></p>
   </div>
-</div>
+</main>
 
-<div id="toast" class="toast"></div>
-
-<!-- RODAPÉ -->
 <footer class="rodape">
   Desenvolvido por 
-  <a href="https://github.com/FelixFreitasJr" target="_blank">Felix Freitas Jr</a><br>
-  <a href="https://github.com/FelixFreitasJr/projeto-seal" target="_blank">Documentação</a>
+  <a href="https://github.com/FelixFreitasJr" target="_blank">Felix Freitas Jr</a>
 </footer>
 
-<!-- SCRIPTS -->
 <script type="module">
-  import { login } from '../js/auth.js'
-  // expõe login no escopo global para funcionar com onclick
-  window.login = login
+  import { supabase } from '../js/auth.js'
+
+  const btnLogin = document.getElementById("btnLogin")
+  const msg = document.getElementById("loginMsg")
+
+  btnLogin.addEventListener("click", async () => {
+    const email = document.getElementById("email").value.trim()
+    const senha = document.getElementById("senha").value.trim()
+
+    if (!email || !senha) {
+      msg.textContent = "Preencha todos os campos."
+      return
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: senha
+    })
+
+    if (error) {
+      msg.textContent = "Login inválido: " + error.message
+    } else {
+      msg.style.color = "green"
+      msg.textContent = "Login realizado com sucesso!"
+      window.location.href = "../index.html"
+    }
+  })
 </script>
 
 </body>

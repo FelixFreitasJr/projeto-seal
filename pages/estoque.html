@@ -1,17 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SEAL - Estoque</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="icon" type="image/x-icon" href="../img/favicon.svg">
+  <style>
+    /* Container com rolagem */
+    .tabela-container {
+      max-height: 500px; /* altura máxima visível */
+      overflow-y: auto;
+    }
+    .tabela-container thead th {
+      position: sticky;
+      top: 0;
+      background: #f0f0f0;
+      z-index: 5;
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- TOPO -->
-<div class="topo">
+<header class="topo">
   <div class="topo-esquerda">
-    <img src="../img/logo.png" class="logo">
+    <img src="../img/logo.png" class="logo" alt="Logo SEAL">
     <div class="titulo">
       <strong>SEAL — Serviço de Almoxarifado - INI / Fiocruz</strong><br>
       <small>Controle de Estoque</small>
@@ -23,12 +37,11 @@
     <button onclick="window.location.href='estoque.html'">Estoque</button>
     <button onclick="window.location.href='dispensa.html'">Dispensa</button>
     <button id="btnPedidos" class="hidden" onclick="window.location.href='pedidos.html'">Pedidos</button>
-    <button id="btnConfig" class="hidden">⚙️</button>
+    <button id="btnConfig" class="hidden" aria-label="Configurações">⚙️</button>
     <button onclick="logout()">Sair</button>
   </div>
-</div>
+</header>
 
-<!-- BARRA -->
 <div class="barra-topo">
   <div class="busca-box">
     <input id="busca" placeholder="Buscar por código, nome, observação ou status...">
@@ -36,38 +49,36 @@
   </div>
 
   <button id="btnNovo">
-    <img src="../img/novo.svg"> Novo Item
+    <img src="../img/novo.svg" alt="Novo"> Novo Item
   </button>
   <span id="contadorEstoque"></span>
 </div>
 
-<!-- TABELA -->
-<div class="conteudo">
-  <table>
-    <thead>
-      <tr>
-        <th onclick="ordenarTabela('produtos','codigo')">Código MV</th>
+<main class="conteudo">
+  <div class="tabela-container">
+    <table>
+      <thead>
+        <tr>
+          <th onclick="ordenarTabela('produtos','codigo')">Código MV</th>
+          <th class="col-sga" onclick="ordenarTabela('produtos','codigo_sga')">Código SGA</th>
+          <th onclick="ordenarTabela('produtos','nome')">Nome</th>
+          <th onclick="ordenarTabela('produtos','endereco_externo')">Externo</th>
+          <th onclick="ordenarTabela('produtos','endereco_satelite')">Satélite</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaEstoque"></tbody>
+    </table>
+  </div>
+</main>
 
-        <th onclick="ordenarTabela('produtos','codigo_sga')">Código SGA</th>
-        <th onclick="ordenarTabela('produtos','nome')">Nome</th>
-        <th onclick="ordenarTabela('produtos','endereco_externo')">Externo</th>
-        <th onclick="ordenarTabela('produtos','endereco_satelite')">Satélite</th>
-
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody id="tabelaEstoque"></tbody>
-  </table>
-  <!-- <p id="userInfo"></p> -->
-</div>
-
-<!-- MODAL NOVO ITEM -->
-<div id="modal" class="modal hidden">
+<!-- Modal novo item -->
+<div id="modal" class="modal hidden" role="dialog" aria-modal="true">
   <div class="modal-content">
     <h3>Novo Item</h3>
 
     <input id="codigo_mv" placeholder="Código MV">
-    <input id="codigo_sga" placeholder="Código SGA">
+    <input id="codigo_sga" class="col-sga" placeholder="Código SGA">
     <input id="nome" placeholder="Nome">
     <input id="externo" placeholder="Endereço Externo">
     <input id="satelite" placeholder="Endereço Satélite">
@@ -84,17 +95,17 @@
 
     <div class="modal-actions">
       <button id="btnCancelar">
-        <img src="../img/excluir.svg"> Cancelar
+        <img src="../img/excluir.svg" alt="Cancelar"> Cancelar
       </button>
       <button id="btnSalvar">
-        <img src="../img/salvar.svg"> Salvar
+        <img src="../img/salvar.svg" alt="Salvar"> Salvar
       </button>
     </div>
   </div>
 </div>
 
-<!-- MODAL CONFIGURAÇÃO -->
-<div id="modalConfig" class="modal hidden">
+<!-- Modal configuração -->
+<div id="modalConfig" class="modal hidden" role="dialog" aria-modal="true">
   <div class="modal-content">
     <h3>Gerenciar Usuários</h3>
     <table>
@@ -113,37 +124,32 @@
   </div>
 </div>
 
-<!-- RODAPÉ -->
 <footer class="rodape">
   Desenvolvido por 
   <a href="https://github.com/FelixFreitasJr" target="_blank">Felix Freitas Jr</a><br>
   <a href="https://github.com/FelixFreitasJr/projeto-seal" target="_blank">Documentação</a>
 </footer>
 
-<!-- SCRIPTS -->
 <script type="module" src="../js/app.js"></script>
 <script type="module">
   import { checkAuth, getUser } from '../js/auth.js'  
 
-  // Verifica login
   checkAuth()
 
-  // Exibe usuário logado (se existir o elemento)
   const user = getUser()
-  const userInfo = document.getElementById("userInfo")
-  if (userInfo && user) {
-    userInfo.innerText = "Usuário logado: " + user
-  }
 
-  // Mostrar botão de config apenas para ADM
-  if (user === "ADM") {
+  // Exibe coluna SGA apenas para ADM
+  if (user !== "ADM") {
+    document.querySelectorAll(".col-sga").forEach(el => {
+      el.style.display = "none"
+    })
+  } else {
     document.getElementById("btnConfig")?.classList.remove("hidden")
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-  atualizarEstoque()
-})
-
+    atualizarEstoque()
+  })
 </script>
 
 </body>

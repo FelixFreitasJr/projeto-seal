@@ -1,24 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <title>SEAL - Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEAL - Pedidos</title>
   <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" type="image/x-icon" href="../img/favicon.svg">
 
+  <!-- Bibliotecas para PDF -->
   <script src="https://cdn.jsdelivr.net/npm/jspdf"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
+
+  <!-- Scripts principais -->
   <script type="module" src="../js/auth.js"></script>
   <script type="module" src="../js/app.js"></script>
   <script type="module" src="../js/modules/pedidos.js"></script>
-
-  <link rel="icon" type="image/x-icon" href="../img/favicon.svg">
 </head>
 
 <body>
 
-<!-- TOPO -->
-<div class="topo">
+<header class="topo">
   <div class="topo-esquerda">
-    <img src="../img/logo.png" class="logo">
+    <img src="../img/logo.png" class="logo" alt="Logo SEAL">
     <div class="titulo">
       <strong>SEAL — Serviço de Almoxarifado - INI / Fiocruz</strong><br>
       <small>Pedidos</small>
@@ -30,52 +33,58 @@
     <button onclick="window.location.href='estoque.html'">Estoque</button>
     <button onclick="window.location.href='dispensa.html'">Dispensa</button>
     <button id="btnPedidos" class="hidden" onclick="window.location.href='pedidos.html'">Pedidos</button>
-    <button id="btnConfig" class="hidden">⚙️</button>
+    <button id="btnConfig" class="hidden" aria-label="Configurações">⚙️</button>
     <button onclick="logout()">Sair</button>
   </div>
-</div>
+</header>
 
+<main class="conteudo">
+  <div id="areaPedidos">
+    <!-- Formulário -->
+    <div class="formulario-pedido">
+      <input id="codigo" placeholder="Código MV ou SGA" oninput="previewCodigo(this.value)">
+      <div id="previewItem"></div>
+      <input id="quantidade" type="number" placeholder="Quantidade">
+      <button id="btnIncluir">Incluir</button>
+    </div>
 
-<div class="conteudo">
-<div id="areaPedidos">
-  <!-- Parte 1: Formulário -->
-  <div class="formulario-pedido">
-    <input id="codigo" placeholder="Código MV ou SGA" oninput="previewCodigo(this.value)">
-    <div id="previewItem"></div>
-    <input id="quantidade" type="number" placeholder="Quantidade">
-    <button id="btnIncluir">Incluir</button>
+    <!-- Lista de pedidos -->
+    <h3>Itens do Pedido</h3>
+    <div class="tabela-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Quantidade</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="listaPedidos"></tbody>
+      </table>
+    </div>
+
+    <!-- Finalizar -->
+    <button id="btnFinalizar">Finalizar Pedido</button>
+    <button id="btnPDF">Exportar PDF</button>
   </div>
+</main>
 
-  <!-- Parte 2: Lista de pedidos -->
-  <h3>Itens do Pedido</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>Código</th>
-        <th>Nome</th>
-        <th>Quantidade</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody id="listaPedidos"></tbody>
-  </table>
+<footer class="rodape">
+  Desenvolvido por 
+  <a href="https://github.com/FelixFreitasJr" target="_blank">Felix Freitas Jr</a><br>
+  <a href="https://github.com/FelixFreitasJr/projeto-seal" target="_blank">Documentação</a>
+</footer>
 
-  <!-- Finalizar -->
-  <button id="btnFinalizar">Finalizar Pedido</button>
-  <button id="btnPDF">Exportar PDF</button>
-</div>
-
-</div>
-
-<script type="module" src="../js/app.js"></script>
 <script type="module">
   import { checkAuth, getUser } from '../js/auth.js'
 
   // Verifica login
   checkAuth()
 
-  // Exibe usuário logado (se existir o elemento)
   const user = getUser()
+
+  // Exibe usuário logado (se existir o elemento)
   const userInfo = document.getElementById("userInfo")
   if (userInfo && user) {
     userInfo.innerText = "Usuário logado: " + user
@@ -86,5 +95,6 @@
     document.getElementById("btnConfig").classList.remove("hidden")
   }
 </script>
+
 </body>
 </html>
