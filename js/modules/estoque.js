@@ -197,7 +197,7 @@ async function editarProduto(id) {
   document.getElementById("externo").value = data.endereco_externo
   document.getElementById("satelite").value = data.endereco_satelite
   document.getElementById("observacao").value = data.observacao || ''
-  document.getElementById("liberacao").value = data.liberacao || ''
+  document.getElementById("liberacao").value = data.liberacao || 'LIVRE'
 
   abrirModal()
 }

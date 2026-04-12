@@ -252,6 +252,29 @@ main.conteudo table thead th { position: sticky; top: 0; background: #f0f0f0; z-
   width: 140px;           /* reserva espaço para ações */
   text-align: center;
 }
+
+.tabela-container th.codigo,
+.tabela-container td.codigo {
+  width: 120px;   /* código MV mais compacto */
+}
+
+.tabela-container th.col-sga,
+.tabela-container td.col-sga {
+  width: 120px;   /* código SGA mais compacto */
+}
+
+.tabela-container th.nome,
+.tabela-container td.nome {
+  width: 40%;     /* nome ocupa mais espaço */
+}
+
+.tabela-container th.externo,
+.tabela-container td.externo,
+.tabela-container th.satelite,
+.tabela-container td.satelite {
+  width: 20%;     /* endereços equilibrados */
+}
+
 .acoes {
   display: flex;
   justify-content: center;
