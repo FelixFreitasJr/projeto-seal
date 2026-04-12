@@ -44,7 +44,7 @@ function renderTabela(data) {
     linhas += `
     <tr>
       <td class="codigo">${item.codigo_mv || ''}</td>
-      <td class="codigo">${item.codigo_sga || ''}</td>    
+      <td class="col-sga">${item.codigo_sga || ''}</td>   
 
       <td>
       <div style="font-weight: bold;">

@@ -32,12 +32,15 @@
   </div>
 
   <div class="topo-direita">
-    <button onclick="window.location.href='index.html'">Dashboard</button>
-    <button onclick="window.location.href='pages/estoque.html'">Estoque</button>
-    <button onclick="window.location.href='pages/dispensa.html'">Dispensa</button>
-    <button id="btnPedidos" class="hidden" onclick="window.location.href='pages/pedidos.html'">Pedidos</button>
-    <button id="btnConfig" class="hidden" aria-label="Configurações">⚙️</button>
-    <button onclick="logout()">Sair</button>
+    <nav class="menu-principal">
+      <button onclick="window.location.href='index.html'">Dashboard</button>
+      <button onclick="window.location.href='pages/estoque.html'">Estoque</button>
+      <button onclick="window.location.href='pages/dispensa.html'">Dispensa</button>
+      <button id="btnPedidos" class="hidden" onclick="window.location.href='pages/pedidos.html'">Pedidos</button>
+      <button id="btnConfig" class="hidden" aria-label="Configurações">⚙️</button>
+      <button onclick="logout()">Sair</button>
+    </nav>
+    <button class="menu-toggle" aria-label="Abrir menu">☰</button>
   </div>
 </header>
 
@@ -163,7 +166,6 @@
   <a href="https://github.com/FelixFreitasJr/projeto-seal" target="_blank">Documentação</a>
 </footer>
 
-<!-- Script inline para autenticação -->
 <!-- Script inline para autenticação -->
 <script type="module">
   import { checkAuth, getUser } from './js/auth.js'
