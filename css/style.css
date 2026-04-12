@@ -31,8 +31,6 @@ header.topo {
 .topo-esquerda { display: flex; align-items: center; }
 .logo { width: 45px; margin-right: 15px; }
 .topo-direita { display: flex; align-items: center; gap: 8px; }
-.topo-direita button { background: var(--white); color: var(--primary); border-radius: 4px; padding: 6px 10px; }
-.topo-direita button:hover { background: #e0e0e0; }
 
 /* Barra */
 .barra-topo {
@@ -159,8 +157,8 @@ main.conteudo table thead th { position: sticky; top: 0; background: #f0f0f0; z-
 .cards a { text-decoration: none; color: var(--white); }
 .card:hover { 
   transform: translateY(-6px); 
-  box-shadow: 0 6px 16px rgba(0,0,0,0.25); 
-}
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+  }
 
 /* Bloco inferior */
 .dashboard-info {
@@ -273,17 +271,32 @@ main.conteudo table thead th { position: sticky; top: 0; background: #f0f0f0; z-
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
-/* Botão hambúrguer */
+/* Menu de navegação */
+.menu-principal {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.menu-principal button {
+  background: var(--white);
+  color: var(--primary);
+  border-radius: 4px;
+  padding: 6px 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+.menu-principal button:hover {
+  background: #e0e0e0;
+}
 .menu-toggle {
-  display: none;
+  display: none; /* só aparece em telas pequenas */
   background: transparent;
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: var(--primary);
+  color: var(--white);
 }
-
-/* Menu suspenso lateral */
 .menu-suspenso {
   position: fixed;
   top: 55px; /* abaixo do header */
@@ -298,23 +311,21 @@ main.conteudo table thead th { position: sticky; top: 0; background: #f0f0f0; z-
   padding: 20px;
   z-index: 1500;
 }
-.menu-suspenso a {
-  padding: 10px 0;
+.menu-suspenso button {
+  background: none;
   color: var(--text);
-  text-decoration: none;
+  text-align: left;
+  padding: 10px 0;
+  border: none;
+  cursor: pointer;
 }
-.menu-suspenso a:hover {
+.menu-suspenso button:hover {
   color: var(--primary);
 }
-.col-sga { display: none; }
 
-
-/* Responsividade: telas menores ou metade da tela */
+/* Responsividade */
 @media (max-width: 952px) {
-  .barra-topo {
-    justify-content: space-between;
-  }
-  .barra-topo nav {
+  .menu-principal {
     display: none; /* esconde menu tradicional */
   }
   .menu-toggle {

@@ -375,19 +375,28 @@ window.toggleFiltroPersonalizado = function() {
   document.getElementById("filtroCustom").classList.toggle("hidden")
 }
 
-window.exportarListaPDF = async function () {
-  const elemento = document.getElementById("listaDispensados")
+window.exportarListaPDF = () => {
+  const { jsPDF } = window.jspdf
+  const doc = new jsPDF()
 
-  const canvas = await html2canvas(elemento)
-  const imgData = canvas.toDataURL("image/png")
+  doc.text("Lista de Itens", 10, 10)
 
-  const pdf = new jspdf.jsPDF('p', 'mm', 'a4')
-  const largura = 190
-  const altura = (canvas.height * largura) / canvas.width
+  // Exemplo simples: pegar tabela
+  const tabela = document.getElementById("tabelaEstoque")
+  if (tabela) {
+    let linhas = []
+    tabela.querySelectorAll("tr").forEach(tr => {
+      let linha = []
+      tr.querySelectorAll("td, th").forEach(td => linha.push(td.innerText))
+      linhas.push(linha)
+    })
+    // Adiciona tabela no PDF
+    doc.autoTable({ head: [linhas[0]], body: linhas.slice(1) })
+  }
 
-  pdf.addImage(imgData, 'PNG', 10, 10, largura, altura)
-  pdf.save("lista_dispensados.pdf")
+  doc.save("estoque.pdf")
 }
+
 
 window.exportarHistoricoPDF = async function () {
   const elemento = document.getElementById("historicoDispensa")
