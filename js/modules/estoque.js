@@ -291,6 +291,12 @@ function formatarStatusClasse(status) {
   return ''
 }
 
+const user = JSON.parse(localStorage.getItem("usuarioLogado"))
+if (user.perfil !== "ADM") {
+  document.querySelectorAll(".col-sga").forEach(el => el.style.display = "none")
+}
+
+
 // =========================
 // GLOBAL
 // =========================

@@ -306,6 +306,8 @@ main.conteudo table thead th { position: sticky; top: 0; background: #f0f0f0; z-
 .menu-suspenso a:hover {
   color: var(--primary);
 }
+.col-sga { display: none; }
+
 
 /* Responsividade: telas menores ou metade da tela */
 @media (max-width: 952px) {
