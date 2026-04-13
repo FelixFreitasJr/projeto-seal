@@ -42,7 +42,7 @@ header.topo {
 
 /* Main */
 main.conteudo {
-  flex: 1; margin-top: 95px; padding: 20px; padding-bottom: 70px;
+  flex: 1; margin-top: 95px; padding: 20px; padding-bottom: 70px; display: flex; flex-direction: column;
 }
 
 /* Login */
@@ -78,10 +78,10 @@ td.externo { background: #e3f2fd; }
 td.satelite { background: #fff3e0; }
 
 /* Menu ações */
-.acoes { display: flex; justify-content: center; position: relative; }
+.acoes { display: flex; justify-content: left; position: relative; }
 .btn-menu { background: transparent; font-size: 18px; margin: 0; }
 .menu-acoes {
-  position: absolute; left: 0; top: 100%;
+  position: absolute; left: 20px; top: 20%;
   background: var(--white); border: 1px solid var(--gray-border); border-radius: 6px;
   display: flex; flex-direction: column; z-index: 1000; min-width: 140px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
@@ -114,11 +114,13 @@ td.satelite { background: #fff3e0; }
 
 /* Toast */
 .toast {
-  position: fixed; bottom: 80px; right: 20px;
-  background: var(--primary); color: var(--white); padding: 10px;
-  border-radius: 6px; display: none;
+  position: fixed;  bottom: 80px;  right: 20px;  background: var(--primary);  color: var(--white);
+  padding: 10px;  border-radius: 6px;  display: block;  opacity: 0;  transition: opacity 0.3s ease;
 }
-.toast.show { opacity: 1; }
+
+.toast.show {
+  opacity: 1;
+}
 
 /* Footer */
 footer.rodape {
@@ -227,7 +229,9 @@ main.conteudo table thead th { position: sticky; top: 0; background: #f0f0f0; z-
 
 /* Ajustes da tabela */
 .tabela-container {
-  max-height: 60vh;
+  flex: 1;
+  min-height: 76vh;
+  max-height: 76vh;
   overflow-y: auto;
   overflow-x: auto;
   margin-top: 20px;

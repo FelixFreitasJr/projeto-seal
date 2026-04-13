@@ -217,7 +217,16 @@ async function dispensarItem(id) {
     showToast("Erro ao dispensar")
   } else {
     showToast("Dispensa registrada")
-    setTimeout(() => window.atualizarDispensa?.(), 100)
+
+    // limpa busca
+    const busca = document.getElementById("busca")
+    const tabela = document.getElementById("tabela")
+
+    if (busca) busca.value = ""
+    if (tabela) tabela.innerHTML = ""
+
+    // foca no campo novamente
+    busca?.focus()
   }
 }
 
