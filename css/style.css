@@ -282,6 +282,22 @@ main.conteudo table thead th { position: sticky; top: 0; background: #f0f0f0; z-
   max-height: none;
 }
 
+.tabela-pedidos {
+  min-height: 40vh; /* ou 30vh, conforme preferir */
+  max-height: 40vh;
+}
+
+
+.actions {
+  display: flex;
+  gap: 10px;       /* espaço entre os botões */
+  margin-top: 20px;
+}
+.actions button {
+  flex: none;      /* mantém tamanho natural */
+}
+
+
 
 /* Menu de navegação */
 .menu-principal {
