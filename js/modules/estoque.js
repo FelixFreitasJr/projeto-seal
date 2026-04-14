@@ -7,8 +7,8 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 let modoEdicaoProduto = null
 
 export function initEstoque() {
-  const user = JSON.parse(localStorage.getItem("usuarioLogado"))
-  const isAdmin = true
+  const user = obterUsuarioLogado()
+  const isAdmin = normalizarPerfil(user?.perfil) === "ADM"
 
   const tabela = document.getElementById('tabelaEstoque')
   const busca = document.getElementById('busca')
@@ -27,16 +27,15 @@ export function initEstoque() {
     let query = supabase.from('produtos').select('*').order('nome', { ascending: true })
 
     if (termo) {
-    query = query.or(
-      `codigo_mv.ilike.%${termo}%,codigo_sga.ilike.%${termo}%,nome.ilike.%${termo}%,endereco_externo.ilike.%${termo}%,endereco_satelite.ilike.%${termo}%,liberacao.ilike.%${termo}%,observacao.ilike.%${termo}%`
-    )
-  }
+      query = query.or(criarFiltroBusca(termo))
+    }
 
 
     const { data, error } = await query
 
     if (error) {
       console.error(error)
+      showToast("Erro ao buscar itens")
       return
     }
 
@@ -50,28 +49,28 @@ function renderTabela(data) {
   data.forEach(item => {
     linhas += `
     <tr>
-      <td class="codigo">${item.codigo_mv || ''}</td>
+      <td class="codigo">${escapeHtml(item.codigo_mv)}</td>
 
-      ${isAdmin ? `<td class="col-sga">${item.codigo_sga || ''}</td>` : ''}
+      ${isAdmin ? `<td class="col-sga">${escapeHtml(item.codigo_sga)}</td>` : ''}
 
       <td>
         <div style="font-weight: bold;">
-          ${item.nome || ''}
+          ${escapeHtml(item.nome)}
         </div>
 
         <div class="status-container">
           <div class="status ${formatarStatusClasse(item.liberacao)}">
-            ${item.liberacao || '-'}
+            ${escapeHtml(item.liberacao || '-')}
           </div>
 
           <div class="info-extra">
-            | ${item.observacao || '-'}
+            | ${escapeHtml(item.observacao || '-')}
           </div>
         </div>
       </td>
 
-      <td class="externo">${item.endereco_externo || ''}</td>
-      <td class="satelite">${item.endereco_satelite || ''}</td>
+      <td class="externo">${escapeHtml(item.endereco_externo)}</td>
+      <td class="satelite">${escapeHtml(item.endereco_satelite)}</td>
 
         ${isAdmin ? `
         <td>
@@ -267,7 +266,7 @@ function fecharModal() {
 }
 
 function limparCampos() {
-  document.querySelectorAll("#modal input").forEach(i => i.value = "")
+  document.querySelectorAll("#modal input, #modal textarea, #modal select").forEach(i => i.value = "")
 }
 
 // =========================
@@ -285,6 +284,58 @@ function formatarStatusClasse(status) {
   if (status.includes('inativo')) return 'inativo'
 
   return ''
+}
+
+function escapeHtml(value) {
+  if (value == null) return ''
+
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+}
+
+function criarFiltroBusca(termo) {
+  const termoSeguro = normalizarTermoBusca(termo)
+  const colunas = [
+    'codigo_mv',
+    'codigo_sga',
+    'nome',
+    'endereco_externo',
+    'endereco_satelite',
+    'liberacao',
+    'observacao'
+  ]
+
+  return colunas.map(coluna => `${coluna}.ilike.%${termoSeguro}%`).join(',')
+}
+
+function normalizarTermoBusca(termo) {
+  return String(termo)
+    .replaceAll(',', ' ')
+    .replaceAll('(', ' ')
+    .replaceAll(')', ' ')
+    .replaceAll('"', ' ')
+    .trim()
+}
+
+function normalizarPerfil(perfil) {
+  return String(perfil || '')
+    .trim()
+    .toUpperCase()
+}
+
+function obterUsuarioLogado() {
+  const rawUser = localStorage.getItem("usuarioLogado")
+  if (!rawUser) return null
+
+  try {
+    return JSON.parse(rawUser)
+  } catch {
+    return null
+  }
 }
 
 function toggleMenu(btn) {
