@@ -7,6 +7,7 @@ let itensPedido = []
 
 // Preview dinâmico ao digitar código
 async function previewCodigo(codigo) {
+  codigo = codigo.trim() // remove espaços extras
   if (!codigo) {
     document.getElementById("previewItem").innerText = ""
     document.getElementById("qtdFat").innerText = "—"
@@ -16,7 +17,7 @@ async function previewCodigo(codigo) {
   const { data, error } = await supabase
     .from('produtos')
     .select('nome, quantidade_faturamento')
-    .or(`codigo_mv.eq."${codigo}",codigo_sga.eq."${codigo}"`)
+    .eq('codigo_mv', codigo) // busca apenas por codigo_mv
     .maybeSingle()
 
   if (error || !data) {
@@ -30,15 +31,15 @@ async function previewCodigo(codigo) {
 
 // Incluir item na lista
 async function incluirItem() {
-  const codigo = document.getElementById("codigo").value.trim()
-  const quantidade = document.getElementById("quantidade").value.trim()
+  let codigo = document.getElementById("codigo").value.trim()
+  let quantidade = document.getElementById("quantidade").value.trim()
 
   if (!codigo || !quantidade) return
 
   const { data, error } = await supabase
     .from('produtos')
     .select('nome, quantidade_faturamento')
-    .or(`codigo_mv.eq."${codigo}",codigo_sga.eq."${codigo}"`)
+    .eq('codigo_mv', codigo)
     .maybeSingle()
 
   if (error || !data) {
@@ -176,6 +177,7 @@ async function carregarHistorico() {
 
 // Exportar PDF
 function exportarPDF() {
+  const { jsPDF } = window.jspdf   // ajuste para UMD
   const doc = new jsPDF()
   doc.text("Pedido de Material", 14, 20)
   doc.autoTable({
