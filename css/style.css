@@ -60,7 +60,8 @@ main.conteudo {
 .limpar { position: absolute; right: 10px; top: 8px; cursor: pointer; }
 
 /* Botões */
-button { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; }
+button { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; background: var(--primary); color: var(--white);}
+button:hover { background: var(--primary-dark);}
 button img { width: 16px !important; height: 16px !important; object-fit: contain; }
 
 /* Tabelas */
@@ -78,12 +79,23 @@ td.externo { background: #e3f2fd; }
 td.satelite { background: #fff3e0; }
 
 /* Menu ações */
-.acoes { display: flex; justify-content: left; position: relative; }
+.acoes { 
+  display: flex; 
+  justify-content: left; 
+  position: relative; 
+}
 .btn-menu { background: transparent; font-size: 18px; margin: 0; }
 .menu-acoes {
-  position: absolute; left: 20px; top: 20%;
-  background: var(--white); border: 1px solid var(--gray-border); border-radius: 6px;
-  display: flex; flex-direction: column; z-index: 1000; min-width: 140px;
+  position: absolute; 
+  left: 20px; 
+  top: 20%;
+  background: var(--white); 
+  border: 1px solid var(--gray-border); 
+  border-radius: 6px;
+  display: flex; 
+  flex-direction: column; 
+  z-index: 1000; 
+  min-width: 140px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 .menu-acoes button { background: none; color: var(--text); text-align: left; padding: 8px 12px; border: none; cursor: pointer; }
@@ -240,7 +252,7 @@ main.conteudo table thead th { position: sticky; top: 0; background: #f0f0f0; z-
 }
 .tabela-container table {
   width: 100%;
-  min-width: 900px;       /* largura mínima fixa */
+  min-width: 700px;       /* largura mínima fixa */
   border-collapse: collapse;
   table-layout: fixed;
 }
@@ -277,25 +289,6 @@ main.conteudo table thead th { position: sticky; top: 0; background: #f0f0f0; z-
 .tabela-container th.satelite,
 .tabela-container td.satelite {
   width: 20%;     /* endereços equilibrados */
-}
-
-.acoes {
-  display: flex;
-  justify-content: center;
-  position: relative;
-}
-.menu-acoes {
-  position: absolute;
-  left: 0;
-  top: 100%;
-  background: var(--white);
-  border: 1px solid var(--gray-border);
-  border-radius: 6px;
-  display: flex;
-  flex-direction: column;
-  z-index: 1000;
-  min-width: 140px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 /* Menu de navegação */
@@ -351,7 +344,7 @@ main.conteudo table thead th { position: sticky; top: 0; background: #f0f0f0; z-
 }
 
 /* Responsividade */
-@media (max-width: 952px) {
+@media (max-width: 958px) {
   .menu-principal {
     display: none; /* esconde menu tradicional */
   }

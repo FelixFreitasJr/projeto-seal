@@ -70,8 +70,13 @@ if (
   window.location.pathname.endsWith("/") ||
   window.location.pathname.endsWith("index.html")
 ) {
-  carregarDashboard()
-  carregarGraficos()
+  if (document.getElementById("totalProdutos")) {
+    carregarDashboard()
+  }
+
+  if (document.getElementById("graficoPizza")) {
+    carregarGraficos()
+  }
 }
 })
 
@@ -110,12 +115,12 @@ window.alterarSenha = async (usuario) => {
   const novaSenha = prompt("Digite a nova senha para " + usuario)
   if (!novaSenha) return
 
-  const hash = bcrypt.hashSync(novaSenha, 10)
+  const hash = novaSenha
 
   const { error } = await supabase
     .from('usuarios')
     .update({ senha: hash })
-    .eq('usuarios', usuario)
+    .eq('usuario', usuario)
 
   if (error) {
     showToast("Erro ao alterar senha")

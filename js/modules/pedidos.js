@@ -1,5 +1,6 @@
 import { SUPABASE_URL, SUPABASE_KEY } from '../config.js'
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+import { getUser } from './auth.js'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
@@ -64,7 +65,7 @@ function renderLista() {
       <td>${i.nome}</td>
       <td>${i.quantidade}</td>
       <td class="acoes">
-        <button class="btn-menu" onclick="toggleMenu(${idx})">⋮</button>
+        <button class="btn-menu" onclick="toggleMenuPedido(${idx})"">⋮</button>
         <div id="menu-${idx}" class="menu-acoes hidden">
           <button onclick="editarItem(${idx})">Editar</button>
           <button onclick="excluirItem(${idx})">Excluir</button>
@@ -75,7 +76,7 @@ function renderLista() {
 }
 
 // Alternar menu de ações
-function toggleMenu(idx) {
+function toggleMenuPedido(idx) {
   const menu = document.getElementById(`menu-${idx}`)
   menu.classList.toggle("hidden")
 }
@@ -98,7 +99,7 @@ function excluirItem(idx) {
 // Finalizar pedido
 async function finalizarPedido() {
   const { data, error } = await supabase.from('pedidos').insert({
-    usuario: "teste", // depois usar getUser()
+    usuario: getUser(),
     data: new Date().toISOString(),
     status: "aberto"
   }).select()
@@ -145,4 +146,4 @@ document.getElementById("btnPDF").addEventListener("click", exportarPDF)
 // Expor funções globais para botões inline
 window.editarItem = editarItem
 window.excluirItem = excluirItem
-window.toggleMenu = toggleMenu
+window.toggleMenuPedido = toggleMenuPedido

@@ -7,10 +7,17 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 let modoEdicaoProduto = null
 
 export function initEstoque() {
+  const user = JSON.parse(localStorage.getItem("usuarioLogado"))
+  const isAdmin = user?.perfil === "ADM"
+
   const tabela = document.getElementById('tabelaEstoque')
   const busca = document.getElementById('busca')
   let timeout = null
 
+  if (!isAdmin) {
+    document.getElementById("colAcoes")?.style.display = "none"
+    document.getElementById("btnNovo")?.remove()
+  }
    // =========================
   // BUSCAR / LISTAR
   // =========================
@@ -44,28 +51,30 @@ function renderTabela(data) {
     linhas += `
     <tr>
       <td class="codigo">${item.codigo_mv || ''}</td>
-      <td class="col-sga">${item.codigo_sga || ''}</td>   
+
+      ${isAdmin ? `<td class="col-sga">${item.codigo_sga || ''}</td>` : ''}
 
       <td>
-      <div style="font-weight: bold;">
-        ${item.nome || ''}
-      </div>
-
-      <div class="status-container">
-        <div class="status ${formatarStatusClasse(item.liberacao)}">
-          ${item.liberacao || '-'}
+        <div style="font-weight: bold;">
+          ${item.nome || ''}
         </div>
 
-        <div class="info-extra">
-          | ${item.observacao || '-'}
+        <div class="status-container">
+          <div class="status ${formatarStatusClasse(item.liberacao)}">
+            ${item.liberacao || '-'}
+          </div>
+
+          <div class="info-extra">
+            | ${item.observacao || '-'}
+          </div>
         </div>
-      </div>
-    </td>
+      </td>
 
       <td class="externo">${item.endereco_externo || ''}</td>
       <td class="satelite">${item.endereco_satelite || ''}</td>
-      
-      <td>
+
+        ${isAdmin ? `
+        <td>
         <div class="acoes">
           <button class="btn-menu" onclick="toggleMenu(this)">⋮</button>
           <div class="menu-acoes hidden">
@@ -75,6 +84,7 @@ function renderTabela(data) {
           </div>
         </div>
       </td>
+      ` : ''}
     </tr>`
   })
 
@@ -264,20 +274,6 @@ function limparCampos() {
 // UTIL
 // =========================
 
-function showToast(msg) {
-  const toast = document.createElement("div")
-  toast.className = "toast"
-  toast.innerText = msg
-  document.body.appendChild(toast)
-
-  setTimeout(() => toast.classList.add("show"), 10)
-
-  setTimeout(() => {
-    toast.classList.remove("show")
-    setTimeout(() => toast.remove(), 300)
-  }, 3000)
-}
-
 function formatarStatusClasse(status) {
   if (!status) return ''
 
@@ -290,12 +286,6 @@ function formatarStatusClasse(status) {
 
   return ''
 }
-
-const user = JSON.parse(localStorage.getItem("usuarioLogado"))
-if (user.perfil !== "ADM") {
-  document.querySelectorAll(".col-sga").forEach(el => el.style.display = "none")
-}
-
 
 // =========================
 // GLOBAL
