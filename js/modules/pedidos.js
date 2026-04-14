@@ -16,7 +16,7 @@ async function previewCodigo(codigo) {
 
   const { data, error } = await supabase
     .from('produtos')
-    .select('nome, quantidade_faturamento')
+    .select('nome, quantidade_faturamento, codigo_sga')
     .eq('codigo_mv', codigo) // busca apenas por codigo_mv
     .maybeSingle()
 
@@ -38,7 +38,7 @@ async function incluirItem() {
 
   const { data, error } = await supabase
     .from('produtos')
-    .select('nome, quantidade_faturamento')
+    .select('nome, quantidade_faturamento, codigo_sga')
     .eq('codigo_mv', codigo)
     .maybeSingle()
 
@@ -49,6 +49,7 @@ async function incluirItem() {
 
   itensPedido.push({
     codigo: codigo,
+    codigo_sga: data.codigo_sga || null,
     nome: data.nome,
     quantidade_faturamento: data.quantidade_faturamento || "—",
     quantidade: parseInt(quantidade, 10)
@@ -70,6 +71,7 @@ function renderLista() {
   tbody.innerHTML = itensPedido.map((i, idx) => `
     <tr>
       <td>${i.codigo}</td>
+      <td>${i.codigo_sga || "—"}</td>
       <td>${i.nome}</td>
       <td>${i.quantidade_faturamento}</td>
       <td>${i.quantidade}</td>
@@ -108,8 +110,10 @@ function finalizarPedido() {
 
 // Salvar pedido no banco
 async function salvarPedido() {
+  const usuario = prompt("Digite seu nome:") || "ADM"
+
   const { data, error } = await supabase.from('pedidos').insert({
-    usuario: "ADM",
+    usuario: usuario,
     data: new Date().toISOString(),
     status: "aberto"
   }).select()
@@ -121,16 +125,23 @@ async function salvarPedido() {
 
   const pedidoId = data[0].id
 
-  for (const item of itensPedido) {
-    await supabase.from('pedido_itens').insert({
-      pedido_id: pedidoId,
-      codigo_mv: item.codigo,
-      nome: item.nome,
-      quantidade: item.quantidade
-    })
-  }
+for (const item of itensPedido) {
+  const { error } = await supabase.from('pedido_itens').insert({
+    pedido_id: pedidoId,
+    codigo_mv: item.codigo,
+    codigo_sga: item.codigo_sga || null,   // se quiser manter, mesmo vazio
+    nome: item.nome,
+    quantidade: item.quantidade
+    quantidade_faturamento: item.quantidade_faturamento || null  // se quiser manter, mesmo vazio
+  })
 
-  alert("Pedido salvo com sucesso")
+  if (error) {
+    console.error("Erro ao salvar item:", error)
+    showToast("Erro ao salvar item do pedido")
+  }
+}
+
+  showToast("Pedido salvo com sucesso por ${usuario}")
   itensPedido = []
   renderLista()
   fecharModal()
@@ -138,9 +149,39 @@ async function salvarPedido() {
 }
 
 // Imprimir pedido atual
-function imprimirPedido() {
-  exportarPDF()
+async function imprimirPedido(pedidoId) {
+  // busca itens do pedido
+const { data, error } = await supabase
+  .from('pedido_itens')
+  .select('codigo_mv, codigo_sga, nome, quantidade, quantidade_faturamento')
+  .eq('pedido_id', pedidoId)
+
+doc.autoTable({
+  head: [["Código MV", "Código SGA", "Nome", "Qtd. Fat.", "Qtd. Solicitada"]],
+  body: data.map(i => [
+    i.codigo_mv,
+    i.codigo_sga || "—",
+    i.nome,
+    i.quantidade_faturamento || "—",
+    i.quantidade
+  ])
+})
+
+  if (error || !data) {
+    showToast("Erro ao buscar itens do pedido")
+    return
+  }
+
+  const { jsPDF } = window.jspdf
+  const doc = new jsPDF()
+  doc.text(`Pedido ${pedidoId}`, 14, 20)
+  doc.autoTable({
+    head: [["Código", "Nome", "Qtd. Fat.", "Qtd. Solicitada"]],
+    body: data.map(i => [i.codigo_mv, i.nome, i.quantidade_faturamento || "—", i.quantidade])
+  })
+  doc.save(`pedido_${pedidoId}.pdf`)
 }
+
 
 // Salvar e imprimir
 async function salvarEImprimir() {
