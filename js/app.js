@@ -235,27 +235,27 @@ window.exportarHistoricoPDF = function(cpf) {
   doc.save(gerarNomeArquivo("historico"))
 }
 
-// =========================
-// FECHAR MODAL AO CLICAR FORA
-// =========================
-document.addEventListener("click", (event) => {
-  const modalDisp = document.getElementById("modalDispensados")
-  if (!modalDisp.classList.contains("hidden")) {
-    const conteudo = modalDisp.querySelector(".modal-content")
-    // se clicou fora do conteúdo e não no botão de abrir
-    if (!conteudo.contains(event.target) && !event.target.closest("#listaDispensados")) {
-      modalDisp.classList.add("hidden")
-    }
-  }
+// // =========================
+// // FECHAR MODAL AO CLICAR FORA
+// // =========================
+// document.addEventListener("click", (event) => {
+//   const modalDisp = document.getElementById("modalDispensados")
+//   if (!modalDisp.classList.contains("hidden")) {
+//     const conteudo = modalDisp.querySelector(".modal-content")
+//     // se clicou fora do conteúdo e não no botão de abrir
+//     if (!conteudo.contains(event.target) && !event.target.closest("#listaDispensados")) {
+//       modalDisp.classList.add("hidden")
+//     }
+//   }
 
-  const modalConfig = document.getElementById("modalConfig")
-  if (!modalConfig.classList.contains("hidden")) {
-    const conteudo = modalConfig.querySelector(".modal-content")
-    if (!conteudo.contains(event.target) && !event.target.closest("#btnConfig")) {
-      modalConfig.classList.add("hidden")
-    }
-  }
-})
+//   const modalConfig = document.getElementById("modalConfig")
+//   if (!modalConfig.classList.contains("hidden")) {
+//     const conteudo = modalConfig.querySelector(".modal-content")
+//     if (!conteudo.contains(event.target) && !event.target.closest("#btnConfig")) {
+//       modalConfig.classList.add("hidden")
+//     }
+//   }
+// })
 
 // =========================
 // GRÁFICOS (importados do módulo)
