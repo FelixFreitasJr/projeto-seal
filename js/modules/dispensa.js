@@ -52,12 +52,11 @@ export function initDispensa() {
         <td>${item.empresa}</td>
         <td>${item.funcao}</td>
         <td>
-          <div class="acoes">
-              <button onclick="dispensarItem('${item.id}')">✔ Dispensar</button>
-              <button onclick="editarColaborador('${item.id}')">📝 Editar</button>
-              <button onclick="excluirItem('${item.id}')">🗑 Excluir</button>
-            </div>
-          </div>
+        <div class="acoes">
+              <button style="background: darkseagreen;" onclick="dispensarItem('${item.id}')"><img src="../img/salvar.svg" alt="Salvar"> Dispensar</button>
+              <button style="background: cadetblue;" onclick="editarColaborador('${item.id}')><img src="../img/editar.svg" alt="Editar"> Editar</button>
+              <button style="background: indianred;" onclick="excluirItem('${item.id}')"><img src="../img/excluir.svg" alt="Excluir"> Excluir</button>
+        </div>
         </td>
       </tr>`
     })

@@ -76,12 +76,9 @@ function renderTabela(data) {
         ${isAdmin ? `
         <td>
         <div class="acoes">
-          <button class="btn-menu" onclick="toggleMenu(this)">⋮</button>
-          <div class="menu-acoes hidden">
-            <button onclick="editarProduto('${item.id}')">Editar</button>
-            <button onclick="clonarItem('${item.id}')">Clonar</button>
-            <button onclick="excluirProduto('${item.id}')">Excluir</button>
-          </div>
+              <button style="background: darkseagreen;" onclick="dispensarItem('${item.id}')"><img src="../img/salvar.svg" alt="Salvar"> Dispensar</button>
+              <button style="background: cadetblue;" onclick="editarColaborador('${item.id}')><img src="../img/editar.svg" alt="Editar"> Editar</button>
+              <button style="background: indianred;" onclick="excluirItem('${item.id}')"><img src="../img/excluir.svg" alt="Excluir"> Excluir</button>
         </div>
       </td>
       ` : ''}

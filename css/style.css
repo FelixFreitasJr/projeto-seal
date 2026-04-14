@@ -60,7 +60,7 @@ main.conteudo {
 .limpar { position: absolute; right: 10px; top: 8px; cursor: pointer; }
 
 /* Botões */
-button { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; background: var(--primary); color: var(--white);}
+button { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer;}
 button:hover { background: var(--primary-dark);}
 button img { width: 16px !important; height: 16px !important; object-fit: contain; }
 
@@ -81,7 +81,7 @@ td.satelite { background: #fff3e0; }
 /* Menu ações */
 .acoes { 
   display: flex; 
-  justify-content: left; 
+  justify-content: space-evenly; 
   position: relative; 
 }
 .btn-menu { background: transparent; font-size: 18px; margin: 0; }
