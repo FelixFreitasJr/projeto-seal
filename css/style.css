@@ -51,7 +51,13 @@ main.conteudo {
   border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;
 }
 .login-box input { width: 90%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--gray-border); border-radius: 6px; }
-.login-box button { width: 100%; background: var(--primary); color: var(--white); }
+.login-box button {     
+  width: 90%;
+  background: var(--primary);
+  color: var(--white);
+  justify-content: center;
+  display: inline;
+}
 .login-box button:hover { background: var(--primary-dark); }
 
 /* Busca */
