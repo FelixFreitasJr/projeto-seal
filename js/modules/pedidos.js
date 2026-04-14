@@ -43,7 +43,7 @@ async function incluirItem() {
     .maybeSingle()
 
   if (error || !data) {
-    alert("Item não encontrado")
+    showToast("Item não encontrado")
     return
   }
 
@@ -115,7 +115,7 @@ async function salvarPedido() {
   }).select()
 
   if (error || !data) {
-    alert("Erro ao salvar pedido")
+    showToast("Erro ao salvar pedido")
     return
   }
 
