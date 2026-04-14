@@ -10,21 +10,22 @@ export async function login() {
   const { data, error } = await supabase
     .from('usuarios')
     .select('*')
-    .eq('usuarios', usuario)
-    .single()
+    .eq('usuario', usuario) // ✅ CORRETO
 
-  if (error || !data) {
+  if (error || !data || data.length === 0) {
     alert("Usuário ou senha inválidos")
     return
   }
 
-  if (senha !== data.senha) {
+  // pega o primeiro registro (mantém compatibilidade)
+  const userData = data[0]
+
+  if (senha !== userData.senha) {
     alert("Usuário ou senha inválidos")
     return
   }
 
-  // salva todos os dados do usuário (perfil, acesso, edicao)
-  localStorage.setItem("usuarioLogado", JSON.stringify(data))
+  localStorage.setItem("usuarioLogado", JSON.stringify(userData))
   window.location.href = "../index.html"
 }
 
@@ -56,11 +57,20 @@ export function getUser() {
   return user ? user.usuario : null
 }
 
-// Função para aplicar permissões conforme perfil/acesso/edicao
+// 🔧 CORREÇÃO DE PERMISSÕES
 function aplicarPermissoes(user) {
   const perfil = user.perfil
-  const acesso = user.acesso || []
-  const edicao = user.edicao || []
+
+  // 🔥 força edicao ser array SEM quebrar sistema
+  let edicao = user.edicao
+
+  if (!Array.isArray(edicao)) {
+    if (typeof edicao === "string") {
+      edicao = edicao.split(",")
+    } else {
+      edicao = []
+    }
+  }
 
   // Configurações e pedidos só para ADM
   if (perfil !== "ADM") {
@@ -75,21 +85,21 @@ function aplicarPermissoes(user) {
     document.getElementById("btnPDF")?.classList.add("hidden")
   }
 
-  // Estoque: só consulta se não tiver permissão de edição
+  // Estoque
   if (!edicao.includes("estoque")) {
     document.querySelectorAll(".acoes").forEach(el => el.classList.add("hidden"))
   }
 
-  // Dispensa: pode cadastrar e editar, mas não excluir
+  // Dispensa
   if (!edicao.includes("excluirColaborador")) {
     document.querySelectorAll(".btnExcluirColaborador").forEach(el => el.classList.add("hidden"))
   }
-// Adicione no app.js ou auth.js
-document.querySelector(".menu-toggle")?.addEventListener("click", () => {
-  const menu = document.querySelector(".menu-suspenso")
-  menu.style.display = menu.style.display === "flex" ? "none" : "flex"
-})
 
+  // Menu mobile
+  document.querySelector(".menu-toggle")?.addEventListener("click", () => {
+    const menu = document.querySelector(".menu-suspenso")
+    menu.style.display = menu.style.display === "flex" ? "none" : "flex"
+  })
 }
 
 window.login = login
