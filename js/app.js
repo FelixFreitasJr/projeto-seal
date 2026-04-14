@@ -167,6 +167,17 @@ window.showToast = function(msg, tipo = "sucesso") {
   }, 3000)
 }
 
+window.gerarNomeArquivo = function(tipo) {
+  const agora = new Date()
+  const dia = String(agora.getDate()).padStart(2, '0')
+  const mes = agora.toLocaleString('pt-BR', { month: 'short' })
+  const ano = agora.getFullYear()
+  const hora = String(agora.getHours()).padStart(2, '0')
+  const minuto = String(agora.getMinutes()).padStart(2, '0')
+
+  return `${tipo}_${dia}-${mes}-${ano}_${hora}-${minuto}.pdf`
+}
+
 // =========================
 // MODAL DISPENSADOS
 // =========================
@@ -399,7 +410,7 @@ window.exportarListaPDF = () => {
     doc.autoTable({ head: [linhas[0]], body: linhas.slice(1) })
   }
 
-  doc.save("estoque.pdf")
+  doc.save(gerarNomeArquivo("estoque"))
 }
 
 
@@ -414,5 +425,5 @@ window.exportarHistoricoPDF = async function () {
   const altura = (canvas.height * largura) / canvas.width
 
   pdf.addImage(imgData, 'PNG', 10, 10, largura, altura)
-  pdf.save("historico.pdf")
+  pdf.save(gerarNomeArquivo("historico"))
 }

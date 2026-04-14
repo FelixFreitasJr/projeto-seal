@@ -179,7 +179,7 @@ doc.autoTable({
     head: [["Código", "Nome", "Qtd. Fat.", "Qtd. Solicitada"]],
     body: data.map(i => [i.codigo_mv, i.nome, i.quantidade_faturamento || "—", i.quantidade])
   })
-  doc.save(`pedido_${pedidoId}.pdf`)
+  doc.save(gerarNomeArquivo(`pedido_${pedidoId}`))
 }
 
 
@@ -225,7 +225,7 @@ function exportarPDF() {
     head: [["Código", "Nome", "Qtd. Fat.", "Qtd. Solicitada"]],
     body: itensPedido.map(i => [i.codigo, i.nome, i.quantidade_faturamento, i.quantidade])
   })
-  doc.save("pedido.pdf")
+  doc.save(gerarNomeArquivo("pedido"))
 }
 
 // Eventos
