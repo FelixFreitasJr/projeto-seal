@@ -7,7 +7,7 @@ let itensPedido = []
 
 // Preview dinâmico ao digitar código
 async function previewCodigo(codigo) {
-  codigo = codigo.trim() // remove espaços extras
+  codigo = codigo.trim()
   if (!codigo) {
     document.getElementById("previewItem").innerText = ""
     document.getElementById("qtdFat").innerText = "—"
@@ -17,7 +17,7 @@ async function previewCodigo(codigo) {
   const { data, error } = await supabase
     .from('produtos')
     .select('nome, quantidade_faturamento, codigo_sga')
-    .eq('codigo_mv', codigo) // busca apenas por codigo_mv
+    .eq('codigo_mv', codigo)
     .maybeSingle()
 
   if (error || !data) {
@@ -33,7 +33,6 @@ async function previewCodigo(codigo) {
 async function incluirItem() {
   let codigo = document.getElementById("codigo").value.trim()
   let quantidade = document.getElementById("quantidade").value.trim()
-
   if (!codigo || !quantidade) return
 
   const { data, error } = await supabase
@@ -120,52 +119,40 @@ async function salvarPedido() {
 
   if (error || !data) {
     showToast("Erro ao salvar pedido", "erro")
-    return
+    return null
   }
 
   const pedidoId = data[0].id
 
-for (const item of itensPedido) {
-  const { error } = await supabase.from('pedido_itens').insert({
-    pedido_id: pedidoId,
-    codigo_mv: item.codigo,
-    codigo_sga: item.codigo_sga || null,   // se quiser manter, mesmo vazio
-    nome: item.nome,
-    quantidade: item.quantidade,
-    quantidade_faturamento: item.quantidade_faturamento || null  // se quiser manter, mesmo vazio
-  })
-
-  if (error) {
-    console.error("Erro ao salvar item:", error)
-    showToast("Erro ao salvar item do pedido", "erro")
+  for (const item of itensPedido) {
+    const { error } = await supabase.from('pedido_itens').insert({
+      pedido_id: pedidoId,
+      codigo_mv: item.codigo,
+      codigo_sga: item.codigo_sga || null,
+      nome: item.nome,
+      quantidade: item.quantidade,
+      quantidade_faturamento: item.quantidade_faturamento || null
+    })
+    if (error) {
+      console.error("Erro ao salvar item:", error)
+      showToast("Erro ao salvar item do pedido", "erro")
+    }
   }
-}
 
-  showToast("Pedido salvo com sucesso por ${usuario}", "sucesso")
+  showToast(`Pedido salvo com sucesso por ${usuario}`, "sucesso")
   itensPedido = []
   renderLista()
   fecharModal()
   carregarHistorico()
+  return pedidoId
 }
 
-// Imprimir pedido atual
+// Imprimir pedido já salvo
 async function imprimirPedido(pedidoId) {
-  // busca itens do pedido
-const { data, error } = await supabase
-  .from('pedido_itens')
-  .select('codigo_mv, codigo_sga, nome, quantidade, quantidade_faturamento')
-  .eq('pedido_id', pedidoId)
-
-doc.autoTable({
-  head: [["Código MV", "Código SGA", "Nome", "Qtd. Fat.", "Qtd. Solicitada"]],
-  body: data.map(i => [
-    i.codigo_mv,
-    i.codigo_sga || "—",
-    i.nome,
-    i.quantidade_faturamento || "—",
-    i.quantidade
-  ])
-})
+  const { data, error } = await supabase
+    .from('pedido_itens')
+    .select('codigo_mv, codigo_sga, nome, quantidade, quantidade_faturamento')
+    .eq('pedido_id', pedidoId)
 
   if (error || !data) {
     showToast("Erro ao buscar itens do pedido", "erro")
@@ -176,17 +163,24 @@ doc.autoTable({
   const doc = new jsPDF()
   doc.text(`Pedido ${pedidoId}`, 14, 20)
   doc.autoTable({
-    head: [["Código", "Nome", "Qtd. Fat.", "Qtd. Solicitada"]],
-    body: data.map(i => [i.codigo_mv, i.nome, i.quantidade_faturamento || "—", i.quantidade])
+    head: [["Código MV", "Código SGA", "Nome", "Qtd. Fat.", "Qtd. Solicitada"]],
+    body: data.map(i => [
+      i.codigo_mv,
+      i.codigo_sga || "—",
+      i.nome,
+      i.quantidade_faturamento || "—",
+      i.quantidade
+    ])
   })
   doc.save(gerarNomeArquivo(`pedido_${pedidoId}`))
 }
 
-
 // Salvar e imprimir
 async function salvarEImprimir() {
-  await salvarPedido()
-  exportarPDF()
+  const pedidoId = await salvarPedido()
+  if (pedidoId) {
+    await imprimirPedido(pedidoId)
+  }
 }
 
 // Fechar modal
@@ -216,14 +210,20 @@ async function carregarHistorico() {
   `).join("")
 }
 
-// Exportar PDF
+// Exportar PDF do pedido atual (antes de salvar)
 function exportarPDF() {
-  const { jsPDF } = window.jspdf   // ajuste para UMD
+  const { jsPDF } = window.jspdf
   const doc = new jsPDF()
   doc.text("Pedido de Material", 14, 20)
   doc.autoTable({
-    head: [["Código", "Nome", "Qtd. Fat.", "Qtd. Solicitada"]],
-    body: itensPedido.map(i => [i.codigo, i.nome, i.quantidade_faturamento, i.quantidade])
+    head: [["Código MV", "Código SGA", "Nome", "Qtd. Fat.", "Qtd. Solicitada"]],
+    body: itensPedido.map(i => [
+      i.codigo,
+      i.codigo_sga || "—",
+      i.nome,
+      i.quantidade_faturamento,
+      i.quantidade
+    ])
   })
   doc.save(gerarNomeArquivo("pedido"))
 }

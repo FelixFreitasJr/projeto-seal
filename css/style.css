@@ -96,8 +96,14 @@ td.satelite { background: #fff3e0; }
 
 /* Modal */
 .modal {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);
-  display: flex; justify-content: center; align-items: center; z-index: 9999;
+  position: fixed; 
+  top: 0; left: 0; 
+  width: 100%; height: 100%; 
+  background: rgba(0,0,0,0.5);
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  z-index: 9999;
 }
 .modal-content {
   background: var(--white); padding: 20px; width: 400px; border-radius: 8px;
@@ -382,6 +388,15 @@ main.conteudo table thead th { position: sticky; top: 0; background: #f0f0f0; z-
 .menu-suspenso button:hover {
   color: var(--primary);
 }
+
+#modalDispensados .modal-content {
+  width: 900px; /* ou mais */
+}
+
+#listaDispensados td:first-child {
+  white-space: nowrap;
+}
+
 
 /* Responsividade */
 @media (max-width: 958px) {

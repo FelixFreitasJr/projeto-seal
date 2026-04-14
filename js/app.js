@@ -5,7 +5,6 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 import { getUser } from './auth.js'
 import { carregarGraficos, filtrarPeriodo, toggleFiltroPersonalizado } from './modules/graficos.js'
 
-
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 // =========================
@@ -192,14 +191,75 @@ async function toggleHistorico(cpf) {
   if (error) return showToast("Erro ao carregar histórico", "erro")
 
   const html = data.map(item => `
-    <div>
-      <input type="checkbox" class="selecionar" checked>
-      ${new Date(item.data_hora).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })} — ${item.usuario}
-    </div>
+    <tr>
+      <td><input type="checkbox" class="selecionar" checked></td>
+      <td>${new Date(item.data_hora).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}</td>
+      <td>${item.usuario}</td>
+    </tr>
   `).join("")
-  trHistorico.querySelector("td").innerHTML = html
+
+  trHistorico.querySelector("td").innerHTML = `
+    <table style="width:100%">
+      <thead><tr><th></th><th>Data/Hora</th><th>Local</th></tr></thead>
+      <tbody>${html}</tbody>
+    </table>
+    <div style="margin-top:10px;">
+      <button onclick="exportarHistoricoPDF('${cpf}')">Exportar Selecionados</button>
+    </div>
+  `
 }
 
+// =========================
+// EXPORTAR HISTÓRICO
+// =========================
+window.exportarHistoricoPDF = function(cpf) {
+  const selecionados = []
+  document.querySelectorAll(`#historico-${cpf} .selecionar:checked`).forEach(cb => {
+    const linha = cb.closest("tr")
+    const cols = Array.from(linha.querySelectorAll("td")).map(td => td.innerText)
+    selecionados.push(cols)
+  })
+
+  if (selecionados.length === 0) {
+    showToast("Nenhum registro selecionado", "alerta")
+    return
+  }
+
+  const { jsPDF } = window.jspdf
+  const doc = new jsPDF()
+  doc.text(`Histórico de ${cpf}`, 14, 20)
+  doc.autoTable({
+    head: [["", "Data/Hora", "Local"]],
+    body: selecionados
+  })
+  doc.save(gerarNomeArquivo("historico"))
+}
+
+// =========================
+// FECHAR MODAL AO CLICAR FORA
+// =========================
+document.addEventListener("click", (event) => {
+  const modalDisp = document.getElementById("modalDispensados")
+  if (!modalDisp.classList.contains("hidden")) {
+    const conteudo = modalDisp.querySelector(".modal-content")
+    // se clicou fora do conteúdo e não no botão de abrir
+    if (!conteudo.contains(event.target) && !event.target.closest("#listaDispensados")) {
+      modalDisp.classList.add("hidden")
+    }
+  }
+
+  const modalConfig = document.getElementById("modalConfig")
+  if (!modalConfig.classList.contains("hidden")) {
+    const conteudo = modalConfig.querySelector(".modal-content")
+    if (!conteudo.contains(event.target) && !event.target.closest("#btnConfig")) {
+      modalConfig.classList.add("hidden")
+    }
+  }
+})
+
+// =========================
+// GRÁFICOS (importados do módulo)
+// =========================
 window.carregarGraficos = carregarGraficos
 window.filtrarPeriodo = filtrarPeriodo
 window.toggleFiltroPersonalizado = toggleFiltroPersonalizado
