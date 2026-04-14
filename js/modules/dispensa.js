@@ -102,7 +102,7 @@ async function salvarColaborador() {
   const funcao = document.getElementById("funcao").value
 
   if (!validarCPF(cpf)) {
-    showToast("CPF inválido")
+    showToast("CPF inválido", "erro")
     return
   }
 
@@ -115,11 +115,11 @@ async function salvarColaborador() {
     }).eq('id', modoEdicaoColaborador)
 
     if (error) {
-      showToast("Erro ao atualizar")
+      showToast("Erro ao atualizar", "erro")
       return
     }
 
-    showToast("Colaborador atualizado")
+    showToast("Colaborador atualizado", "sucesso")
     modoEdicaoColaborador = null
 
   } else {
@@ -130,7 +130,7 @@ async function salvarColaborador() {
       .maybeSingle()
 
     if (existente) {
-      showToast("CPF já cadastrado")
+      showToast("CPF já cadastrado", "alerta")
       return
     }
 
@@ -142,11 +142,11 @@ async function salvarColaborador() {
     })
 
     if (error) {
-      showToast("Erro ao cadastrar")
+      showToast("Erro ao cadastrar", "erro")
       return
     }
 
-    showToast("Colaborador cadastrado")
+    showToast("Colaborador cadastrado", "sucesso")
   }
 
   window.atualizarDispensa?.()
@@ -164,7 +164,7 @@ async function editarColaborador(id) {
     .single()
 
   if (error || !data) {
-    showToast("Colaborador não localizado")
+    showToast("Colaborador não localizado", "erro")
     return
   }
 
@@ -180,9 +180,9 @@ async function excluirItem(id) {
   const { error } = await supabase.from('colaboradores').delete().eq('id', id)
 
   if (error) {
-    showToast("Erro ao excluir")
+    showToast("Erro ao excluir", "erro")
   } else {
-    showToast("Excluído com sucesso")
+    showToast("Excluído com sucesso", "sucesso")
     window.atualizarDispensa?.()
   }
 }
@@ -197,7 +197,7 @@ async function dispensarItem(id) {
     .single()
 
   if (error) {
-    showToast("Erro ao buscar colaborador")
+    showToast("Erro ao buscar colaborador", "erro")
     return
   }
 
@@ -211,9 +211,9 @@ async function dispensarItem(id) {
   })
 
   if (insertError) {
-    showToast("Erro ao dispensar")
+    showToast("Erro ao dispensar", "erro")
   } else {
-    showToast("Dispensa registrada")
+    showToast("Dispensa registrada", "sucesso")
 
     // limpa busca
     const busca = document.getElementById("busca")
@@ -273,21 +273,6 @@ function validarCPF(cpf) {
   if (/^(\d)\1+$/.test(cpf)) return false
   return true
 }
-
-function showToast(msg) {
-  const toast = document.createElement("div")
-  toast.className = "toast"
-  toast.innerText = msg
-  document.body.appendChild(toast)
-
-  setTimeout(() => toast.classList.add("show"), 10)
-
-  setTimeout(() => {
-    toast.classList.remove("show")
-    setTimeout(() => toast.remove(), 300)
-  }, 3000)
-}
-
 
 // =========================
 // GLOBAL

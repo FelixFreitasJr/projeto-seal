@@ -153,9 +153,9 @@ async function carregarDashboard() {
 // =========================
 // TOAST
 // =========================
-window.showToast = function(msg) {
+window.showToast = function(msg, tipo = "sucesso") {
   const toast = document.createElement("div")
-  toast.className = "toast"
+  toast.className = "toast ${tipo}"
   toast.innerText = msg
   document.body.appendChild(toast)
 

@@ -137,7 +137,7 @@ async function salvarProduto() {
   const liberacao = document.getElementById("liberacao").value
 
   if (!codigo_mv || !nome) {
-    showToast("Preencha código MV e nome")
+    showToast("Preencha código MV e nome", "alerta")
     return
   }
 
@@ -153,11 +153,11 @@ async function salvarProduto() {
     }).eq('id', modoEdicaoProduto)
 
     if (error) {
-      showToast("Erro ao atualizar")
+      showToast("Erro ao atualizar", "erro")
       return
     }
 
-    showToast("Item atualizado")
+    showToast("Item atualizado", "sucesso")
     modoEdicaoProduto = null
 
   } else {
@@ -172,11 +172,11 @@ async function salvarProduto() {
     })
 
     if (error) {
-      showToast("Erro ao salvar")
+      showToast("Erro ao salvar", "erro")
       return
     }
 
-    showToast("Item cadastrado")
+    showToast("Item cadastrado", "sucesso")
   }
 
   window.atualizarEstoque?.()
@@ -194,7 +194,7 @@ async function editarProduto(id) {
     .single()
 
   if (error || !data) {
-    showToast("Item não encontrado")
+    showToast("Item não encontrado", "erro")
     return
   }
 
@@ -213,9 +213,9 @@ async function excluirProduto(id) {
   const { error } = await supabase.from('produtos').delete().eq('id', id)
 
   if (error) {
-    showToast("Erro ao excluir")
+    showToast("Erro ao excluir", "erro")
   } else {
-    showToast("Item excluído")
+    showToast("Item excluído", "sucesso")
     window.atualizarEstoque?.()
   }
 }
@@ -228,7 +228,7 @@ async function clonarItem(id) {
     .single()
 
   if (error || !data) {
-    showToast("Erro ao clonar")
+    showToast("Erro ao clonar", "erro")
     return
   }
 
@@ -238,9 +238,9 @@ async function clonarItem(id) {
   const { error: insertError } = await supabase.from('produtos').insert(clone)
 
   if (insertError) {
-    showToast("Erro ao salvar clone")
+    showToast("Erro ao salvar clone", "erro")
   } else {
-    showToast("Item clonado")
+    showToast("Item clonado", "sucesso")
     window.atualizarEstoque?.()
   }
 }

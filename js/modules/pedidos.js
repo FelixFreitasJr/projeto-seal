@@ -119,7 +119,7 @@ async function salvarPedido() {
   }).select()
 
   if (error || !data) {
-    showToast("Erro ao salvar pedido")
+    showToast("Erro ao salvar pedido", "erro")
     return
   }
 
@@ -131,17 +131,17 @@ for (const item of itensPedido) {
     codigo_mv: item.codigo,
     codigo_sga: item.codigo_sga || null,   // se quiser manter, mesmo vazio
     nome: item.nome,
-    quantidade: item.quantidade
+    quantidade: item.quantidade,
     quantidade_faturamento: item.quantidade_faturamento || null  // se quiser manter, mesmo vazio
   })
 
   if (error) {
     console.error("Erro ao salvar item:", error)
-    showToast("Erro ao salvar item do pedido")
+    showToast("Erro ao salvar item do pedido", "erro")
   }
 }
 
-  showToast("Pedido salvo com sucesso por ${usuario}")
+  showToast("Pedido salvo com sucesso por ${usuario}", "sucesso")
   itensPedido = []
   renderLista()
   fecharModal()
@@ -168,7 +168,7 @@ doc.autoTable({
 })
 
   if (error || !data) {
-    showToast("Erro ao buscar itens do pedido")
+    showToast("Erro ao buscar itens do pedido", "erro")
     return
   }
 
