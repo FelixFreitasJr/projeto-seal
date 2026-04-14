@@ -10,7 +10,7 @@ export async function login() {
   const { data, error } = await supabase
     .from('usuarios')
     .select('*')
-    .eq('usuario', usuario)
+    .eq('usuarios', usuario)
     .single()
 
   if (error || !data) {
