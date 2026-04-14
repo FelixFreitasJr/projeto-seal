@@ -15,7 +15,8 @@ export function initEstoque() {
   let timeout = null
 
   if (!isAdmin) {
-    document.getElementById("colAcoes")?.style.display = "none"
+    const colAcoes = document.getElementById("colAcoes")
+    if (colAcoes) colAcoes.style.display = "none"
     document.getElementById("btnNovo")?.remove()
   }
    // =========================
