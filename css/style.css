@@ -277,6 +277,12 @@ main.conteudo table thead th { position: sticky; top: 0; background: #f0f0f0; z-
   width: 20%;     /* endereços equilibrados */
 }
 
+.tabela-formulario {
+  min-height: auto;
+  max-height: none;
+}
+
+
 /* Menu de navegação */
 .menu-principal {
   display: flex;

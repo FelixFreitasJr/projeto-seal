@@ -16,8 +16,9 @@ async function previewCodigo(codigo) {
   const { data, error } = await supabase
     .from('produtos')
     .select('nome, quantidade_faturamento')
-    .or(`codigo_mv.eq.${codigo},codigo_sga.eq.${codigo}`)
+    .or(`codigo_mv.eq."${codigo}",codigo_sga.eq."${codigo}"`)
     .maybeSingle()
+
 
   if (error || !data) {
     document.getElementById("previewItem").innerText = "Não encontrado"
