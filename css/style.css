@@ -258,6 +258,10 @@ main.conteudo table thead th { position: sticky; top: 0; background: #f0f0f0; z-
   margin-top: 5px;
 }
 
+#liberacao option {
+  text-transform: uppercase;
+}
+
 /* Lista de pedidos */
 #listaPedidos tr:hover { background: #f9f9f9; }
 #btnFinalizar, #btnPDF { margin-top: 20px; background: var(--primary); color: var(--white); }

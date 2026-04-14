@@ -263,3 +263,11 @@ document.addEventListener("click", (event) => {
 window.carregarGraficos = carregarGraficos
 window.filtrarPeriodo = filtrarPeriodo
 window.toggleFiltroPersonalizado = toggleFiltroPersonalizado
+
+// =========================
+// DISPENSADOS (funções globais)
+// =========================
+window.abrirModalDispensados = abrirModalDispensados
+window.fecharModalDispensados = fecharModalDispensados
+window.exportarListaPDF = exportarListaPDF
+window.exportarHistoricoPDF = exportarHistoricoPDF

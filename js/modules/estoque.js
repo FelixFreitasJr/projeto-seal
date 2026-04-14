@@ -18,7 +18,8 @@ export function initEstoque() {
     document.getElementById("colAcoes").style.display = "none"
     document.getElementById("btnNovo").remove()
   }
-   // =========================
+
+  // =========================
   // BUSCAR / LISTAR
   // =========================
   async function buscar() {
@@ -27,14 +28,12 @@ export function initEstoque() {
     let query = supabase.from('produtos').select('*').order('nome', { ascending: true })
 
     if (termo) {
-    query = query.or(
-      `codigo_mv.ilike.%${termo}%,codigo_sga.ilike.%${termo}%,nome.ilike.%${termo}%,endereco_externo.ilike.%${termo}%,endereco_satelite.ilike.%${termo}%,liberacao.ilike.%${termo}%,observacao.ilike.%${termo}%`
-    )
-  }
-
+      query = query.or(
+        `codigo_mv.ilike.%${termo}%,codigo_sga.ilike.%${termo}%,nome.ilike.%${termo}%,endereco_externo.ilike.%${termo}%,endereco_satelite.ilike.%${termo}%,liberacao.ilike.%${termo}%,observacao.ilike.%${termo}%`
+      )
+    }
 
     const { data, error } = await query
-
     if (error) {
       console.error(error)
       return
@@ -44,55 +43,43 @@ export function initEstoque() {
     atualizarContador(data.length)
   }
 
-function renderTabela(data) {
-  let linhas = ''
+  function renderTabela(data) {
+    let linhas = ''
 
-  data.forEach(item => {
-    linhas += `
-    <tr>
-      <td class="codigo">${escapeHtml(item.codigo_mv)}</td>
-
-      ${isAdmin ? `<td class="col-sga">${escapeHtml(item.codigo_sga)}</td>` : ''}
-
-      <td>
-        <div style="font-weight: bold;">
-          ${escapeHtml(item.nome)}
-        </div>
-
-        <div class="status-container">
-          <div class="status ${formatarStatusClasse(item.liberacao)}">
-            ${escapeHtml(item.liberacao || '-')}
+    data.forEach(item => {
+      linhas += `
+      <tr>
+        <td class="codigo">${escapeHtml(item.codigo_mv)}</td>
+        ${isAdmin ? `<td class="col-sga">${escapeHtml(item.codigo_sga)}</td>` : ''}
+        <td>
+          <div style="font-weight: bold;">${escapeHtml(item.nome)}</div>
+          <div class="status-container">
+            <div class="status ${formatarStatusClasse(item.liberacao)}">
+              ${escapeHtml(item.liberacao || '-')}
+            </div>
+            <div class="info-extra">| ${escapeHtml(item.observacao || '-')}</div>
           </div>
-
-          <div class="info-extra">
-            | ${escapeHtml(item.observacao || '-')}
-          </div>
-        </div>
-      </td>
-
-      <td class="externo">${escapeHtml(item.endereco_externo)}</td>
-      <td class="satelite">${escapeHtml(item.endereco_satelite)}</td>
-
+        </td>
+        <td class="externo">${escapeHtml(item.endereco_externo)}</td>
+        <td class="satelite">${escapeHtml(item.endereco_satelite)}</td>
+        <td class="qtdFat">${escapeHtml(item.quantidade_faturamento || '—')}</td>
         ${isAdmin ? `
         <td>
-        <div class="acoes">
-              <button onclick="editarProduto('${item.id}')"><img src="../img/editar.svg" alt="Editar"> Editar</button>
-              <button onclick="clonarItem('${item.id}')"><img src="../img/clonar.svg" alt="Clonar"> Clonar</button>
-              <button onclick="excluirProduto('${item.id}')"><img src="../img/excluir.svg" alt="Excluir"> Excluir</button>
-        </div>
-      </td>
-      ` : ''}
-    </tr>`
-  })
+          <div class="acoes">
+            <button onclick="editarProduto('${item.id}')"><img src="../img/editar.svg" alt="Editar"> Editar</button>
+            <button onclick="clonarItem('${item.id}')"><img src="../img/clonar.svg" alt="Clonar"> Clonar</button>
+            <button onclick="excluirProduto('${item.id}')"><img src="../img/excluir.svg" alt="Excluir"> Excluir</button>
+          </div>
+        </td>` : ''}
+      </tr>`
+    })
 
-  tabela.innerHTML = linhas
-}
+    tabela.innerHTML = linhas
+  }
 
   function atualizarContador(qtd) {
     const contador = document.getElementById("contadorEstoque")
-    if (contador) {
-      contador.innerText = "Itens: " + qtd
-    }
+    if (contador) contador.innerText = "Itens: " + qtd
   }
 
   // =========================
@@ -126,7 +113,6 @@ function renderTabela(data) {
 // =========================
 // CRUD PRODUTO
 // =========================
-
 async function salvarProduto() {
   const codigo_mv = document.getElementById("codigo_mv").value
   const codigo_sga = document.getElementById("codigo_sga").value
@@ -135,47 +121,32 @@ async function salvarProduto() {
   const satelite = document.getElementById("satelite").value
   const observacao = document.getElementById("observacao").value
   const liberacao = document.getElementById("liberacao").value
+  const quantidade_faturamento = document.getElementById("quantidade_faturamento").value
 
   if (!codigo_mv || !nome) {
     showToast("Preencha código MV e nome", "alerta")
     return
   }
 
+  const dados = {
+    codigo_mv,
+    codigo_sga,
+    nome,
+    endereco_externo: externo,
+    endereco_satelite: satelite,
+    observacao,
+    liberacao,
+    quantidade_faturamento: quantidade_faturamento || null
+  }
+
   if (modoEdicaoProduto) {
-    const { error } = await supabase.from('produtos').update({
-      codigo_mv,
-      codigo_sga,
-      nome,
-      endereco_externo: externo,
-      endereco_satelite: satelite,
-      observacao,
-      liberacao
-    }).eq('id', modoEdicaoProduto)
-
-    if (error) {
-      showToast("Erro ao atualizar", "erro")
-      return
-    }
-
+    const { error } = await supabase.from('produtos').update(dados).eq('id', modoEdicaoProduto)
+    if (error) return showToast("Erro ao atualizar", "erro")
     showToast("Item atualizado", "sucesso")
     modoEdicaoProduto = null
-
   } else {
-    const { error } = await supabase.from('produtos').insert({
-      codigo_mv,
-      codigo_sga,
-      nome,
-      endereco_externo: externo,
-      endereco_satelite: satelite,
-      observacao,
-      liberacao
-    })
-
-    if (error) {
-      showToast("Erro ao salvar", "erro")
-      return
-    }
-
+    const { error } = await supabase.from('produtos').insert(dados)
+    if (error) return showToast("Erro ao salvar", "erro")
     showToast("Item cadastrado", "sucesso")
   }
 
@@ -186,17 +157,8 @@ async function salvarProduto() {
 
 async function editarProduto(id) {
   modoEdicaoProduto = id
-
-  const { data, error } = await supabase
-    .from('produtos')
-    .select('*')
-    .eq('id', id)
-    .single()
-
-  if (error || !data) {
-    showToast("Item não encontrado", "erro")
-    return
-  }
+  const { data, error } = await supabase.from('produtos').select('*').eq('id', id).single()
+  if (error || !data) return showToast("Item não encontrado", "erro")
 
   document.getElementById("codigo_mv").value = data.codigo_mv
   document.getElementById("codigo_sga").value = data.codigo_sga
@@ -205,41 +167,30 @@ async function editarProduto(id) {
   document.getElementById("satelite").value = data.endereco_satelite
   document.getElementById("observacao").value = data.observacao || ''
   document.getElementById("liberacao").value = data.liberacao || 'LIVRE'
+  document.getElementById("quantidade_faturamento").value = data.quantidade_faturamento || ''
 
   abrirModal()
 }
 
 async function excluirProduto(id) {
   const { error } = await supabase.from('produtos').delete().eq('id', id)
-
-  if (error) {
-    showToast("Erro ao excluir", "erro")
-  } else {
+  if (error) showToast("Erro ao excluir", "erro")
+  else {
     showToast("Item excluído", "sucesso")
     window.atualizarEstoque?.()
   }
 }
 
 async function clonarItem(id) {
-  const { data, error } = await supabase
-    .from('produtos')
-    .select('*')
-    .eq('id', id)
-    .single()
-
-  if (error || !data) {
-    showToast("Erro ao clonar", "erro")
-    return
-  }
+  const { data, error } = await supabase.from('produtos').select('*').eq('id', id).single()
+  if (error || !data) return showToast("Erro ao clonar", "erro")
 
   const clone = { ...data }
   delete clone.id
 
   const { error: insertError } = await supabase.from('produtos').insert(clone)
-
-  if (insertError) {
-    showToast("Erro ao salvar clone", "erro")
-  } else {
+  if (insertError) showToast("Erro ao salvar clone", "erro")
+  else {
     showToast("Item clonado", "sucesso")
     window.atualizarEstoque?.()
   }
@@ -248,14 +199,9 @@ async function clonarItem(id) {
 // =========================
 // UI
 // =========================
-
 function abrirModal() {
   const tituloModal = document.querySelector("#modal h3")
-  if (modoEdicaoProduto) {
-    tituloModal.innerText = "Atualizar Item"
-  } else {
-    tituloModal.innerText = "Novo Item"
-  }
+  tituloModal.innerText = modoEdicaoProduto ? "Atualizar Item" : "Novo Item"
   document.getElementById("modal").classList.remove("hidden")
 }
 
@@ -270,17 +216,13 @@ function limparCampos() {
 // =========================
 // UTIL
 // =========================
-
 function formatarStatusClasse(status) {
   if (!status) return ''
-
   status = status.toLowerCase()
-
   if (status.includes('livre')) return 'livre'
   if (status.includes('externo')) return 'externo'
   if (status.includes('satélite') || status.includes('satelite')) return 'satelite'
   if (status.includes('inativo')) return 'inativo'
-
   return ''
 }
 
@@ -294,7 +236,6 @@ function escapeHtml(value) {
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;')
 }
-
 function toggleMenu(btn) {
   const menu = btn.nextElementSibling
   menu.classList.toggle("hidden")
