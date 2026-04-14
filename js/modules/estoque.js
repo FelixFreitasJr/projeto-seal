@@ -15,8 +15,8 @@ export function initEstoque() {
   let timeout = null
 
   if (!isAdmin) {
-    document.getElementById("colAcoes")?.style.display = "none"
-    document.getElementById("btnNovo")?.remove()
+    document.getElementById("colAcoes").style.display = "none"
+    document.getElementById("btnNovo").remove()
   }
    // =========================
   // BUSCAR / LISTAR
