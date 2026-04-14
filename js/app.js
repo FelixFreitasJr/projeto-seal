@@ -3,6 +3,8 @@ import { initDispensa } from './modules/dispensa.js'
 import { SUPABASE_URL, SUPABASE_KEY } from './config.js'
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 import { getUser } from './auth.js'
+import { carregarGraficos, filtrarPeriodo, toggleFiltroPersonalizado } from './modules/graficos.js'
+
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
@@ -12,19 +14,12 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 document.addEventListener('DOMContentLoaded', () => {
   const pagina = window.location.href
 
-  if (pagina.endsWith("estoque.html")) {
-    initEstoque()
-  }
-
-  if (pagina.endsWith("dispensa.html")) {
-    initDispensa()
-  }
+  if (pagina.endsWith("estoque.html")) initEstoque()
+  if (pagina.endsWith("dispensa.html")) initDispensa()
 
   const user = getUser()
   const titulo = document.querySelector(".titulo small")
-  if (titulo && user) {
-    titulo.innerText += " | Usuário: " + user
-  }
+  if (titulo && user) titulo.innerText += " | Usuário: " + user
 
   if (user === "ADM") {
     document.getElementById("btnPedidos")?.classList.remove("hidden")
@@ -33,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btn?.addEventListener("click", async () => {
       const { data, error } = await supabase.from('usuarios').select('*')
-      if (error) return alert("Erro ao carregar usuários")
+      if (error) return showToast("Erro ao carregar usuários", "erro")
 
       let linhas = ''
       data.forEach(u => {
@@ -41,9 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <tr>
             <td>${u.usuario}</td>
             <td>${u.perfil}</td>
-            <td>
-              <button onclick="alterarSenha('${u.usuario}')">Alterar Senha</button>
-            </td>
+            <td><button onclick="alterarSenha('${u.usuario}')">Alterar Senha</button></td>
           </tr>`
       })
 
@@ -57,27 +50,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (window.location.pathname.includes("pedidos.html")) {
-  if (getUser() !== "ADM") {
-    alert("Acesso restrito")
-    window.location.href = "../index.html"
-  }
-}
-
-  // =========================
-// LOAD DASHBOARD
-// =========================
-if (
-  window.location.pathname.endsWith("/") ||
-  window.location.pathname.endsWith("index.html")
-) {
-  if (document.getElementById("totalProdutos")) {
-    carregarDashboard()
+    if (getUser() !== "ADM") {
+      alert("Acesso restrito")
+      window.location.href = "../index.html"
+    }
   }
 
-  if (document.getElementById("graficoPizza")) {
-    carregarGraficos()
+  if (window.location.pathname.endsWith("/") || window.location.pathname.endsWith("index.html")) {
+    if (document.getElementById("totalProdutos")) carregarDashboard()
+    if (document.getElementById("graficoPizza")) carregarGraficos()
   }
-}
 })
 
 // =========================
@@ -92,58 +74,28 @@ window.ir = function(pagina) {
 }
 
 // =========================
-// MENU AÇÕES
-// =========================
-window.toggleMenu = (btn) => {
-  const menu = btn.nextElementSibling
-  menu.classList.toggle("hidden")
-}
-
-document.addEventListener('click', (event) => {
-  const menus = document.querySelectorAll('.menu-acoes')
-  menus.forEach(menu => {
-    if (!menu.contains(event.target) && !menu.previousElementSibling.contains(event.target)) {
-      menu.classList.add('hidden')
-    }
-  })
-})
-
-// =========================
 // ALTERAR SENHA
 // =========================
 window.alterarSenha = async (usuario) => {
   const novaSenha = prompt("Digite a nova senha para " + usuario)
   if (!novaSenha) return
 
-  const hash = novaSenha
-
   const { error } = await supabase
     .from('usuarios')
-    .update({ senha: hash })
+    .update({ senha: novaSenha })
     .eq('usuario', usuario)
 
-  if (error) {
-    showToast("Erro ao alterar senha")
-  } else {
-    showToast("Senha atualizada com sucesso")
-  }
+  if (error) showToast("Erro ao alterar senha", "erro")
+  else showToast("Senha atualizada com sucesso", "sucesso")
 }
 
 // =========================
 // DASHBOARD
 // =========================
 async function carregarDashboard() {
-  const { count: produtos } = await supabase
-    .from('produtos')
-    .select('*', { count: 'exact', head: true })
-
-  const { count: colaboradores } = await supabase
-    .from('colaboradores')
-    .select('*', { count: 'exact', head: true })
-
-  const { count: dispensas } = await supabase
-    .from('dispensas')
-    .select('*', { count: 'exact', head: true })
+  const { count: produtos } = await supabase.from('produtos').select('*', { count: 'exact', head: true })
+  const { count: colaboradores } = await supabase.from('colaboradores').select('*', { count: 'exact', head: true })
+  const { count: dispensas } = await supabase.from('dispensas').select('*', { count: 'exact', head: true })
 
   document.getElementById("totalProdutos").innerText = produtos || 0
   document.getElementById("totalColaboradores").innerText = colaboradores || 0
@@ -151,16 +103,15 @@ async function carregarDashboard() {
 }
 
 // =========================
-// TOAST
+// TOAST + UTIL
 // =========================
 window.showToast = function(msg, tipo = "sucesso") {
   const toast = document.createElement("div")
-  toast.className = "toast ${tipo}"
+  toast.className = `toast ${tipo}`
   toast.innerText = msg
   document.body.appendChild(toast)
 
   setTimeout(() => toast.classList.add("show"), 10)
-
   setTimeout(() => {
     toast.classList.remove("show")
     setTimeout(() => toast.remove(), 300)
@@ -174,51 +125,41 @@ window.gerarNomeArquivo = function(tipo) {
   const ano = agora.getFullYear()
   const hora = String(agora.getHours()).padStart(2, '0')
   const minuto = String(agora.getMinutes()).padStart(2, '0')
-
   return `${tipo}_${dia}-${mes}-${ano}_${hora}-${minuto}.pdf`
 }
 
+function mascararCPF(cpf) {
+  cpf = cpf.replace(/[^\d]/g, '')
+  if (cpf.length !== 11) return cpf
+  return cpf.substring(0, 3) + '.' + cpf.substring(3, 6) + '.XXX-' + cpf.substring(9, 11)
+}
+
 // =========================
-// MODAL DISPENSADOS
+// MODAL DISPENSADOS (accordion)
 // =========================
 window.abrirModalDispensados = async function () {
   document.getElementById("modalDispensados").classList.remove("hidden")
 
-  const { data, error } = await supabase
-    .from('dispensas')
-    .select('*')
-
-  if (error) return
+  const { data, error } = await supabase.from('dispensas').select('*')
+  if (error) return showToast("Erro ao carregar dispensas", "erro")
 
   const mapa = {}
-
   data.forEach(item => {
     if (!mapa[item.cpf]) {
-      mapa[item.cpf] = {
-        cpf: item.cpf,
-        nome: item.nome,
-        empresa: item.empresa,
-        local: item.usuario,
-        quantidade: 0
-      }
+      mapa[item.cpf] = { cpf: item.cpf, nome: item.nome, empresa: item.empresa, local: item.usuario, quantidade: 0 }
     }
-
-    mapa[item.cpf].quantidade += 1
+    mapa[item.cpf].quantidade++
   })
 
   const tbody = document.getElementById("listaDispensados")
   tbody.innerHTML = ''
 
-  Object.values(mapa)
-    .sort((a, b) => b.quantidade - a.quantidade)
-    .forEach(p => {
-      
-
+  Object.values(mapa).sort((a, b) => b.quantidade - a.quantidade).forEach(p => {
     const tr = document.createElement("tr")
-      if (p.quantidade > 15) {
-              tr.style.background = "#ffe0e0"
-              tr.style.fontWeight = "bold"
-            }
+    if (p.quantidade > 15) {
+      tr.style.background = "#ffe0e0"
+      tr.style.fontWeight = "bold"
+    }
     tr.innerHTML = `
       <td>${mascararCPF(p.cpf)}</td>
       <td>${p.nome}</td>
@@ -226,11 +167,15 @@ window.abrirModalDispensados = async function () {
       <td>${p.local}</td>
       <td>${p.quantidade}</td>
     `
-
     tr.style.cursor = "pointer"
-    tr.onclick = () => carregarHistorico(p.cpf)
-
+    tr.onclick = () => toggleHistorico(p.cpf)
     tbody.appendChild(tr)
+
+    const trHistorico = document.createElement("tr")
+    trHistorico.id = `historico-${p.cpf}`
+    trHistorico.classList.add("hidden")
+    trHistorico.innerHTML = `<td colspan="5"></td>`
+    tbody.appendChild(trHistorico)
   })
 }
 
@@ -238,192 +183,23 @@ window.fecharModalDispensados = function () {
   document.getElementById("modalDispensados").classList.add("hidden")
 }
 
-async function carregarHistorico(cpf) {
-  const { data } = await supabase
-    .from('dispensas')
-    .select('*')
-    .eq('cpf', cpf)
-    .order('data_hora', { ascending: false })
+async function toggleHistorico(cpf) {
+  document.querySelectorAll("[id^='historico-']").forEach(h => h.classList.add("hidden"))
+  const trHistorico = document.getElementById(`historico-${cpf}`)
+  trHistorico.classList.remove("hidden")
 
-  const tbody = document.getElementById("historicoDispensa")
-  tbody.innerHTML = ''
+  const { data, error } = await supabase.from('dispensas').select('*').eq('cpf', cpf).order('data_hora', { ascending: false })
+  if (error) return showToast("Erro ao carregar histórico", "erro")
 
-  data.forEach(item => {
-    const tr = document.createElement("tr")
-
-    tr.innerHTML = `
-      <td>${new Date(item.data_hora).toLocaleString('pt-BR', {
-        timeZone: 'America/Sao_Paulo'
-      })}</td>
-    `
-
-    tbody.appendChild(tr)
-  })
+  const html = data.map(item => `
+    <div>
+      <input type="checkbox" class="selecionar" checked>
+      ${new Date(item.data_hora).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })} — ${item.usuario}
+    </div>
+  `).join("")
+  trHistorico.querySelector("td").innerHTML = html
 }
 
-function mascararCPF(cpf) {
-  cpf = cpf.replace(/[^\d]/g, '')
-
-  if (cpf.length !== 11) return cpf
-
-  return cpf.substring(0, 3) + '.' +
-         cpf.substring(3, 6) + '.XXX-' +
-         cpf.substring(9, 11)
-}
-
-// =========================
-// GRÁFICOS
-// =========================
-let graficoPizza = null
-let graficoBarra = null
-
-function destruirGraficos() {
-  if (graficoPizza) {
-    graficoPizza.destroy()
-    graficoPizza = null
-  }
-
-  if (graficoBarra) {
-    graficoBarra.destroy()
-    graficoBarra = null
-  }
-}
-
-async function carregarGraficos() {
-
-  destruirGraficos()
-
-  const inicio = document.getElementById("dataInicio")?.value
-  const fim = document.getElementById("dataFim")?.value
-
-  let query = supabase.from('dispensas').select('*')
-
-  if (inicio) query = query.gte('data_hora', inicio)
-  if (fim) query = query.lte('data_hora', fim)
-
-  const { data, error } = await query
-
-  if (error || !data) return
-
-  // 📊 PIZZA (LOCAL)
-  const mapaLocal = {
-    ADM: 0,
-    EXTERNO: 0,
-    SATELITE: 0
-  }
-
-  data.forEach(d => {
-    if (mapaLocal[d.usuario] !== undefined) {
-      mapaLocal[d.usuario]++
-    }
-  })
-
-  graficoPizza = new Chart(document.getElementById("graficoPizza"), {
-    type: 'pie',
-    data: {
-      labels: Object.keys(mapaLocal),
-      datasets: [{
-        data: Object.values(mapaLocal),
-        backgroundColor: [
-        '#4CAF50', // verde (ADM)
-        '#2196F3', // azul (EXTERNO)
-        '#FF9800'  // laranja (SATELITE)
-      ]
-      }]
-    }
-  })
-
-  // 📊 BARRA (MÊS A MÊS)
-  const mapaMes = {}
-
-  data.forEach(d => {
-    const dataObj = new Date(
-      new Date(d.data_hora).toLocaleString('en-US', {
-        timeZone:'America/Sao_Paulo'
-      })
-    )
-    const chave = `${dataObj.getFullYear()}-${dataObj.getMonth()}`
-
-    if (!mapaMes[chave]) {
-      mapaMes[chave] = {
-        label: dataObj.toLocaleString('pt-BR', { month: 'short', year: 'numeric' }),
-        total: 0
-      }
-    }
-
-    mapaMes[chave].total++
-  })
-
-  const mesesOrdenados = Object.entries(mapaMes)
-    .sort((a, b) => {
-      const [anoA, mesA] = a[0].split('-').map(Number)
-      const [anoB, mesB] = b[0].split('-').map(Number)
-      return new Date(anoA, mesA) - new Date(anoB, mesB)
-    })
-    .map(item => item[1])
-
-  graficoBarra = new Chart(document.getElementById("graficoBarra"), {
-    type: 'bar',
-    data: {
-      labels: mesesOrdenados.map(m => m.label),
-      datasets: [{
-        label: 'Dispensas por mês',
-        data: mesesOrdenados.map(m => m.total),
-        backgroundColor: '#2196F3'
-      }]
-    }
-  })
-}
-
-window.filtrarPeriodo = function(dias) {
-  const hoje = new Date()
-  const inicio = new Date()
-
-  inicio.setDate(hoje.getDate() - dias)
-
-  document.getElementById("dataInicio").value = inicio.toISOString().split('T')[0]
-  document.getElementById("dataFim").value = hoje.toISOString().split('T')[0]
-
-  carregarGraficos()
-}
-
-window.toggleFiltroPersonalizado = function() {
-  document.getElementById("filtroCustom").classList.toggle("hidden")
-}
-
-window.exportarListaPDF = () => {
-  const { jsPDF } = window.jspdf
-  const doc = new jsPDF()
-
-  doc.text("Lista de Itens", 10, 10)
-
-  // Exemplo simples: pegar tabela
-  const tabela = document.getElementById("tabelaEstoque")
-  if (tabela) {
-    let linhas = []
-    tabela.querySelectorAll("tr").forEach(tr => {
-      let linha = []
-      tr.querySelectorAll("td, th").forEach(td => linha.push(td.innerText))
-      linhas.push(linha)
-    })
-    // Adiciona tabela no PDF
-    doc.autoTable({ head: [linhas[0]], body: linhas.slice(1) })
-  }
-
-  doc.save(gerarNomeArquivo("estoque"))
-}
-
-
-window.exportarHistoricoPDF = async function () {
-  const elemento = document.getElementById("historicoDispensa")
-
-  const canvas = await html2canvas(elemento)
-  const imgData = canvas.toDataURL("image/png")
-
-  const pdf = new jspdf.jsPDF('p', 'mm', 'a4')
-  const largura = 190
-  const altura = (canvas.height * largura) / canvas.width
-
-  pdf.addImage(imgData, 'PNG', 10, 10, largura, altura)
-  pdf.save(gerarNomeArquivo("historico"))
-}
+window.carregarGraficos = carregarGraficos
+window.filtrarPeriodo = filtrarPeriodo
+window.toggleFiltroPersonalizado = toggleFiltroPersonalizado
