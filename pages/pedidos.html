@@ -49,12 +49,30 @@
 <main class="conteudo">
   <div id="areaPedidos">
     <!-- Formulário -->
-    <div class="formulario-pedido">
-      <input id="codigo" placeholder="Código MV ou SGA" oninput="previewCodigo(this.value)">
-      <div id="previewItem"></div>
-      <input id="quantidade" type="number" placeholder="Quantidade">
-      <button id="btnIncluir">Incluir</button>
+    <h3>Novo Item</h3>
+    <div class="tabela-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descrição</th>
+            <th>Qtd. Fat.</th>
+            <th>Qtd. Solicitada</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input id="codigo" placeholder="Código MV ou SGA" oninput="previewCodigo(this.value)"></td>
+            <td><div id="previewItem"></div></td>
+            <td><div id="qtdFat">—</div></td>
+            <td><input id="quantidade" type="number" placeholder="Qtd."></td>
+            <td><button id="btnIncluir">Incluir</button></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+
 
     <!-- Lista de pedidos -->
     <h3>Itens do Pedido</h3>
@@ -79,6 +97,48 @@
     </div>
 
   </div>
+
+  <!-- Modal de resumo -->
+<div id="modalResumo" class="modal hidden">
+  <div class="modal-content">
+    <h3>Resumo do Pedido</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nome</th>
+          <th>Quantidade</th>
+        </tr>
+      </thead>
+      <tbody id="resumoPedidos"></tbody>
+    </table>
+    <div class="modal-actions">
+      <button onclick="salvarPedido()">Salvar</button>
+      <button onclick="imprimirPedido()">Imprimir</button>
+      <button onclick="salvarEImprimir()">Salvar e Imprimir</button>
+      <button onclick="fecharModal()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Histórico de pedidos -->
+<div id="historicoPedidos" class="hidden">
+  <h3>Histórico de Pedidos</h3>
+  <div class="tabela-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Nº Pedido</th>
+          <th>Itens</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="listaHistorico"></tbody>
+    </table>
+  </div>
+</div>
+
 </main>
 
 <footer class="rodape">
