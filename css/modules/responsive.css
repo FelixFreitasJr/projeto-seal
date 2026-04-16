@@ -32,7 +32,24 @@
   }
 
   .menu-suspenso {
+    display: none;
+  }
+
+  .menu-suspenso.aberto {
     display: flex;
+  }
+
+  .menu-suspenso {
+    top: 90px;
+    height: calc(100% - 90px);
+  }
+
+  main.conteudo {
+    margin-top: 135px;
+  }
+
+  .barra-topo {
+    top: 90px;
   }
 
   /* Cards */

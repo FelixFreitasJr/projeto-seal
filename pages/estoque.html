@@ -151,7 +151,7 @@
   }
 
   // Exibe coluna SGA apenas para ADM
-  if (user.perfil !== "ADM") {
+  if (!user || user.perfil !== "ADM") {
     document.querySelectorAll(".col-sga").forEach(el => el.style.display = "none")
   }
 

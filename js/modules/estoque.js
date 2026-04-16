@@ -5,6 +5,16 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 // 🔥 controle de edição
 let modoEdicaoProduto = null
+let ordenacao = { campo: 'nome', asc: true }
+
+const mapaOrdenacao = {
+  codigo: 'codigo_mv',
+  codigo_sga: 'codigo_sga',
+  nome: 'nome',
+  endereco_externo: 'endereco_externo',
+  endereco_satelite: 'endereco_satelite',
+  quantidade_faturamento: 'quantidade_faturamento'
+}
 
 export function initEstoque() {
   const user = JSON.parse(localStorage.getItem("usuarioLogado"))
@@ -15,14 +25,14 @@ export function initEstoque() {
   let timeout = null
 
   if (!isAdmin) {
-    document.getElementById("colAcoes").style.display = "none"
-    document.getElementById("btnNovo").remove()
+    document.getElementById("colAcoes")?.style.setProperty('display', 'none')
+    document.getElementById("btnNovo")?.remove()
   }
 
   if (isAdmin) {
-  document.getElementById("btnExportarEstoque").classList.remove("hidden")
-  document.getElementById("btnExportarEstoque").addEventListener("click", exportarEstoquePDF)
-}
+    document.getElementById("btnExportarEstoque")?.classList.remove("hidden")
+    document.getElementById("btnExportarEstoque")?.addEventListener("click", exportarEstoquePDF)
+  }
 
   // =========================
   // BUSCAR / LISTAR
@@ -30,7 +40,10 @@ export function initEstoque() {
   async function buscar() {
     const termo = busca?.value?.trim() || ''
 
-    let query = supabase.from('produtos').select('*').order('nome', { ascending: true })
+    let query = supabase
+      .from('produtos')
+      .select('*')
+      .order(ordenacao.campo, { ascending: ordenacao.asc })
 
     if (termo) {
       query = query.or(
@@ -286,3 +299,18 @@ window.editarProduto = editarProduto
 window.excluirProduto = excluirProduto
 window.clonarItem = clonarItem
 window.formatarStatusClasse = formatarStatusClasse
+
+function ordenarTabela(_tabela, campo) {
+  const campoBanco = mapaOrdenacao[campo] || 'nome'
+
+  if (ordenacao.campo === campoBanco) {
+    ordenacao.asc = !ordenacao.asc
+  } else {
+    ordenacao.campo = campoBanco
+    ordenacao.asc = true
+  }
+
+  window.atualizarEstoque?.()
+}
+
+window.ordenarTabela = ordenarTabela
