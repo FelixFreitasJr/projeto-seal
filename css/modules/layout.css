@@ -183,10 +183,6 @@ footer.rodape a:hover {
   color: var(--primary);
 }
 
-.dashboard-header {
-  margin-bottom: 20px;
-}
-
 .dashboard-header h1 {
   color: var(--primary);
   margin: 0;
@@ -198,7 +194,7 @@ footer.rodape a:hover {
 }
 
 .dashboard-info {
-  margin-top: 20px;
+  margin-top: 10px;
   font-size: 14px;
   color: var(--text-light);
 }

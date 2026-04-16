@@ -94,7 +94,6 @@
   top: 0;
   width: 100%;
   height: 100%;
-  overflow: auto;
   background: rgba(0,0,0,0.5);
 }
 
@@ -133,8 +132,7 @@
 }
 
 .modal-dispensados-content {
-  width: min(92vw, 680px);
-  max-width: 680px;
+  max-width: 90%;
   max-height: 82vh;
   overflow: auto;
 }
