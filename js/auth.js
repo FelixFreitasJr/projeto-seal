@@ -3,12 +3,38 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
+function safeShowToast(msg, tipo = 'sucesso') {
+  if (typeof window.showToast === 'function') {
+    window.showToast(msg, tipo)
+    return
+  }
+
+  const toast = document.createElement('div')
+  toast.className = `toast ${tipo}`
+  toast.innerText = msg
+  document.body.appendChild(toast)
+
+  setTimeout(() => toast.classList.add('show'), 10)
+  setTimeout(() => {
+    toast.classList.remove('show')
+    setTimeout(() => toast.remove(), 300)
+  }, 3000)
+}
+
 // =========================
 // LOGIN
 // =========================
 export async function login() {
-  const user = document.getElementById("usuario").value.trim().toUpperCase()
-  const pass = document.getElementById("senha").value.trim().toUpperCase()
+  const userInput = document.getElementById('usuario')
+  const passInput = document.getElementById('senha')
+
+  if (!userInput || !passInput) {
+    safeShowToast('Campos de login não encontrados na página.', 'erro')
+    return false
+  }
+
+  const user = userInput.value.trim().toUpperCase()
+  const pass = passInput.value.trim()
 
   const { data, error } = await supabase
     .from('usuarios')
@@ -16,30 +42,46 @@ export async function login() {
     .eq('usuario', user)
 
   if (error || !data || data.length === 0) {
-    showToast("Usuário ou senha inválidos", "erro")
+    safeShowToast('Usuário ou senha inválidos', 'erro')
     return false
   }
 
   const userData = data[0]
+  const senhaBanco = String(userData.senha ?? '').trim()
 
-  if (pass !== userData.senha) {
-    showToast("Usuário ou senha inválidos", "erro")
+  if (pass.toUpperCase() !== senhaBanco.toUpperCase()) {
+    safeShowToast('Usuário ou senha inválidos', 'erro')
     return false
   }
 
-  // salva usuário + timestamp da sessão
   userData.loginTime = Date.now()
-  localStorage.setItem("usuarioLogado", JSON.stringify(userData))
+  localStorage.setItem('usuarioLogado', JSON.stringify(userData))
 
-  window.location.href = "../index.html"
+  window.location.href = '../index.html'
   return true
+}
+
+function initLoginForm() {
+  const form = document.getElementById('formLogin')
+  if (!form) return
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault()
+    await login()
+  })
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initLoginForm)
+} else {
+  initLoginForm()
 }
 
 // =========================
 // LOGOUT
 // =========================
 export function logout() {
-  localStorage.removeItem("usuarioLogado")
+  localStorage.removeItem('usuarioLogado')
   if (window.location.pathname.includes('/pages/')) {
     window.location.href = 'login.html'
   } else {
@@ -51,17 +93,16 @@ export function logout() {
 // CHECK AUTH
 // =========================
 export function checkAuth() {
-  const user = JSON.parse(localStorage.getItem("usuarioLogado"))
+  const user = JSON.parse(localStorage.getItem('usuarioLogado'))
 
   if (!user) {
     redirecionarLogin()
     return
   }
 
-  // verifica se já passou 1 hora (3600000 ms)
   const agora = Date.now()
   if (agora - user.loginTime > 3600000) {
-    showToast("Sessão expirada. Faça login novamente.", "alerta")
+    safeShowToast('Sessão expirada. Faça login novamente.', 'alerta')
     logout()
     return
   }
@@ -70,7 +111,7 @@ export function checkAuth() {
 }
 
 export function getUser() {
-  const user = JSON.parse(localStorage.getItem("usuarioLogado"))
+  const user = JSON.parse(localStorage.getItem('usuarioLogado'))
   return user ? user.usuario : null
 }
 
@@ -82,32 +123,33 @@ function aplicarPermissoes(user) {
   let edicao = user.edicao
 
   if (!Array.isArray(edicao)) {
-    if (typeof edicao === "string") {
-      edicao = edicao.split(",")
+    if (typeof edicao === 'string') {
+      edicao = edicao.split(',')
     } else {
       edicao = []
     }
   }
 
-  if (perfil !== "ADM") {
-    document.getElementById("btnConfig")?.classList.add("hidden")
-    document.getElementById("btnPedidos")?.classList.add("hidden")
-    document.getElementById("btnExportarLista")?.classList.add("hidden")
-    document.getElementById("btnExportarHistorico")?.classList.add("hidden")
-    document.getElementById("btnPDF")?.classList.add("hidden")
+  if (perfil !== 'ADM') {
+    document.getElementById('btnConfig')?.classList.add('hidden')
+    document.getElementById('btnPedidos')?.classList.add('hidden')
+    document.getElementById('btnExportarLista')?.classList.add('hidden')
+    document.getElementById('btnExportarHistorico')?.classList.add('hidden')
+    document.getElementById('btnPDF')?.classList.add('hidden')
   }
 
-  if (!edicao.includes("estoque")) {
-    document.querySelectorAll(".acoes").forEach(el => el.classList.add("hidden"))
+  if (!edicao.includes('estoque')) {
+    document.querySelectorAll('.acoes').forEach((el) => el.classList.add('hidden'))
   }
 
-  if (!edicao.includes("excluirColaborador")) {
-    document.querySelectorAll(".btnExcluirColaborador").forEach(el => el.classList.add("hidden"))
+  if (!edicao.includes('excluirColaborador')) {
+    document.querySelectorAll('.btnExcluirColaborador').forEach((el) => el.classList.add('hidden'))
   }
 
-  document.querySelector(".menu-toggle")?.addEventListener("click", () => {
-    const menu = document.querySelector(".menu-suspenso")
-    menu.style.display = menu.style.display === "flex" ? "none" : "flex"
+  document.querySelector('.menu-toggle')?.addEventListener('click', () => {
+    const menu = document.querySelector('.menu-suspenso')
+    if (!menu) return
+    menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex'
   })
 }
 
@@ -125,5 +167,4 @@ function redirecionarLogin() {
 // =========================
 // FUNÇÕES GLOBAIS
 // =========================
-
 window.logout = logout
