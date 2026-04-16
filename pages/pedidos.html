@@ -19,7 +19,7 @@
   <!-- Scripts principais -->
   <script type="module" src="../js/auth.js"></script>
   <script type="module" src="../js/app.js"></script>
-  <script type="module" src="../js/modules/pedidos.js"></script>
+  <script type="module" src="../js/modules/pedido.js"></script>
 </head>
 
 <body>
@@ -48,17 +48,24 @@
 
 <main class="conteudo">
   <div id="areaPedidos">
+
+    <!-- Campo de usuário -->
+    <div class="form-usuario">
+      <label for="usuarioPedido"><strong>Usuário:</strong></label>
+      <input id="usuarioPedido" type="text" placeholder="Digite seu nome">
+    </div>
+
     <!-- Formulário -->
     <h3>Novo Item</h3>
     <div class="tabela-container tabela-formulario">
       <table>
         <thead>
           <tr>
-            <th>Código</th>
-            <th>Descrição</th>
-            <th>Qtd. Fat.</th>
-            <th>Qtd. Solicitada</th>
-            <th>Ações</th>
+            <th class="col-codigo">Código</th>
+            <th class="col-nome">Descrição</th>
+            <th class="col-qtdFat">Qtd. Fat.</th>
+            <th class="col-qtdSolicitada">Qtd. Solicitada</th>
+            <th class="col-acoes">Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -67,80 +74,81 @@
             <td><div id="previewItem"></div></td>
             <td><div id="qtdFat">—</div></td>
             <td><input id="quantidade" type="text" placeholder="Qtd."></td>
-            <td><button id="btnIncluir">Incluir</button></td>
+            <td><button id="btnIncluir" class="btn-incluir">Incluir</button></td>
           </tr>
         </tbody>
       </table>
     </div>
 
-
     <!-- Lista de pedidos -->
     <h3>Itens do Pedido</h3>
     <div class="tabela-container tabela-pedidos">
       <table>
-      <thead>
-        <tr>
-          <th>Código MV</th>
-          <th>Código SGA</th>
-          <th>Nome</th>
-          <th>Qtd. Fat.</th>
-          <th>Qtd. Solicitada</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
+        <thead>
+          <tr>
+            <th class="col-codigo">Código MV</th>
+            <th class="col-sga">Código SGA</th>
+            <th class="col-nome">Nome</th>
+            <th class="col-qtdFat">Qtd. Fat.</th>
+            <th class="col-qtdSolicitada">Qtd. Solicitada</th>
+            <th class="col-acoes">Ações</th>
+          </tr>
+        </thead>
         <tbody id="listaPedidos"></tbody>
       </table>
     </div>
 
     <!-- Finalizar -->
     <div class="actions">
-      <button id="btnFinalizar">Finalizar Pedido</button>
-      <button id="btnPDF">Exportar PDF</button>
+      <button id="btnFinalizar" class="btn-finalizar">Finalizar Pedido</button>
+      <button id="btnHistorico" class="btn-pdf">Consultar Histórico</button>
     </div>
-
   </div>
 
   <!-- Modal de resumo -->
-<div id="modalResumo" class="modal hidden">
-  <div class="modal-content">
-    <h3>Resumo do Pedido</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Código</th>
-          <th>Nome</th>
-          <th>Quantidade</th>
-        </tr>
-      </thead>
-      <tbody id="resumoPedidos"></tbody>
-    </table>
-    <div class="modal-actions">
-      <button onclick="salvarPedido()">Salvar</button>
-      <button onclick="imprimirPedido()">Imprimir</button>
-      <button onclick="salvarEImprimir()">Salvar e Imprimir</button>
-      <button onclick="fecharModal()">Fechar</button>
+  <div id="modalResumo" class="modal hidden">
+    <div class="modal-content">
+      <h3>Resumo do Pedido</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Qtd. Fat.</th>
+            <th>Qtd. Solicitada</th>
+          </tr>
+        </thead>
+        <tbody id="resumoPedidos"></tbody>
+      </table>
+      <div class="modal-actions">
+        <button onclick="salvarPedido()">Salvar Pedido</button>
+        <button onclick="salvarEImprimir()">Salvar e Imprimir</button>
+        <button onclick="fecharModal()">Fechar</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Histórico de pedidos -->
-<div id="historicoPedidos" class="hidden">
-  <h3>Histórico de Pedidos</h3>
-  <div class="tabela-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Data</th>
-          <th>Nº Pedido</th>
-          <th>Itens</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody id="listaHistorico"></tbody>
-    </table>
+  <!-- Modal de histórico -->
+  <div id="modalHistorico" class="modal hidden">
+    <div class="modal-content">
+      <h3>Histórico de Pedidos</h3>
+      <div class="modal-actions">
+        <button onclick="exportarSelecionados()">Exportar Selecionados</button>
+        <button onclick="fecharHistorico()">Fechar</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Pedido</th>
+            <th>Usuário</th>
+            <th>Data e Hora</th>
+            <th>Selecionar</th>
+          </tr>
+        </thead>
+        <tbody id="listaHistorico"></tbody>
+      </table>
+    </div>
   </div>
-</div>
-
 </main>
 
 <footer class="rodape">
@@ -160,7 +168,5 @@
     userInfo.innerText = "Usuário logado: " + user
   }
 </script>
-
-
 </body>
 </html>

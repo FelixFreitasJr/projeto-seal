@@ -3,32 +3,41 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-export async function login() {
-  const usuario = document.getElementById("usuario").value.trim().toUpperCase()
-  const senha = document.getElementById("senha").value.trim().toUpperCase()
+// =========================
+// LOGIN
+// =========================
+export async function login(usuario, senha) {
+  const user = usuario.trim().toUpperCase()
+  const pass = senha.trim().toUpperCase()
 
   const { data, error } = await supabase
     .from('usuarios')
     .select('*')
-    .eq('usuario', usuario) // ✅ CORRETO
+    .eq('usuario', user)
 
   if (error || !data || data.length === 0) {
-    alert("Usuário ou senha inválidos")
-    return
+    showToast("Usuário ou senha inválidos", "erro")
+    return false
   }
 
-  // pega o primeiro registro (mantém compatibilidade)
   const userData = data[0]
 
-  if (senha !== userData.senha) {
-    alert("Usuário ou senha inválidos")
-    return
+  if (pass !== userData.senha) {
+    showToast("Usuário ou senha inválidos", "erro")
+    return false
   }
 
+  // salva usuário + timestamp da sessão
+  userData.loginTime = Date.now()
   localStorage.setItem("usuarioLogado", JSON.stringify(userData))
+
   window.location.href = "../index.html"
+  return true
 }
 
+// =========================
+// LOGOUT
+// =========================
 export function logout() {
   localStorage.removeItem("usuarioLogado")
   if (window.location.pathname.includes('/pages/')) {
@@ -38,18 +47,26 @@ export function logout() {
   }
 }
 
+// =========================
+// CHECK AUTH
+// =========================
 export function checkAuth() {
   const user = JSON.parse(localStorage.getItem("usuarioLogado"))
 
   if (!user) {
-    if (window.location.pathname.includes('/pages/')) {
-      window.location.href = 'login.html'
-    } else {
-      window.location.href = 'pages/login.html'
-    }
-  } else {
-    aplicarPermissoes(user)
+    redirecionarLogin()
+    return
   }
+
+  // verifica se já passou 1 hora (3600000 ms)
+  const agora = Date.now()
+  if (agora - user.loginTime > 3600000) {
+    showToast("Sessão expirada. Faça login novamente.", "alerta")
+    logout()
+    return
+  }
+
+  aplicarPermissoes(user)
 }
 
 export function getUser() {
@@ -57,11 +74,11 @@ export function getUser() {
   return user ? user.usuario : null
 }
 
-// 🔧 CORREÇÃO DE PERMISSÕES
+// =========================
+// PERMISSÕES
+// =========================
 function aplicarPermissoes(user) {
   const perfil = user.perfil
-
-  // 🔥 força edicao ser array SEM quebrar sistema
   let edicao = user.edicao
 
   if (!Array.isArray(edicao)) {
@@ -72,35 +89,45 @@ function aplicarPermissoes(user) {
     }
   }
 
-  // Configurações e pedidos só para ADM
   if (perfil !== "ADM") {
     document.getElementById("btnConfig")?.classList.add("hidden")
     document.getElementById("btnPedidos")?.classList.add("hidden")
-  }
-
-  // Exportar PDF/histórico só para ADM
-  if (perfil !== "ADM") {
     document.getElementById("btnExportarLista")?.classList.add("hidden")
     document.getElementById("btnExportarHistorico")?.classList.add("hidden")
     document.getElementById("btnPDF")?.classList.add("hidden")
   }
 
-  // Estoque
   if (!edicao.includes("estoque")) {
     document.querySelectorAll(".acoes").forEach(el => el.classList.add("hidden"))
   }
 
-  // Dispensa
   if (!edicao.includes("excluirColaborador")) {
     document.querySelectorAll(".btnExcluirColaborador").forEach(el => el.classList.add("hidden"))
   }
 
-  // Menu mobile
   document.querySelector(".menu-toggle")?.addEventListener("click", () => {
     const menu = document.querySelector(".menu-suspenso")
     menu.style.display = menu.style.display === "flex" ? "none" : "flex"
   })
 }
 
-window.login = login
+// =========================
+// REDIRECIONAR LOGIN
+// =========================
+function redirecionarLogin() {
+  if (window.location.pathname.includes('/pages/')) {
+    window.location.href = 'login.html'
+  } else {
+    window.location.href = 'pages/login.html'
+  }
+}
+
+// =========================
+// FUNÇÕES GLOBAIS
+// =========================
+window.login = async () => {
+  const usuario = document.getElementById("usuario").value
+  const senha = document.getElementById("senha").value
+  await login(usuario, senha)
+}
 window.logout = logout

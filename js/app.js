@@ -134,7 +134,7 @@ function mascararCPF(cpf) {
 }
 
 // =========================
-// MODAL DISPENSADOS (accordion)
+// MODAL DISPENSADOS
 // =========================
 window.abrirModalDispensados = async function () {
   document.getElementById("modalDispensados").classList.remove("hidden")
@@ -145,7 +145,13 @@ window.abrirModalDispensados = async function () {
   const mapa = {}
   data.forEach(item => {
     if (!mapa[item.cpf]) {
-      mapa[item.cpf] = { cpf: item.cpf, nome: item.nome, empresa: item.empresa, local: item.usuario, quantidade: 0 }
+      mapa[item.cpf] = { 
+        cpf: item.cpf, 
+        nome: item.nome, 
+        empresa: item.empresa, 
+        funcao: item.funcao,   // nova coluna
+        quantidade: 0 
+      }
     }
     mapa[item.cpf].quantidade++
   })
@@ -163,7 +169,7 @@ window.abrirModalDispensados = async function () {
       <td>${mascararCPF(p.cpf)}</td>
       <td>${p.nome}</td>
       <td>${p.empresa}</td>
-      <td>${p.local}</td>
+      <td>${p.funcao || "-"}</td>
       <td>${p.quantidade}</td>
     `
     tr.style.cursor = "pointer"
@@ -204,15 +210,36 @@ async function toggleHistorico(cpf) {
       <tbody>${html}</tbody>
     </table>
     <div style="margin-top:10px;">
-      <button onclick="exportarHistoricoPDF('${cpf}')">Exportar Selecionados</button>
+      <button onclick="exportarHistoricoPDF('${cpf}')"><img src="../img/baixar.svg" alt="Exportar"> Exportar Selecionados</button>
     </div>
   `
+}
+
+// =========================
+// EXPORTAR LISTA GERAL
+// =========================
+window.exportarListaPDF = function() {
+  const { jsPDF } = window.jspdf
+  const doc = new jsPDF()
+  doc.text("Lista de Colaboradores com Dispensas", 14, 20)
+
+  const head = [["CPF", "Nome", "Empresa", "Função", "Qtd"]]
+  const body = Array.from(document.querySelectorAll("#listaDispensados tr")).map(tr =>
+    Array.from(tr.querySelectorAll("td")).map(td => td.innerText)
+  )
+
+  doc.autoTable({ head, body })
+  doc.save(gerarNomeArquivo("lista_dispensados"))
 }
 
 // =========================
 // EXPORTAR HISTÓRICO
 // =========================
 window.exportarHistoricoPDF = function(cpf) {
+  // pega o nome da linha principal
+  const linha = document.querySelector(`#listaDispensados tr td:nth-child(2)`)
+  const nome = linha ? linha.innerText : cpf
+
   const selecionados = []
   document.querySelectorAll(`#historico-${cpf} .selecionar:checked`).forEach(cb => {
     const linha = cb.closest("tr")
@@ -227,35 +254,15 @@ window.exportarHistoricoPDF = function(cpf) {
 
   const { jsPDF } = window.jspdf
   const doc = new jsPDF()
-  doc.text(`Histórico de ${cpf}`, 14, 20)
+  doc.text(`Histórico de ${nome} (${cpf})`, 14, 20)
+
   doc.autoTable({
     head: [["", "Data/Hora", "Local"]],
     body: selecionados
   })
+
   doc.save(gerarNomeArquivo("historico"))
 }
-
-// // =========================
-// // FECHAR MODAL AO CLICAR FORA
-// // =========================
-// document.addEventListener("click", (event) => {
-//   const modalDisp = document.getElementById("modalDispensados")
-//   if (!modalDisp.classList.contains("hidden")) {
-//     const conteudo = modalDisp.querySelector(".modal-content")
-//     // se clicou fora do conteúdo e não no botão de abrir
-//     if (!conteudo.contains(event.target) && !event.target.closest("#listaDispensados")) {
-//       modalDisp.classList.add("hidden")
-//     }
-//   }
-
-//   const modalConfig = document.getElementById("modalConfig")
-//   if (!modalConfig.classList.contains("hidden")) {
-//     const conteudo = modalConfig.querySelector(".modal-content")
-//     if (!conteudo.contains(event.target) && !event.target.closest("#btnConfig")) {
-//       modalConfig.classList.add("hidden")
-//     }
-//   }
-// })
 
 // =========================
 // GRÁFICOS (importados do módulo)

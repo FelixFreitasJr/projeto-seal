@@ -22,17 +22,13 @@
 
 <main class="conteudo">
   <div class="login-box">
-    <!-- Imagem da caixa de login -->
     <img src="../img/login.svg" alt="Login" class="login-img">
-
     <h2>Acesso ao Sistema</h2>
-    <form onsubmit="login(); return false;">
-      <input type="text" id="usuario" placeholder="Usuário">
-
-      <input type="password" id="senha" placeholder="Senha">
-
-      <button type="submit">Entrar</button>
-    </form>
+      <form id="formLogin">
+        <input type="text" id="usuario" placeholder="Usuário" required>
+        <input type="password" id="senha" placeholder="Senha" required>
+        <button type="submit">Entrar</button>
+      </form>
   </div>
 </main>
 

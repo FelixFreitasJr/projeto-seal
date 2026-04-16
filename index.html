@@ -130,38 +130,29 @@
 <div id="modalDispensados" class="modal hidden">
   <div class="modal-content" style="width: 750px;">
     <h3>Colaboradores com Dispensas</h3>
+    <div class="modal-actions">
+      <button id="btnExportarLista" onclick="exportarListaPDF()">
+        <img src="../img/baixar.svg" alt="Exportar"> Exportar Lista</button>
+      <button id="btnExportarHistorico" onclick="exportarHistoricoPDF()"> 
+        <img src="../img/baixar.svg" alt="Exportar"> Exportar Histórico</button>
+      <button onclick="fecharModalDispensados()">Fechar</button>
+    </div>
     <table>
       <thead>
         <tr>
           <th>CPF</th>
           <th>Nome</th>
           <th>Empresa</th>
-          <th>Local</th>
+          <th>Função</th>
           <th>Qtd</th>
         </tr>
       </thead>
       <tbody id="listaDispensados"></tbody>
     </table>
 
-    <hr>
-
-    <h4>Histórico</h4>
-    <table>
-      <thead>
-        <tr>
-          <th>Data</th>
-        </tr>
-      </thead>
-      <tbody id="historicoDispensa"></tbody>
-    </table>
-
-    <div class="modal-actions">
-      <button id="btnExportarLista" onclick="exportarListaPDF()">Exportar Lista</button>
-      <button id="btnExportarHistorico" onclick="exportarHistoricoPDF()">Exportar Histórico</button>
-      <button onclick="fecharModalDispensados()">Fechar</button>
-    </div>
   </div>
 </div>
+
 
 <footer class="rodape">
   Desenvolvido por 

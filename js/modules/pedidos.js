@@ -42,7 +42,7 @@ async function incluirItem() {
     .maybeSingle()
 
   if (error || !data) {
-    showToast("Item não encontrado")
+    showToast("Item não encontrado", "alerta")
     return
   }
 
@@ -74,9 +74,9 @@ function renderLista() {
       <td>${i.nome}</td>
       <td>${i.quantidade_faturamento}</td>
       <td>${i.quantidade}</td>
-      <td class="acoes">
-          <button onclick="editarItem(${idx})"><img src="../img/editar.svg" alt="Editar"> Editar</button>
-          <button onclick="excluirItem(${idx})"><img src="../img/excluir.svg" alt="Excluir"> Excluir</button>
+      <td class="acoes-pedidos">
+          <button class="btn-editar" onclick="editarItem(${idx})"><img src="../img/editar.svg" alt="Editar"> Editar</button>
+          <button class="btn-excluir" onclick="excluirItem(${idx})"><img src="../img/excluir.svg" alt="Excluir"> Excluir</button>
       </td>
     </tr>
   `).join("")
@@ -97,21 +97,43 @@ function excluirItem(idx) {
   renderLista()
 }
 
-// Finalizar pedido → abre modal
-function finalizarPedido() {
-  const modal = document.getElementById("modalResumo")
-  modal.classList.remove("hidden")
-
-  document.getElementById("resumoPedidos").innerHTML = itensPedido.map(i =>
-    `<tr><td>${i.codigo}</td><td>${i.nome}</td><td>${i.quantidade}</td></tr>`
-  ).join("")
+// Finalizar pedido → salva e abre modal
+async function finalizarPedido() {
+  const pedidoId = await salvarPedido()
+  if (pedidoId) {
+    document.getElementById("resumoPedidos").innerHTML = itensPedido.map(i =>
+      `<tr>
+         <td>${i.codigo}</td>
+         <td>${i.nome}</td>
+         <td>${i.quantidade_faturamento}</td>
+         <td><strong>${i.quantidade}</strong></td>
+       </tr>`
+    ).join("")
+    document.getElementById("modalResumo").classList.remove("hidden")
+  }
 }
 
-// Salvar pedido no banco
+// Salvar pedido no banco com código sequencial
 async function salvarPedido() {
-  const usuario = prompt("Digite seu nome:") || "ADM"
+  const usuarioInput = document.getElementById("usuarioPedido")
+  const usuario = usuarioInput?.value.trim() || "ADM"
+
+  // Buscar último pedido para gerar código sequencial
+  const { data: ultimoPedido, error: erroUltimo } = await supabase
+    .from('pedidos')
+    .select('codigo')
+    .order('id', { ascending: false })
+    .limit(1)
+
+  let novoCodigo = "PED-001"
+  if (!erroUltimo && ultimoPedido && ultimoPedido.length > 0) {
+    const ultimoCodigo = ultimoPedido[0].codigo
+    const numero = parseInt(ultimoCodigo.replace("PED-", ""), 10) + 1
+    novoCodigo = "PED-" + numero.toString().padStart(3, "0")
+  }
 
   const { data, error } = await supabase.from('pedidos').insert({
+    codigo: novoCodigo,
     usuario: usuario,
     data: new Date().toISOString(),
     status: "aberto"
@@ -139,10 +161,7 @@ async function salvarPedido() {
     }
   }
 
-  showToast(`Pedido salvo com sucesso por ${usuario}`, "sucesso")
-  itensPedido = []
-  renderLista()
-  fecharModal()
+  showToast(`Pedido ${novoCodigo} salvo com sucesso por ${usuario}`, "sucesso")
   carregarHistorico()
   return pedidoId
 }
@@ -163,7 +182,7 @@ async function imprimirPedido(pedidoId) {
   const doc = new jsPDF()
   doc.text(`Pedido ${pedidoId}`, 14, 20)
   doc.autoTable({
-    head: [["Código MV", "Código SGA", "Nome", "Qtd. Fat.", "Qtd. Solicitada"]],
+    head: [["Código MV", "Código SGA", "Descrição", "Qtd. Fat.", "Qtd. Solicitada"]],
     body: data.map(i => [
       i.codigo_mv,
       i.codigo_sga || "—",
@@ -175,24 +194,67 @@ async function imprimirPedido(pedidoId) {
   doc.save(gerarNomeArquivo(`pedido_${pedidoId}`))
 }
 
+// Exportar apenas selecionados
+async function exportarSelecionados() {
+  const selecionados = Array.from(document.querySelectorAll(".chkPedido:checked")).map(chk => chk.value)
+
+  if (selecionados.length === 0) {
+    showToast("Nenhum pedido selecionado", "alerta")
+    return
+  }
+
+  const { jsPDF } = window.jspdf
+  const doc = new jsPDF()
+
+  for (const pedidoId of selecionados) {
+    const { data, error } = await supabase
+      .from('pedido_itens')
+      .select('codigo_mv, codigo_sga, nome, quantidade, quantidade_faturamento')
+      .eq('pedido_id', pedidoId)
+
+    if (error || !data) continue
+
+    doc.text(`Pedido ${pedidoId}`, 14, 20)
+    doc.autoTable({
+      head: [["Código MV", "Código SGA", "Descrição", "Qtd. Fat.", "Qtd. Solicitada"]],
+      body: data.map(i => [
+        i.codigo_mv,
+        i.codigo_sga || "—",
+        i.nome,
+        i.quantidade_faturamento || "—",
+        i.quantidade
+      ])
+    })
+    doc.addPage()
+  }
+
+  doc.save(gerarNomeArquivo("pedidos_selecionados"))
+}
+
 // Salvar e imprimir
 async function salvarEImprimir() {
   const pedidoId = await salvarPedido()
   if (pedidoId) {
     await imprimirPedido(pedidoId)
+    fecharModal()
   }
 }
 
-// Fechar modal
+// Fechar modal de resumo
 function fecharModal() {
   document.getElementById("modalResumo").classList.add("hidden")
+}
+
+// Fechar modal de histórico
+function fecharHistorico() {
+  document.getElementById("modalHistorico").classList.add("hidden")
 }
 
 // Carregar histórico de pedidos
 async function carregarHistorico() {
   const { data, error } = await supabase
     .from('pedidos')
-    .select('id, data')
+    .select('id, codigo, usuario, data')
     .order('data', { ascending: false })
 
   if (error) {
@@ -202,39 +264,48 @@ async function carregarHistorico() {
 
   document.getElementById("listaHistorico").innerHTML = data.map(p => `
     <tr>
-      <td>${new Date(p.data).toLocaleDateString()}</td>
-      <td>${p.id}</td>
-      <td><!-- quantidade de itens pode ser buscada com join --></td>
-      <td><button onclick="imprimirPedido(${p.id})">Imprimir</button></td>
+      <td>${p.codigo}</td>
+      <td>${p.usuario}</td>
+      <td>${new Date(p.data).toLocaleString()}</td>
+      <td><input type="checkbox" class="chkPedido" value="${p.id}"></td>
     </tr>
   `).join("")
 }
 
-// Exportar PDF do pedido atual (antes de salvar)
-function exportarPDF() {
-  const { jsPDF } = window.jspdf
-  const doc = new jsPDF()
-  doc.text("Pedido de Material", 14, 20)
-  doc.autoTable({
-    head: [["Código MV", "Código SGA", "Nome", "Qtd. Fat.", "Qtd. Solicitada"]],
-    body: itensPedido.map(i => [
-      i.codigo,
-      i.codigo_sga || "—",
-      i.nome,
-      i.quantidade_faturamento,
-      i.quantidade
-    ])
-  })
-  doc.save(gerarNomeArquivo("pedido"))
+// Abrir pedido do histórico e mostrar itens
+async function abrirPedido(pedidoId) {
+  const { data, error } = await supabase
+    .from('pedido_itens')
+    .select('*')
+    .eq('pedido_id', pedidoId)
+
+  if (error) {
+    showToast("Erro ao buscar itens", "erro")
+    return
+  }
+
+  document.getElementById("resumoPedidos").innerHTML = data.map(i =>
+    `<tr>
+       <td>${i.codigo_mv}</td>
+       <td>${i.nome}</td>
+       <td>${i.quantidade_faturamento || "—"}</td>
+       <td><strong>${i.quantidade}</strong></td>
+     </tr>`
+  ).join("")
+
+  document.getElementById("modalResumo").classList.remove("hidden")
 }
 
-// Eventos
+// Eventos principais
 document.getElementById("codigo").addEventListener("input", e => previewCodigo(e.target.value))
 document.getElementById("btnIncluir").addEventListener("click", incluirItem)
 document.getElementById("btnFinalizar").addEventListener("click", finalizarPedido)
-document.getElementById("btnPDF").addEventListener("click", exportarPDF)
+document.getElementById("btnHistorico").addEventListener("click", () => {
+  carregarHistorico()
+  document.getElementById("modalHistorico").classList.remove("hidden")
+})
 
-// Expor funções globais
+// Expor funções globais para uso no HTML
 window.editarItem = editarItem
 window.excluirItem = excluirItem
 window.previewCodigo = previewCodigo
@@ -243,3 +314,6 @@ window.imprimirPedido = imprimirPedido
 window.salvarEImprimir = salvarEImprimir
 window.fecharModal = fecharModal
 window.carregarHistorico = carregarHistorico
+window.abrirPedido = abrirPedido
+window.exportarSelecionados = exportarSelecionados
+window.fecharHistorico = fecharHistorico

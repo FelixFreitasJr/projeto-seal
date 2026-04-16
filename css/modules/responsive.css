@@ -1,0 +1,93 @@
+/* ===========================
+   RESPONSIVE CSS
+   Ajustes para telas menores
+   =========================== */
+
+/* Ajustes gerais */
+@media (max-width: 958px) {
+  /* Header */
+  header.topo {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
+  }
+
+  .topo-esquerda {
+    margin-bottom: 10px;
+  }
+
+  .barra-topo {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px;
+  }
+
+  /* Menu suspenso */
+  .menu-toggle {
+    display: block;
+  }
+
+  .menu-principal {
+    display: none;
+  }
+
+  .menu-suspenso {
+    display: flex;
+  }
+
+  /* Cards */
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  /* Tabelas */
+  .tabela-container {
+    max-height: none;
+    min-height: auto;
+    overflow-x: auto;
+  }
+
+  .tabela-container table {
+    min-width: 500px;
+  }
+
+  /* Formulários */
+  .login-box {
+    margin: 40px auto;
+    width: 90%;
+  }
+
+  .formulario-pedido {
+    padding: 15px;
+  }
+
+  /* Gráficos */
+  .graficos {
+    flex-direction: column;
+  }
+
+  .grafico-box canvas {
+    height: 220px !important;
+  }
+}
+
+/* Ajustes extras para telas muito pequenas */
+@media (max-width: 480px) {
+  header.topo {
+    font-size: 14px;
+  }
+
+  .barra-topo {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .card p {
+    font-size: 1.5em;
+  }
+
+  .modal-content {
+    width: 95%;
+    margin: 20% auto;
+  }
+}

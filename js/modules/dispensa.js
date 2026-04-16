@@ -46,19 +46,25 @@ export function initDispensa() {
 
     data.forEach(item => {
       linhas += `
-      <tr>
-        <td>${mascararCPF(item.cpf)}</td>
-        <td>${item.nome}</td>
-        <td>${item.empresa}</td>
-        <td>${item.funcao}</td>
-        <td>
-        <div class="acoes">
-              <button style="background: darkseagreen;" onclick="dispensarItem('${item.id}')"><img src="../img/salvar.svg" alt="Salvar"> Dispensar</button>
-              <button onclick="editarColaborador('${item.id}')"><img src="../img/editar.svg" alt="Editar"> Editar</button>
-              <button onclick="excluirItem('${item.id}')"><img src="../img/excluir.svg" alt="Excluir"> Excluir</button>
-        </div>
-        </td>
-      </tr>`
+        <tr>
+          <td class="col-cpf">${mascararCPF(item.cpf)}</td>
+          <td class="col-nome">${item.nome}</td>
+          <td class="col-empresa">${item.empresa}</td>
+          <td class="col-funcao">${item.funcao}</td>
+          <td>
+            <div class="acoes-dispensa">
+              <button class="btn-dispensar" onclick="dispensarItem('${item.id}')">
+                <img src="../img/salvar.svg" alt="Dispensar"> Dispensar
+              </button>
+              <button class="btn-editar" onclick="editarColaborador('${item.id}')">
+                <img src="../img/editar.svg" alt="Editar"> Editar
+              </button>
+              <button class="btn-excluir" onclick="excluirItem('${item.id}')">
+                <img src="../img/excluir.svg" alt="Excluir"> Excluir
+              </button>
+            </div>
+          </td>
+        </tr>`
     })
 
     tabela.innerHTML = linhas

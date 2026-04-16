@@ -1,0 +1,373 @@
+/* ===========================
+   TABELAS CSS
+   Estilos para tabelas de estoque, pedidos e relatórios
+   =========================== */
+
+/* Regras gerais de tabelas */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+th {
+  background: #f0f0f0;
+  cursor: pointer;
+}
+
+/* Cabeçalho fixo */
+main.conteudo table thead th {
+  position: sticky;
+  top: 0;
+  background: #f0f0f0;
+  z-index: 5;
+}
+
+/* Status dentro da tabela */
+.status-container {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.status {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  font-weight: bold;
+  text-transform: uppercase; /* garante visual em maiúsculas */
+}
+
+.status.livre {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.externo {
+  background: #cce5ff;
+  color: #004085;
+}
+
+.status.satelite {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status.inativo {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.status.supervisao {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+.status.prescricao {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.status.cme {
+  background: #fefefe;
+  color: #6c757d;
+}
+
+.status.paciente {
+  background: #f5c6cb;
+  color: #721c24;
+}
+
+
+td.externo {
+  background: #e3f2fd;
+}
+
+td.satelite {
+  background: #fff3e0;
+}
+
+/* Container de tabelas com scroll */
+.tabela-container {
+  flex: 1;
+  min-height: 76vh;
+  max-height: 76vh;
+  overflow-y: auto;
+  overflow-x: auto;
+  margin-top: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabela-container table {
+  width: 100%;
+  min-width: 700px;       /* largura mínima fixa */
+  border-collapse: collapse;
+  table-layout: fixed;    /* força largura proporcional */
+}
+
+.tabela-container th,
+.tabela-container td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  word-wrap: break-word;
+}
+
+/* Colunas específicas */
+.tabela-container th.codigo,
+.tabela-container td.codigo {
+  width: 12%; /* Código MV */
+}
+
+.tabela-container th.col-sga,
+.tabela-container td.col-sga {
+  width: 12%; /* Código SGA */
+}
+
+.tabela-container th.nome,
+.tabela-container td.nome {
+  width: 25%; /* Nome */
+}
+
+.tabela-container th.externo,
+.tabela-container td.externo,
+.tabela-container th.satelite,
+.tabela-container td.satelite {
+  width: 15%; /* Endereços */
+}
+
+.tabela-container th.qtdFat,
+.tabela-container td.qtdFat {
+  width: 15%; /* Qtd. Faturamento */
+}
+
+.tabela-container th.qtd,
+.tabela-container td.qtd {
+  width: 15%; /* Qtd. Faturamento */
+}
+
+.tabela-container th.acoes,
+.tabela-container td.acoes {
+  width: 16%; /* Ações */
+  text-align: center;
+}
+
+/* Tabelas específicas */
+.tabela-formulario {
+  min-height: auto;
+  max-height: none;
+}
+
+.tabela-pedidos {
+  min-height: 40vh;
+  max-height: 40vh;
+}
+
+/* Hover em linhas */
+#listaPedidos tr:hover {
+  background: #f9f9f9;
+}
+
+#listaDispensados tr:hover {
+  background: var(--background);
+}
+
+#listaDispensados td:first-child {
+  white-space: nowrap;
+}
+
+#listaDispensados tr {
+  cursor: pointer;
+}
+
+#listaDispensados tr:hover {
+  background: #f9f9f9;
+}
+
+#listaDispensados input.selecionar {
+  transform: scale(1.2);
+  margin-right: 6px;
+}
+
+/* ===========================
+   TABELA DISPENSA
+   =========================== */
+
+.tabela-container th.col-cpf,
+.tabela-container td.col-cpf {
+  width: 15%;
+}
+
+.tabela-container th.col-nome,
+.tabela-container td.col-nome {
+  width: 30%;
+}
+
+.tabela-container th.col-empresa,
+.tabela-container td.col-empresa {
+  width: 25%;
+}
+
+.tabela-container th.col-funcao,
+.tabela-container td.col-funcao {
+  width: 20%;
+}
+
+.tabela-container th.col-acoes,
+.tabela-container td.col-acoes {
+  width: 10%;
+  text-align: center;
+}
+
+/* Ações da tabela de dispensa */
+.acoes-dispensa {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.acoes-dispensa button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.acoes-dispensa button img {
+  width: 16px;
+  height: 16px;
+}
+
+/* Botões específicos */
+.btn-dispensar {
+  background: darkseagreen;
+  color: #fff;
+}
+
+.btn-dispensar:hover {
+  background: seagreen;
+}
+
+.btn-editar {
+  background: #ffc107;
+  color: #000;
+}
+
+.btn-editar:hover {
+  background: #e0a800;
+}
+
+.btn-excluir {
+  background: #dc3545;
+  color: #fff;
+}
+
+.btn-excluir:hover {
+  background: #c82333;
+}
+
+/* ===========================
+   TABELA ESTOQUE
+   =========================== */
+
+.acoes-estoque {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.acoes-estoque button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.acoes-estoque button img {
+  width: 16px;
+  height: 16px;
+}
+
+/* Botões específicos */
+.btn-editar {
+  background: #ffc107;
+  color: #000;
+}
+
+.btn-editar:hover {
+  background: #e0a800;
+}
+
+.btn-clonar {
+  background: #17a2b8;
+  color: #fff;
+}
+
+.btn-clonar:hover {
+  background: #138496;
+}
+
+.btn-excluir {
+  background: #dc3545;
+  color: #fff;
+}
+
+.btn-excluir:hover {
+  background: #c82333;
+}
+
+/* ===========================
+   PEDIDOS CSS
+   Estilos específicos da tela de pedidos
+   =========================== */
+
+/* Destaque para quantidade solicitada */
+.tabela-container td strong {
+  color: #d9534f; /* vermelho suave */
+  font-weight: bold;
+}
+
+/* Modais */
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal.hidden {
+  display: none;
+}
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 6px;
+  width: 80%;
+  max-width: 800px;
+}
+.modal-actions {
+  margin-top: 1rem;
+  text-align: right;
+}
+.modal-actions button {
+  margin-left: 8px;
+}

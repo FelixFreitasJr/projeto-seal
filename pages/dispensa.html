@@ -52,6 +52,10 @@
   <button id="btnNovoColaborador">
     <img src="../img/novo.svg" alt="Novo"> Novo Colaborador
   </button>
+  <button id="btnExportarDispensa" class="hidden">
+    <img src="../img/baixar.svg" alt="Exportar"> Exportar PDF
+  </button>
+
   <span id="contadorColaboradores"></span>
 </div>
 
@@ -60,17 +64,18 @@
     <table>
       <thead>
         <tr>
-          <th>CPF</th>
-          <th>Nome</th>
-          <th>Empresa</th>
-          <th>Função</th>
-          <th>Ações</th>
+          <th class="col-cpf">CPF</th>
+          <th class="col-nome">Nome</th>
+          <th class="col-empresa">Empresa</th>
+          <th class="col-funcao">Função</th>
+          <th class="col-acoes">Ações</th>
         </tr>
       </thead>
       <tbody id="tabela"></tbody>
     </table>
   </div>
 </main>
+
 
 <!-- Modal novo colaborador -->
 <div id="modalColaborador" class="modal hidden" role="dialog" aria-modal="true">

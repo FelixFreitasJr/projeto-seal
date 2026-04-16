@@ -19,6 +19,11 @@ export function initEstoque() {
     document.getElementById("btnNovo").remove()
   }
 
+  if (isAdmin) {
+  document.getElementById("btnExportarEstoque").classList.remove("hidden")
+  document.getElementById("btnExportarEstoque").addEventListener("click", exportarEstoquePDF)
+}
+
   // =========================
   // BUSCAR / LISTAR
   // =========================
@@ -62,13 +67,19 @@ export function initEstoque() {
         </td>
         <td class="externo">${escapeHtml(item.endereco_externo)}</td>
         <td class="satelite">${escapeHtml(item.endereco_satelite)}</td>
-        <td class="qtdFat">${escapeHtml(item.quantidade_faturamento || '—')}</td>
         ${isAdmin ? `
+        <td class="qtdFat">${escapeHtml(item.quantidade_faturamento || '—')}</td>
         <td>
-          <div class="acoes">
-            <button onclick="editarProduto('${item.id}')"><img src="../img/editar.svg" alt="Editar"> Editar</button>
-            <button onclick="clonarItem('${item.id}')"><img src="../img/clonar.svg" alt="Clonar"> Clonar</button>
-            <button onclick="excluirProduto('${item.id}')"><img src="../img/excluir.svg" alt="Excluir"> Excluir</button>
+          <div class="acoes-estoque">
+            <button class="btn-editar" onclick="editarProduto('${item.id}')">
+              <img src="../img/editar.svg" alt="Editar"> Editar
+            </button>
+            <button class="btn-clonar" onclick="clonarItem('${item.id}')">
+              <img src="../img/clonar.svg" alt="Clonar"> Clonar
+            </button>
+            <button class="btn-excluir" onclick="excluirProduto('${item.id}')">
+              <img src="../img/excluir.svg" alt="Excluir"> Excluir
+            </button>
           </div>
         </td>` : ''}
       </tr>`
@@ -129,15 +140,16 @@ async function salvarProduto() {
   }
 
   const dados = {
-    codigo_mv,
-    codigo_sga,
-    nome,
-    endereco_externo: externo,
-    endereco_satelite: satelite,
-    observacao,
-    liberacao,
+    codigo_mv: codigo_mv.toUpperCase(),
+    codigo_sga: codigo_sga.toUpperCase(),
+    nome: nome.toUpperCase(),
+    endereco_externo: externo.toUpperCase(),
+    endereco_satelite: satelite.toUpperCase(),
+    observacao: observacao.toUpperCase(),
+    liberacao: liberacao.toUpperCase(),
     quantidade_faturamento: quantidade_faturamento || null
   }
+
 
   if (modoEdicaoProduto) {
     const { error } = await supabase.from('produtos').update(dados).eq('id', modoEdicaoProduto)
@@ -223,8 +235,13 @@ function formatarStatusClasse(status) {
   if (status.includes('externo')) return 'externo'
   if (status.includes('satélite') || status.includes('satelite')) return 'satelite'
   if (status.includes('inativo')) return 'inativo'
+  if (status.includes('supervisão')) return 'supervisao'
+  if (status.includes('prescrição')) return 'prescricao'
+  if (status.includes('cme')) return 'cme'
+  if (status.includes('paciente')) return 'paciente'
   return ''
 }
+
 
 function escapeHtml(value) {
   if (value == null) return ''
@@ -242,6 +259,25 @@ function toggleMenu(btn) {
 }
 
 window.toggleMenu = toggleMenu
+
+function exportarEstoquePDF() {
+  const { jsPDF } = window.jspdf
+  const doc = new jsPDF()
+
+  doc.text("Relatório de Estoque", 14, 20)
+
+  // Cabeçalho da tabela
+  const head = [["Código MV", "Código SGA", "Nome", "Externo", "Satélite", "Qtd. Faturamento"]]
+
+  // Linhas da tabela atual renderizada
+  const body = Array.from(document.querySelectorAll("#tabelaEstoque tr")).map(tr =>
+    Array.from(tr.querySelectorAll("td")).map(td => td.innerText)
+  )
+
+  doc.autoTable({ head, body })
+  doc.save(gerarNomeArquivo("estoque"))
+}
+
 
 // =========================
 // GLOBAL
