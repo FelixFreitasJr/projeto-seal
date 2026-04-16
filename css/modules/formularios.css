@@ -5,7 +5,6 @@
 
 /* Login */
 .login-box {
-  max-width: 320px;
   margin: 80px auto;
   padding: 20px;
   background: var(--white);
@@ -20,11 +19,20 @@
 }
 
 .login-box input {
-  width: 100%;
-  padding: 10px;
+  width: 90%;
+  padding: 15px;
   margin-bottom: 12px;
   border: 1px solid var(--gray-border);
   border-radius: 6px;
+}
+
+.login-box button {
+ background-color: var(--primary);
+ cursor: pointer;
+}
+
+.login-box button:hover {
+ background-color: var(--primary-dark);
 }
 
 /* Busca */
