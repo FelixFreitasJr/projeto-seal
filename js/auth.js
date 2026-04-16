@@ -6,9 +6,9 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 // =========================
 // LOGIN
 // =========================
-export async function login(usuario, senha) {
-  const user = usuario.trim().toUpperCase()
-  const pass = senha.trim().toUpperCase()
+export async function login() {
+  const user = document.getElementById("usuario").value.trim().toUpperCase()
+  const pass = document.getElementById("senha").value.trim().toUpperCase()
 
   const { data, error } = await supabase
     .from('usuarios')
@@ -125,9 +125,5 @@ function redirecionarLogin() {
 // =========================
 // FUNÇÕES GLOBAIS
 // =========================
-window.login = async () => {
-  const usuario = document.getElementById("usuario").value
-  const senha = document.getElementById("senha").value
-  await login(usuario, senha)
-}
+
 window.logout = logout
