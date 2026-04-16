@@ -1,7 +1,7 @@
 /* Arquivo central que importa os módulos */
-@import url('module/global.css');
-@import url('module/layout.css');
-@import url('module/tabelas.css');
-@import url('module/graficos.css');
-@import url('module/formularios.css');
-@import url('module/responsive.css');
+@import url('modules/global.css');
+@import url('modules/layout.css');
+@import url('modules/tabelas.css');
+@import url('modules/graficos.css');
+@import url('modules/formularios.css');
+@import url('modules/responsive.css');
