@@ -7,13 +7,28 @@
 @media (max-width: 958px) {
   /* Header */
   header.topo {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
     padding: 10px;
   }
 
   .topo-esquerda {
-    margin-bottom: 10px;
+    min-width: 0;
+    margin-bottom: 0;
+  }
+
+  .titulo {
+    min-width: 0;
+  }
+
+  .titulo strong,
+  .titulo small {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70vw;
   }
 
   .barra-topo {
@@ -40,16 +55,20 @@
   }
 
   .menu-suspenso {
-    top: 90px;
-    height: calc(100% - 90px);
+    top: 62px;
+    left: 0;
+    right: auto;
+    border-left: none;
+    border-right: 1px solid var(--gray-border);
+    height: calc(100% - 62px);
   }
 
   main.conteudo {
-    margin-top: 135px;
+    margin-top: 118px;
   }
 
   .barra-topo {
-    top: 90px;
+    top: 62px;
   }
 
   /* Cards */

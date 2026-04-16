@@ -17,10 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (pagina.endsWith("dispensa.html")) initDispensa()
 
   const user = getUser()
+  const sessao = JSON.parse(localStorage.getItem('usuarioLogado') || '{}')
+  const perfil = sessao?.perfil
   const titulo = document.querySelector(".titulo small")
   if (titulo && user) titulo.innerText += " | Usuário: " + user
 
-  if (user === "ADM") {
+  if (perfil === "ADM") {
     document.getElementById("btnPedidos")?.classList.remove("hidden")
     const btn = document.getElementById("btnConfig")
     if (btn) btn.classList.remove("hidden")
@@ -49,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (window.location.pathname.includes("pedidos.html")) {
-    if (getUser() !== "ADM") {
+    if (perfil !== "ADM") {
       alert("Acesso restrito")
       window.location.href = "../index.html"
     }
@@ -239,13 +241,14 @@ async function toggleHistorico(cpf) {
     </tr>
   `).join("")
 
+  const imgBasePath = window.location.pathname.includes('/pages/') ? '../img' : 'img'
   trHistorico.querySelector("td").innerHTML = `
     <table style="width:100%">
       <thead><tr><th></th><th>Data/Hora</th><th>Local</th></tr></thead>
       <tbody>${html}</tbody>
     </table>
     <div style="margin-top:10px;">
-      <button onclick="exportarHistoricoPDF('${cpf}')"><img src="../img/baixar.svg" alt="Exportar"> Exportar Selecionados</button>
+      <button onclick="exportarHistoricoPDF('${cpf}')"><img src="${imgBasePath}/baixar.svg" alt="Exportar"> Exportar Selecionados</button>
     </div>
   `
 }

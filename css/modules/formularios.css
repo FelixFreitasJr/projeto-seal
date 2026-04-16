@@ -30,15 +30,33 @@
 /* Busca */
 .busca-box {
   display: flex;
-  gap: 10px;
   align-items: center;
+  position: relative;
+  min-width: 280px;
+  flex: 1;
 }
 
 .busca-box input {
-  flex: 1;
-  padding: 8px;
+  width: 100%;
+  padding: 8px 34px 8px 10px;
   border: 1px solid var(--gray-border);
   border-radius: 6px;
+}
+
+.limpar {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: var(--text-light);
+  cursor: pointer;
+  user-select: none;
+  line-height: 1;
+}
+
+.limpar:hover {
+  color: var(--primary);
 }
 
 /* Formulário de pedidos */
@@ -66,7 +84,9 @@
 
 /* Modal */
 .modal {
-  display: none; /* aparece via JS */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: fixed;
   z-index: 2000;
   left: 0;
@@ -75,6 +95,10 @@
   height: 100%;
   overflow: auto;
   background: rgba(0,0,0,0.5);
+}
+
+.modal.hidden {
+  display: none !important;
 }
 
 .modal-content {
@@ -95,6 +119,13 @@
 }
 
 /* Botões dentro de formulários */
+.filtro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
 .filtro button {
   background: var(--primary);
   color: var(--white);
@@ -148,12 +179,21 @@
 
 .form-usuario {
   margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
 }
 .form-usuario label {
-  margin-right: 0.5rem;
+  margin-right: 0;
   font-weight: bold;
 }
 .form-usuario input {
+  min-width: 220px;
   padding: 6px 10px;
   border: 1px solid #ccc;
   border-radius: 4px;

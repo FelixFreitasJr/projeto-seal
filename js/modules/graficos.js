@@ -24,8 +24,8 @@ export async function carregarGraficos() {
   const fim = document.getElementById("dataFim")?.value
 
   let query = supabase.from('dispensas').select('*')
-  if (inicio) query = query.gte('data_hora', inicio)
-  if (fim) query = query.lte('data_hora', fim)
+  if (inicio) query = query.gte('data_hora', `${inicio}T00:00:00`)
+  if (fim) query = query.lte('data_hora', `${fim}T23:59:59`)
 
   const { data, error } = await query
   if (error || !data) return
