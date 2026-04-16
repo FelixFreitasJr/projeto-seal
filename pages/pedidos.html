@@ -49,12 +49,6 @@
 <main class="conteudo">
   <div id="areaPedidos">
 
-    <!-- Campo de usuário -->
-    <div class="form-usuario">
-      <label for="usuarioPedido"><strong>Usuário:</strong></label>
-      <input id="usuarioPedido" type="text" placeholder="Digite seu nome">
-    </div>
-
     <!-- Formulário -->
     <h3>Novo Item</h3>
     <div class="tabela-container tabela-formulario">
@@ -70,7 +64,13 @@
         </thead>
         <tbody>
           <tr>
-            <td><input id="codigo" placeholder="Código MV ou SGA" oninput="previewCodigo(this.value)"></td>
+            <td>
+              <div class="usuario-codigo-inline">
+                <input id="usuarioPedido" type="text" placeholder="Usuário" class="usuario-pedido-inline">
+                <span class="separador-campos">|</span>
+                <input id="codigo" placeholder="Código MV ou SGA" oninput="previewCodigo(this.value)">
+              </div>
+            </td>
             <td><div id="previewItem"></div></td>
             <td><div id="qtdFat">—</div></td>
             <td><input id="quantidade" type="text" placeholder="Qtd."></td>

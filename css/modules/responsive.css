@@ -37,6 +37,11 @@
     padding: 8px;
   }
 
+  .busca-box {
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
+
   /* Menu suspenso */
   .menu-toggle {
     display: block;

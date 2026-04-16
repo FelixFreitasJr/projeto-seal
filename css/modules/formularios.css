@@ -32,8 +32,9 @@
   display: flex;
   align-items: center;
   position: relative;
-  min-width: 280px;
-  flex: 1;
+  min-width: 220px;
+  flex: 0 1 440px;
+  max-width: 440px;
 }
 
 .busca-box input {
@@ -111,6 +112,33 @@
   box-shadow: 0 2px 10px rgba(0,0,0,0.25);
 }
 
+#modal .modal-content,
+#modalColaborador .modal-content {
+  max-width: 560px;
+}
+
+#modal .modal-content h3,
+#modalColaborador .modal-content h3 {
+  margin-top: 0;
+  color: var(--primary);
+}
+
+#modal .modal-content input,
+#modal .modal-content select,
+#modalColaborador .modal-content input,
+#modalColaborador .modal-content select {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
+.modal-dispensados-content {
+  width: min(92vw, 680px);
+  max-width: 680px;
+  max-height: 82vh;
+  overflow: auto;
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -166,9 +194,9 @@
 
 .modal-actions {
   display: flex;
-  justify-content: flex-start; /* ficam no topo, alinhados à esquerda */
+  justify-content: flex-end;
   gap: 10px;
-  margin-bottom: 15px; /* espaço abaixo dos botões */
+  margin-bottom: 15px;
 }
 
 .login-img {
@@ -197,4 +225,20 @@
   padding: 6px 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.usuario-codigo-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.usuario-pedido-inline {
+  max-width: 120px;
+  min-width: 90px;
+}
+
+.separador-campos {
+  color: #666;
+  font-weight: bold;
 }
