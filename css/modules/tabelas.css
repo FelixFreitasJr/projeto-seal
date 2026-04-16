@@ -218,6 +218,15 @@ td.satelite {
   margin-right: 6px;
 }
 
+#listaDispensados button{
+  background-color: var(--secondary);
+  transition: background-color 0.3s ease;
+}
+
+#listaDispensados button:hover{
+  background-color: var(--secondary-dark);
+}
+
 /* ===========================
    TABELA DISPENSA
    =========================== */
@@ -380,10 +389,4 @@ td.satelite {
   width: 80%;
   max-width: 800px;
 }
-.modal-actions {
-  margin-top: 1rem;
-  text-align: right;
-}
-.modal-actions button {
-  margin-left: 8px;
-}
+

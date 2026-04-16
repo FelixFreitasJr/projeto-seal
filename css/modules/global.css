@@ -5,9 +5,12 @@
 
 /* Paleta de cores e variáveis */
 :root {
-  --primary: #2f7d5b;
-  --primary-dark: #25664a;
+  --primary: #2f7d5b;        /* verde principal */
+  --primary-dark: #25664a;   /* verde escuro */
+  --primary-light: #66b497;  /* verde claro  */
   --secondary: #2196F3;
+  --secondary-light: #64B5F6; /* azul mais claro */
+  --secondary-dark: #1976D2;  /* azul mais escuro */
   --background: #f5f5f5;
   --text: #444;
   --text-light: #666;
