@@ -38,7 +38,7 @@ export async function login() {
   }
 
   const user = userInput.value.trim().toUpperCase()
-  const pass = passInput.value.trim()
+  const pass = passInput.value.trim().toUpperCase()
 
   if (isLoginBloqueado(user)) {
     safeShowToast('Muitas tentativas. Aguarde 5 minutos para tentar novamente.', 'alerta')

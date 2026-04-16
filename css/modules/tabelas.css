@@ -159,6 +159,28 @@ td.satelite {
   text-align: center;
 }
 
+/* Ajustes da tabela de estoque */
+#tabelaEstoque td:nth-child(1) {
+  width: 12%;
+}
+
+#tabelaEstoque td:nth-child(2) {
+  width: 12%;
+}
+
+#tabelaEstoque td:nth-child(3) {
+  width: 34%;
+}
+
+#tabelaEstoque td:nth-child(6) {
+  width: 8%;
+  white-space: nowrap;
+}
+
+#tabelaEstoque td:nth-child(7) {
+  width: 20%;
+}
+
 /* Tabelas específicas */
 .tabela-formulario {
   min-height: auto;
@@ -212,7 +234,7 @@ td.satelite {
 
 .tabela-container th.col-empresa,
 .tabela-container td.col-empresa {
-  width: 25%;
+  width: 12%;
 }
 
 .tabela-container th.col-funcao,
@@ -250,32 +272,48 @@ td.satelite {
   height: 16px;
 }
 
-/* Botões específicos */
-.btn-dispensar {
+/* Botões específicos da dispensa */
+.acoes-dispensa .btn-dispensar {
   background: darkseagreen;
   color: #fff;
 }
 
-.btn-dispensar:hover {
+.acoes-dispensa .btn-dispensar:hover {
   background: seagreen;
 }
 
-.btn-editar {
+.acoes-dispensa .btn-editar {
   background: #ffc107;
   color: #000;
 }
 
-.btn-editar:hover {
+.acoes-dispensa .btn-editar:hover {
   background: #e0a800;
 }
 
-.btn-excluir {
+.acoes-dispensa .btn-excluir {
   background: #dc3545;
   color: #fff;
 }
 
-.btn-excluir:hover {
+.acoes-dispensa .btn-excluir:hover {
   background: #c82333;
+}
+
+#listaPedidos .acoes-pedidos {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+#listaPedidos .acoes-pedidos button {
+  border: 1px solid #d7d7d7;
+  background: #fff;
+  color: #333;
+}
+
+#listaPedidos .acoes-pedidos button:hover {
+  background: #f1f1f1;
 }
 
 /* ===========================
@@ -293,11 +331,13 @@ td.satelite {
   align-items: center;
   gap: 4px;
   padding: 4px 8px;
-  border: none;
+  border: 1px solid #d7d7d7;
   border-radius: 4px;
   font-size: 0.85em;
   cursor: pointer;
   transition: background 0.2s ease;
+  background: #fff;
+  color: #333;
 }
 
 .acoes-estoque button img {
@@ -305,32 +345,8 @@ td.satelite {
   height: 16px;
 }
 
-/* Botões específicos */
-.btn-editar {
-  background: #ffc107;
-  color: #000;
-}
-
-.btn-editar:hover {
-  background: #e0a800;
-}
-
-.btn-clonar {
-  background: #17a2b8;
-  color: #fff;
-}
-
-.btn-clonar:hover {
-  background: #138496;
-}
-
-.btn-excluir {
-  background: #dc3545;
-  color: #fff;
-}
-
-.btn-excluir:hover {
-  background: #c82333;
+.acoes-estoque button:hover {
+  background: #f1f1f1;
 }
 
 /* ===========================

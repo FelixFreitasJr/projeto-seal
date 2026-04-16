@@ -6,6 +6,7 @@ import { getUser } from './auth.js'
 import { carregarGraficos, filtrarPeriodo, toggleFiltroPersonalizado } from './modules/graficos.js'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+let colaboradoresDispensados = {}
 
 // =========================
 // INIT
@@ -17,10 +18,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (pagina.endsWith("dispensa.html")) initDispensa()
 
   const user = getUser()
+  const sessao = JSON.parse(localStorage.getItem('usuarioLogado') || '{}')
+  const perfil = sessao?.perfil
   const titulo = document.querySelector(".titulo small")
   if (titulo && user) titulo.innerText += " | Usuário: " + user
 
-  if (user === "ADM") {
+  if (perfil === "ADM") {
     document.getElementById("btnPedidos")?.classList.remove("hidden")
     const btn = document.getElementById("btnConfig")
     if (btn) btn.classList.remove("hidden")
@@ -49,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (window.location.pathname.includes("pedidos.html")) {
-    if (getUser() !== "ADM") {
+    if (perfil !== "ADM") {
       alert("Acesso restrito")
       window.location.href = "../index.html"
     }
@@ -189,6 +192,8 @@ async function abrirModalDispensados() {
     mapa[item.cpf].quantidade++
   })
 
+  colaboradoresDispensados = mapa
+
   const tbody = document.getElementById("listaDispensados")
   tbody.innerHTML = ''
 
@@ -239,13 +244,14 @@ async function toggleHistorico(cpf) {
     </tr>
   `).join("")
 
+  const imgBasePath = window.location.pathname.includes('/pages/') ? '../img' : 'img'
   trHistorico.querySelector("td").innerHTML = `
     <table style="width:100%">
       <thead><tr><th></th><th>Data/Hora</th><th>Local</th></tr></thead>
       <tbody>${html}</tbody>
     </table>
     <div style="margin-top:10px;">
-      <button onclick="exportarHistoricoPDF('${cpf}')"><img src="../img/baixar.svg" alt="Exportar"> Exportar Selecionados</button>
+      <button onclick="exportarHistoricoPDF('${cpf}')"><img src="${imgBasePath}/baixar.svg" alt="Exportar"> Exportar Selecionados</button>
     </div>
   `
 }
@@ -276,9 +282,10 @@ function exportarHistoricoPDF(cpf) {
     return
   }
 
-  // pega o nome da linha principal
-  const linha = document.querySelector(`#listaDispensados tr td:nth-child(2)`)
-  const nome = linha ? linha.innerText : cpf
+  const colaborador = colaboradoresDispensados[cpf]
+  const nome = colaborador?.nome || cpf
+  const empresa = colaborador?.empresa || "-"
+  const funcao = colaborador?.funcao || "-"
 
   const selecionados = []
   document.querySelectorAll(`#historico-${cpf} .selecionar:checked`).forEach(cb => {
@@ -295,8 +302,11 @@ function exportarHistoricoPDF(cpf) {
   const { jsPDF } = window.jspdf
   const doc = new jsPDF()
   doc.text(`Histórico de ${nome} (${cpf})`, 14, 20)
+  doc.text(`Empresa: ${empresa}`, 14, 28)
+  doc.text(`Função: ${funcao}`, 14, 36)
 
   doc.autoTable({
+    startY: 42,
     head: [["", "Data/Hora", "Local"]],
     body: selecionados
   })
