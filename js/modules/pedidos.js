@@ -35,6 +35,12 @@ async function incluirItem() {
   let quantidade = document.getElementById("quantidade").value.trim()
   if (!codigo || !quantidade) return
 
+  const qtdNumerica = parseInt(quantidade, 10)
+  if (Number.isNaN(qtdNumerica) || qtdNumerica <= 0) {
+    showToast("Informe uma quantidade válida", "alerta")
+    return
+  }
+
   const { data, error } = await supabase
     .from('produtos')
     .select('nome, quantidade_faturamento, codigo_sga')
@@ -51,7 +57,7 @@ async function incluirItem() {
     codigo_sga: data.codigo_sga || null,
     nome: data.nome,
     quantidade_faturamento: data.quantidade_faturamento || "—",
-    quantidade: parseInt(quantidade, 10)
+    quantidade: qtdNumerica
   })
 
   renderLista()
@@ -99,18 +105,20 @@ function excluirItem(idx) {
 
 // Finalizar pedido → salva e abre modal
 async function finalizarPedido() {
-  const pedidoId = await salvarPedido()
-  if (pedidoId) {
-    document.getElementById("resumoPedidos").innerHTML = itensPedido.map(i =>
-      `<tr>
-         <td>${i.codigo}</td>
-         <td>${i.nome}</td>
-         <td>${i.quantidade_faturamento}</td>
-         <td><strong>${i.quantidade}</strong></td>
-       </tr>`
-    ).join("")
-    document.getElementById("modalResumo").classList.remove("hidden")
+  if (itensPedido.length === 0) {
+    showToast("Inclua ao menos um item no pedido", "alerta")
+    return
   }
+
+  document.getElementById("resumoPedidos").innerHTML = itensPedido.map(i =>
+    `<tr>
+       <td>${i.codigo}</td>
+       <td>${i.nome}</td>
+       <td>${i.quantidade_faturamento}</td>
+       <td><strong>${i.quantidade}</strong></td>
+     </tr>`
+  ).join("")
+  document.getElementById("modalResumo").classList.remove("hidden")
 }
 
 // Salvar pedido no banco com código sequencial
@@ -163,6 +171,11 @@ async function salvarPedido() {
 
   showToast(`Pedido ${novoCodigo} salvo com sucesso por ${usuario}`, "sucesso")
   carregarHistorico()
+
+  itensPedido = []
+  renderLista()
+  fecharModal()
+
   return pedidoId
 }
 
@@ -206,7 +219,8 @@ async function exportarSelecionados() {
   const { jsPDF } = window.jspdf
   const doc = new jsPDF()
 
-  for (const pedidoId of selecionados) {
+  for (let idx = 0; idx < selecionados.length; idx += 1) {
+    const pedidoId = selecionados[idx]
     const { data, error } = await supabase
       .from('pedido_itens')
       .select('codigo_mv, codigo_sga, nome, quantidade, quantidade_faturamento')
@@ -225,7 +239,7 @@ async function exportarSelecionados() {
         i.quantidade
       ])
     })
-    doc.addPage()
+    if (idx < selecionados.length - 1) doc.addPage()
   }
 
   doc.save(gerarNomeArquivo("pedidos_selecionados"))

@@ -59,7 +59,40 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById("totalProdutos")) carregarDashboard()
     if (document.getElementById("graficoPizza")) carregarGraficos()
   }
+
+  initMenuResponsivo()
 })
+
+function initMenuResponsivo() {
+  const menuPrincipal = document.querySelector('.menu-principal')
+  const botaoToggle = document.querySelector('.menu-toggle')
+  const topoDireita = document.querySelector('.topo-direita')
+  if (!menuPrincipal || !botaoToggle || !topoDireita) return
+
+  let menuSuspenso = document.querySelector('.menu-suspenso')
+  if (!menuSuspenso) {
+    menuSuspenso = menuPrincipal.cloneNode(true)
+    menuSuspenso.classList.remove('menu-principal')
+    menuSuspenso.classList.add('menu-suspenso')
+
+    menuSuspenso.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'))
+    topoDireita.appendChild(menuSuspenso)
+  }
+
+  botaoToggle.addEventListener('click', () => {
+    menuSuspenso.classList.toggle('aberto')
+  })
+
+  menuSuspenso.querySelectorAll('button').forEach((btn) => {
+    btn.addEventListener('click', () => menuSuspenso.classList.remove('aberto'))
+  })
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 958) {
+      menuSuspenso.classList.remove('aberto')
+    }
+  })
+}
 
 // =========================
 // NAVEGAÇÃO
@@ -136,7 +169,7 @@ function mascararCPF(cpf) {
 // =========================
 // MODAL DISPENSADOS
 // =========================
-window.abrirModalDispensados = async function () {
+async function abrirModalDispensados() {
   document.getElementById("modalDispensados").classList.remove("hidden")
 
   const { data, error } = await supabase.from('dispensas').select('*')
@@ -184,13 +217,15 @@ window.abrirModalDispensados = async function () {
   })
 }
 
-window.fecharModalDispensados = function () {
+function fecharModalDispensados() {
   document.getElementById("modalDispensados").classList.add("hidden")
 }
 
 async function toggleHistorico(cpf) {
   document.querySelectorAll("[id^='historico-']").forEach(h => h.classList.add("hidden"))
   const trHistorico = document.getElementById(`historico-${cpf}`)
+  if (!trHistorico) return
+
   trHistorico.classList.remove("hidden")
 
   const { data, error } = await supabase.from('dispensas').select('*').eq('cpf', cpf).order('data_hora', { ascending: false })
@@ -218,13 +253,13 @@ async function toggleHistorico(cpf) {
 // =========================
 // EXPORTAR LISTA GERAL
 // =========================
-window.exportarListaPDF = function() {
+function exportarListaPDF() {
   const { jsPDF } = window.jspdf
   const doc = new jsPDF()
   doc.text("Lista de Colaboradores com Dispensas", 14, 20)
 
   const head = [["CPF", "Nome", "Empresa", "Função", "Qtd"]]
-  const body = Array.from(document.querySelectorAll("#listaDispensados tr")).map(tr =>
+  const body = Array.from(document.querySelectorAll("#listaDispensados > tr:not([id^='historico-'])")).map(tr =>
     Array.from(tr.querySelectorAll("td")).map(td => td.innerText)
   )
 
@@ -235,7 +270,12 @@ window.exportarListaPDF = function() {
 // =========================
 // EXPORTAR HISTÓRICO
 // =========================
-window.exportarHistoricoPDF = function(cpf) {
+function exportarHistoricoPDF(cpf) {
+  if (!cpf) {
+    showToast("Abra o histórico de um colaborador para exportar.", "alerta")
+    return
+  }
+
   // pega o nome da linha principal
   const linha = document.querySelector(`#listaDispensados tr td:nth-child(2)`)
   const nome = linha ? linha.innerText : cpf

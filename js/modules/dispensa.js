@@ -10,6 +10,8 @@ let modoEdicaoColaborador = null
 export function initDispensa() {
   const tabela = document.getElementById('tabela')
   const busca = document.getElementById('busca')
+  if (!tabela || !busca) return
+
   let timeout = null
 
   // =========================
@@ -48,9 +50,9 @@ export function initDispensa() {
       linhas += `
         <tr>
           <td class="col-cpf">${mascararCPF(item.cpf)}</td>
-          <td class="col-nome">${item.nome}</td>
-          <td class="col-empresa">${item.empresa}</td>
-          <td class="col-funcao">${item.funcao}</td>
+          <td class="col-nome">${escapeHtml(item.nome)}</td>
+          <td class="col-empresa">${escapeHtml(item.empresa)}</td>
+          <td class="col-funcao">${escapeHtml(item.funcao)}</td>
           <td>
             <div class="acoes-dispensa">
               <button class="btn-dispensar" onclick="dispensarItem('${item.id}')">
@@ -73,7 +75,7 @@ export function initDispensa() {
   // =========================
   // EVENTOS
   // =========================
-  busca.addEventListener('input', () => {
+  busca?.addEventListener('input', () => {
     clearTimeout(timeout)
     timeout = setTimeout(buscar, 300)
   })
@@ -103,9 +105,14 @@ export function initDispensa() {
 
 async function salvarColaborador() {
   const cpf = limparCPF(document.getElementById("cpf").value)
-  const nome = document.getElementById("nome").value
-  const empresa = document.getElementById("empresa").value
-  const funcao = document.getElementById("funcao").value
+  const nome = document.getElementById("nome").value.trim()
+  const empresa = document.getElementById("empresa").value.trim()
+  const funcao = document.getElementById("funcao").value.trim()
+
+  if (!nome || !empresa || !funcao) {
+    showToast("Preencha nome, empresa e função", "alerta")
+    return
+  }
 
   if (!validarCPF(cpf)) {
     showToast("CPF inválido", "erro")
@@ -278,6 +285,17 @@ function validarCPF(cpf) {
   if (!cpf || cpf.length !== 11) return false
   if (/^(\d)\1+$/.test(cpf)) return false
   return true
+}
+
+function escapeHtml(value) {
+  if (value == null) return ''
+
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
 }
 
 // =========================

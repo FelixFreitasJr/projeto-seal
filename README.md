@@ -1,78 +1,162 @@
-# Projeto SEAL - Consulta de Estoque
+# SEAL — Serviço de Almoxarifado (INI / Fiocruz)
 
-Sistema web para consulta e gestão de estoque e colaboradores, com funcionalidades de busca, cadastro, dispensa e dashboard de acompanhamento.
+Aplicação web para gestão de estoque, dispensas de colaboradores, pedidos e acompanhamento por dashboard.
 
-## 🚀 Tecnologias utilizadas
-
-- Frontend: HTML5, CSS3, JavaScript (Vanilla)
-- Backend: Supabase (Banco de dados e API)
-
-## 🔍 Funcionalidades
-- 🔍 Busca inteligente por:
-  - Código
-  - Nome
-  - Observação
-
-- 📋 Listagem dinâmica de produtos e colaboradores
-
-- ➕ Cadastro de novos itens e colaboradores
-
-- ✏️ Edição de itens existentes
-
-- ✔ Dispensa de colaboradores com confirmação
-
-- 🗑️ Exclusão de itens e colaboradores
-
-- 📄 Clonagem de itens e colaboradores
-
-- 🔤 Ordenação automática por colunas (Código, nome e endereços)
-
-- ⚡ Busca automática ao digitar
-
-- 🔒 Validação para evitar códigos duplicados
-
-- 📊 Dashboard com cards de resumo (Produtos, Colaboradores, Dispensas)
+> Projeto frontend em HTML/CSS/JS (Vanilla) com integração direta ao Supabase.
 
 ---
 
-## 🌐 Acesso ao sistema
-https://felixfreitasjr.github.io/projeto-seal/
+## Visão geral
 
-## 📁 Estrutura do projeto
+O SEAL organiza o fluxo operacional em quatro módulos principais:
 
-```shell
-/projeto-seal
-│
-├── index.html           
-├── css/
-│   └── style.css        
+- **Dashboard (`index.html`)**: visão consolidada com cards de totais, gráficos e modal de histórico de dispensas.
+- **Estoque (`pages/estoque.html`)**: cadastro, edição, clonagem, exclusão, busca e exportação de produtos.
+- **Dispensa (`pages/dispensa.html`)**: consulta e cadastro de colaboradores, além de registro de dispensas.
+- **Pedidos (`pages/pedidos.html`)**: montagem de pedidos, resumo, histórico e exportações.
+
+---
+
+## Funcionalidades
+
+### 1) Autenticação e sessão
+- Login com usuários cadastrados na tabela `usuarios`.
+- Sessão com expiração automática (timeout).
+- Controle básico de tentativas inválidas (bloqueio temporário no cliente).
+- Compatível com senha em texto puro e hash bcrypt (quando armazenado no banco).
+
+### 2) Dashboard
+- Cards de contagem de **produtos**, **colaboradores** e **dispensas**.
+- Gráficos de distribuição e comparativo por período.
+- Filtro rápido por período (7, 15, 30, 60 dias e intervalo customizado).
+- Modal de colaboradores com histórico de dispensas e exportação em PDF.
+
+### 3) Estoque
+- Busca por código, nome, observação, status e endereços.
+- Ordenação por colunas.
+- CRUD de produtos (com edição/clonagem/exclusão).
+- Controle de visibilidade por perfil (ações administrativas).
+- Exportação em PDF da listagem.
+
+### 4) Dispensa
+- Busca por CPF, nome, empresa e função.
+- CRUD de colaboradores.
+- Registro de dispensa com data/hora e usuário.
+- Validação de CPF e campos obrigatórios.
+
+### 5) Pedidos
+- Inclusão de itens por código com preview automático.
+- Validação de quantidade.
+- Resumo antes de salvar.
+- Histórico de pedidos com seleção e exportação em PDF.
+
+---
+
+## Stack
+
+- **Frontend:** HTML5, CSS3 e JavaScript (ES Modules, sem framework)
+- **Backend/Banco:** Supabase
+- **Bibliotecas:**
+  - `@supabase/supabase-js` (CDN)
+  - `Chart.js`
+  - `jsPDF` + `autotable`
+  - `html2canvas`
+  - `bcryptjs`
+
+---
+
+## Estrutura do projeto
+
+```txt
+projeto-seal/
+├── index.html
+├── pages/
+│   ├── login.html
+│   ├── estoque.html
+│   ├── dispensa.html
+│   └── pedidos.html
 ├── js/
-│   ├── app.js           
-│   ├── estoque.js       
-│   ├── dispensa.js      
+│   ├── app.js
+│   ├── auth.js
 │   ├── config.js
 │   └── modules/
-│      ├── dispensa.js
-│      └── estoque.js     
-├── pages/
-│   ├── estoque.html     
-│   ├── dispensa.html    
-│   └── colaboradores.html 
-├── img/
-│   └── logo.png
-└── README.md
-
+│       ├── estoque.js
+│       ├── dispensa.js
+│       ├── pedidos.js
+│       └── graficos.js
+├── css/
+│   ├── style.css
+│   └── modules/
+│       ├── global.css
+│       ├── layout.css
+│       ├── tabelas.css
+│       ├── formularios.css
+│       ├── graficos.css
+│       └── responsive.css
+└── img/
 ```
 
-## ⚠️ Melhorias planejadas
+---
 
-- 🎨 Layout mais profissional e responsivo
-- 🔑 Sistema de login e autenticação
-- 📦 Controle de saída de materiais com histórico
-- 📈 Relatórios e exportação de dados
-- 🖱️ Cards do dashboard clicáveis para navegação direta
+## Configuração
 
-## 👨‍💻 Autor
+### 1) Supabase
+Edite `js/config.js` com as credenciais do projeto:
 
-Felix Freitas Jr<br>
+```js
+export const SUPABASE_URL = 'SUA_URL'
+export const SUPABASE_KEY = 'SUA_CHAVE_ANON'
+```
+
+### 2) Tabelas esperadas
+O frontend referencia as seguintes tabelas:
+
+- `usuarios`
+- `produtos`
+- `colaboradores`
+- `dispensas`
+- `pedidos`
+- `pedido_itens`
+
+> Recomenda-se manter políticas RLS e permissões alinhadas ao perfil de uso da aplicação.
+
+---
+
+## Execução local
+
+Como é um projeto estático com módulos ES, execute por um servidor local (não abra via `file://`).
+
+Exemplo com Python:
+
+```bash
+python3 -m http.server 5500
+```
+
+Acesse:
+
+```txt
+http://localhost:5500
+```
+
+---
+
+## Deploy
+
+Projeto publicado em:
+
+- https://felixfreitasjr.github.io/projeto-seal/
+
+---
+
+## Observações de manutenção
+
+- Evite salvar dados sensíveis no `localStorage` além do estritamente necessário para sessão.
+- Se possível, padronize gradualmente todas as senhas para hash bcrypt no banco.
+- Para evoluções, priorize separar regras de negócio do DOM e incluir testes de integração (login, estoque, pedidos e exportações).
+
+---
+
+## Autor
+
+**Felix Freitas Jr**  
 INI / Fiocruz
