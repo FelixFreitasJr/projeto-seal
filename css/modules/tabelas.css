@@ -123,29 +123,29 @@ td.satelite {
 /* Colunas específicas */
 .tabela-container th.codigo,
 .tabela-container td.codigo {
-  width: 12%; /* Código MV */
+  width: 5%; /* Código MV */
 }
 
 .tabela-container th.col-sga,
 .tabela-container td.col-sga {
-  width: 12%; /* Código SGA */
+  width: 5%; /* Código SGA */
 }
 
 .tabela-container th.nome,
 .tabela-container td.nome {
-  width: 25%; /* Nome */
+  width: 40%; /* Nome */
 }
 
 .tabela-container th.externo,
 .tabela-container td.externo,
 .tabela-container th.satelite,
 .tabela-container td.satelite {
-  width: 15%; /* Endereços */
+  width: 20%; /* Endereços */
 }
 
 .tabela-container th.qtdFat,
 .tabela-container td.qtdFat {
-  width: 15%; /* Qtd. Faturamento */
+  width: 10%; /* Qtd. Faturamento */
 }
 
 .tabela-container th.qtd,
@@ -342,7 +342,7 @@ td.satelite {
   padding: 4px 8px;
   border: 1px solid #d7d7d7;
   border-radius: 4px;
-  font-size: 0.85em;
+  font-size: 15px;
   cursor: pointer;
   transition: background 0.2s ease;
   background: #fff;

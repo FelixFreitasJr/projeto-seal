@@ -26,6 +26,7 @@ export function initEstoque() {
 
   if (!isAdmin) {
     document.getElementById("colAcoes")?.style.setProperty('display', 'none')
+    document.getElementById("qtdFat")?.style.setProperty('display', 'none')
     document.getElementById("btnNovo")?.remove()
   }
 
