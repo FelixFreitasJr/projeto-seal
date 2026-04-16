@@ -16,10 +16,10 @@
   margin-bottom: 20px;
   text-align: center;
   color: var(--primary);
+  padding: inherit;
 }
 
 .login-box input {
-  width: 90%;
   padding: 15px;
   margin-bottom: 12px;
   border: 1px solid var(--gray-border);
@@ -34,6 +34,14 @@
 .login-box button:hover {
  background-color: var(--primary-dark);
 }
+
+#formLogin {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: space-around;
+}
+
 
 /* Busca */
 .busca-box {
