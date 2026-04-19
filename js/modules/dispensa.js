@@ -12,6 +12,9 @@ export function initDispensa() {
   const busca = document.getElementById('busca')
   if (!tabela || !busca) return
 
+  const sessao = JSON.parse(localStorage.getItem('usuarioLogado') || '{}')
+  const mostrarCpfCompleto = sessao?.perfil === 'ADM'
+
   let timeout = null
 
   // =========================
@@ -19,11 +22,6 @@ export function initDispensa() {
   // =========================
   async function buscar() {
     const termo = busca.value.trim()
-
-    if (!termo) {
-      tabela.innerHTML = ''
-      return
-    }
 
     let query = supabase.from('colaboradores').select('*').order('nome', { ascending: true })
 
@@ -49,7 +47,7 @@ export function initDispensa() {
     data.forEach(item => {
       linhas += `
         <tr>
-          <td class="col-cpf">${mascararCPF(item.cpf)}</td>
+          <td class="col-cpf">${mostrarCpfCompleto ? item.cpf : mascararCPF(item.cpf)}</td>
           <td class="col-nome">${escapeHtml(item.nome)}</td>
           <td class="col-empresa">${escapeHtml(item.empresa)}</td>
           <td class="col-funcao">${escapeHtml(item.funcao)}</td>
@@ -82,7 +80,7 @@ export function initDispensa() {
 
   document.getElementById('limparBusca')?.addEventListener('click', () => {
     busca.value = ''
-    tabela.innerHTML = ''
+    buscar()
   })
 
   document.getElementById("btnNovoColaborador")?.addEventListener("click", () => {
@@ -97,6 +95,9 @@ export function initDispensa() {
 
   // expõe global
   window.atualizarDispensa = buscar
+
+  // primeira carga
+  buscar()
 }
 
 // =========================
