@@ -11,26 +11,26 @@ let colaboradoresDispensados = {}
 // =========================
 // INIT
 // =========================
-document.addEventListener('DOMContentLoaded', () => {
-  const pagina = window.location.href
+function inicializarApp() {
+  const pathname = window.location.pathname.toLowerCase()
 
-  if (pagina.endsWith("estoque.html")) initEstoque()
-  if (pagina.endsWith("dispensa.html")) initDispensa()
+  if (pathname.endsWith('/estoque.html')) initEstoque()
+  if (pathname.endsWith('/dispensa.html')) initDispensa()
 
   const user = getUser()
   const sessao = JSON.parse(localStorage.getItem('usuarioLogado') || '{}')
   const perfil = sessao?.perfil
-  const titulo = document.querySelector(".titulo small")
-  if (titulo && user) titulo.innerText += " | Usuário: " + user
+  const titulo = document.querySelector('.titulo small')
+  if (titulo && user) titulo.innerText += ' | Usuário: ' + user
 
-  if (perfil === "ADM") {
-    document.getElementById("btnPedidos")?.classList.remove("hidden")
-    const btn = document.getElementById("btnConfig")
-    if (btn) btn.classList.remove("hidden")
+  if (perfil === 'ADM') {
+    document.getElementById('btnPedidos')?.classList.remove('hidden')
+    const btn = document.getElementById('btnConfig')
+    if (btn) btn.classList.remove('hidden')
 
-    btn?.addEventListener("click", async () => {
+    btn?.addEventListener('click', async () => {
       const { data, error } = await supabase.from('usuarios').select('*')
-      if (error) return showToast("Erro ao carregar usuários", "erro")
+      if (error) return showToast('Erro ao carregar usuários', 'erro')
 
       let linhas = ''
       data.forEach(u => {
@@ -42,29 +42,35 @@ document.addEventListener('DOMContentLoaded', () => {
           </tr>`
       })
 
-      document.getElementById("tabelaUsuarios").innerHTML = linhas
-      document.getElementById("modalConfig").classList.remove("hidden")
+      document.getElementById('tabelaUsuarios').innerHTML = linhas
+      document.getElementById('modalConfig').classList.remove('hidden')
     })
 
-    document.getElementById("btnFecharConfig")?.addEventListener("click", () => {
-      document.getElementById("modalConfig").classList.add("hidden")
+    document.getElementById('btnFecharConfig')?.addEventListener('click', () => {
+      document.getElementById('modalConfig').classList.add('hidden')
     })
   }
 
-  if (window.location.pathname.includes("pedidos.html")) {
-    if (perfil !== "ADM") {
-      alert("Acesso restrito")
-      window.location.href = "../index.html"
+  if (window.location.pathname.includes('pedidos.html')) {
+    if (perfil !== 'ADM') {
+      alert('Acesso restrito')
+      window.location.href = '../index.html'
     }
   }
 
-  if (window.location.pathname.endsWith("/") || window.location.pathname.endsWith("index.html")) {
-    if (document.getElementById("totalProdutos")) carregarDashboard()
-    if (document.getElementById("graficoPizza")) carregarGraficos()
+  if (window.location.pathname.endsWith('/') || window.location.pathname.endsWith('index.html')) {
+    if (document.getElementById('totalProdutos')) carregarDashboard()
+    if (document.getElementById('graficoPizza')) carregarGraficos()
   }
 
   initMenuResponsivo()
-})
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', inicializarApp)
+} else {
+  inicializarApp()
+}
 
 function initMenuResponsivo() {
   const menuPrincipal = document.querySelector('.menu-principal')
@@ -132,9 +138,169 @@ async function carregarDashboard() {
   const { count: colaboradores } = await supabase.from('colaboradores').select('*', { count: 'exact', head: true })
   const { count: dispensas } = await supabase.from('dispensas').select('*', { count: 'exact', head: true })
 
-  document.getElementById("totalProdutos").innerText = produtos || 0
-  document.getElementById("totalColaboradores").innerText = colaboradores || 0
-  document.getElementById("totalDispensas").innerText = dispensas || 0
+  document.getElementById('totalProdutos').innerText = produtos || 0
+  document.getElementById('totalColaboradores').innerText = colaboradores || 0
+  document.getElementById('totalDispensas').innerText = dispensas || 0
+
+  await carregarResumoNovosCadastros()
+}
+
+
+async function carregarResumoNovosCadastros() {
+  const [colaboradoresRecentes, produtosRecentes] = await Promise.all([
+    buscarCadastrosRecentes('colaboradores', 30),
+    buscarCadastrosRecentes('produtos', 30)
+  ])
+
+  const cardColaboradores = document.getElementById('novosColaboradores')
+  const cardItens = document.getElementById('novosItens')
+
+  if (cardColaboradores) cardColaboradores.innerText = colaboradoresRecentes.length
+  if (cardItens) cardItens.innerText = produtosRecentes.length
+}
+
+function obterDataCadastro(item) {
+  const dataBruta = item.created_at || item.data_cadastro || item.cadastrado_em || item.inserted_at || null
+  if (!dataBruta) return null
+
+  const data = new Date(dataBruta)
+  if (Number.isNaN(data.getTime())) return null
+
+  return data
+}
+
+
+async function buscarTodosRegistros(tabela) {
+  const limitePagina = 1000
+  let pagina = 0
+  let resultado = []
+
+  while (true) {
+    const from = pagina * limitePagina
+    const to = from + limitePagina - 1
+
+    const { data, error } = await supabase.from(tabela).select('*').range(from, to)
+    if (error || !data) break
+
+    resultado = resultado.concat(data)
+
+    if (data.length < limitePagina) break
+    pagina++
+  }
+
+  return resultado
+}
+
+async function buscarCadastrosRecentes(tabela, dias = 30) {
+  const data = await buscarTodosRegistros(tabela)
+  if (!data.length) return []
+
+  const agora = new Date()
+  const limite = new Date()
+  limite.setDate(agora.getDate() - dias)
+
+  return data
+    .map((item) => ({ ...item, _dataCadastro: obterDataCadastro(item) }))
+    .filter((item) => item._dataCadastro && item._dataCadastro >= limite)
+    .sort((a, b) => b._dataCadastro - a._dataCadastro)
+}
+
+let tipoCadastroAtual = 'colaboradores'
+let cacheNovosCadastros = []
+
+async function abrirModalNovosCadastros(tipoCadastro) {
+  tipoCadastroAtual = tipoCadastro
+  const modal = document.getElementById('modalNovosCadastros')
+  if (!modal) return
+
+  modal.classList.remove('hidden')
+
+  const titulo = document.getElementById('tituloNovosCadastros')
+  if (titulo) {
+    titulo.innerText = tipoCadastro === 'colaboradores'
+      ? 'Novos Colaboradores (últimos 30 dias)'
+      : 'Novos Itens (últimos 30 dias)'
+  }
+
+  const sessao = JSON.parse(localStorage.getItem('usuarioLogado') || '{}')
+  const isAdmin = sessao?.perfil === 'ADM'
+
+  const btnExportar = document.getElementById('btnExportarNovosCadastros')
+  btnExportar?.classList.toggle('hidden', !isAdmin)
+
+  const colCpf = document.getElementById('colNovosCpf')
+  if (colCpf) colCpf.style.display = tipoCadastro === 'colaboradores' ? '' : 'none'
+
+  cacheNovosCadastros = await buscarCadastrosRecentes(tipoCadastro, 30)
+
+  const tbody = document.getElementById('listaNovosCadastros')
+  if (!tbody) return
+
+  tbody.innerHTML = ''
+  cacheNovosCadastros.forEach(item => {
+    const tr = document.createElement('tr')
+    const dataFormatada = item._dataCadastro
+      ? item._dataCadastro.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })
+      : '-'
+
+    if (tipoCadastro === 'colaboradores') {
+      const cpf = isAdmin ? (item.cpf || '-') : mascararCPF(item.cpf || '-')
+      tr.innerHTML = `
+        <td>${dataFormatada}</td>
+        <td>${cpf}</td>
+        <td>${item.nome || '-'}</td>
+        <td>${item.empresa || '-'}</td>
+      `
+    } else {
+      tr.innerHTML = `
+        <td>${dataFormatada}</td>
+        <td style="display:none"></td>
+        <td>${item.nome || '-'}</td>
+        <td>${item.codigo_mv || '-'}</td>
+      `
+    }
+
+    tbody.appendChild(tr)
+  })
+}
+
+function fecharModalNovosCadastros() {
+  document.getElementById('modalNovosCadastros')?.classList.add('hidden')
+}
+
+function exportarNovosCadastrosPDF() {
+  const sessao = JSON.parse(localStorage.getItem('usuarioLogado') || '{}')
+  if (sessao?.perfil !== 'ADM') {
+    showToast('Somente ADM pode exportar esta lista', 'alerta')
+    return
+  }
+
+  const { jsPDF } = window.jspdf
+  const doc = new jsPDF()
+  const titulo = tipoCadastroAtual === 'colaboradores'
+    ? 'Novos Colaboradores (30 dias)'
+    : 'Novos Itens de Estoque (30 dias)'
+
+  doc.text(titulo, 14, 20)
+
+  const head = tipoCadastroAtual === 'colaboradores'
+    ? [['Data', 'CPF', 'Nome', 'Empresa']]
+    : [['Data', 'Nome', 'Código MV']]
+
+  const body = cacheNovosCadastros.map(item => {
+    const data = item._dataCadastro
+      ? item._dataCadastro.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })
+      : '-'
+
+    if (tipoCadastroAtual === 'colaboradores') {
+      return [data, item.cpf || '-', item.nome || '-', item.empresa || '-']
+    }
+
+    return [data, item.nome || '-', item.codigo_mv || '-']
+  })
+
+  doc.autoTable({ head, body })
+  doc.save(gerarNomeArquivo(tipoCadastroAtual === 'colaboradores' ? 'novos_colaboradores' : 'novos_itens'))
 }
 
 // =========================
@@ -163,6 +329,12 @@ window.gerarNomeArquivo = function(tipo) {
   return `${tipo}_${dia}-${mes}-${ano}_${hora}-${minuto}.pdf`
 }
 
+
+function isAdminAtual() {
+  const sessao = JSON.parse(localStorage.getItem('usuarioLogado') || '{}')
+  return sessao?.perfil === 'ADM'
+}
+
 function mascararCPF(cpf) {
   cpf = cpf.replace(/[^\d]/g, '')
   if (cpf.length !== 11) return cpf
@@ -172,10 +344,16 @@ function mascararCPF(cpf) {
 // =========================
 // MODAL DISPENSADOS
 // =========================
-async function abrirModalDispensados() {
-  document.getElementById("modalDispensados").classList.remove("hidden")
+async function abrirModalDispensados(local = null) {
+  document.getElementById('modalDispensados').classList.remove('hidden')
 
-  const { data, error } = await supabase.from('dispensas').select('*')
+  const titulo = document.querySelector('#modalDispensados h3')
+  if (titulo) titulo.innerText = local ? `Colaboradores com Dispensas — ${local}` : 'Colaboradores com Dispensas'
+
+  let query = supabase.from('dispensas').select('*')
+  if (local) query = query.eq('usuario', local)
+
+  const { data, error } = await query
   if (error) return showToast("Erro ao carregar dispensas", "erro")
 
   const mapa = {}
@@ -204,14 +382,14 @@ async function abrirModalDispensados() {
       tr.style.fontWeight = "bold"
     }
     tr.innerHTML = `
-      <td>${mascararCPF(p.cpf)}</td>
+      <td>${isAdminAtual() ? (p.cpf || '-') : mascararCPF(p.cpf || '-')}</td>
       <td>${p.nome}</td>
       <td>${p.empresa}</td>
       <td>${p.funcao || "-"}</td>
       <td>${p.quantidade}</td>
     `
     tr.style.cursor = "pointer"
-    tr.onclick = () => toggleHistorico(p.cpf)
+    tr.onclick = () => toggleHistorico(p.cpf, local)
     tbody.appendChild(tr)
 
     const trHistorico = document.createElement("tr")
@@ -223,17 +401,20 @@ async function abrirModalDispensados() {
 }
 
 function fecharModalDispensados() {
-  document.getElementById("modalDispensados").classList.add("hidden")
+  document.getElementById('modalDispensados').classList.add('hidden')
 }
 
-async function toggleHistorico(cpf) {
+async function toggleHistorico(cpf, local = null) {
   document.querySelectorAll("[id^='historico-']").forEach(h => h.classList.add("hidden"))
   const trHistorico = document.getElementById(`historico-${cpf}`)
   if (!trHistorico) return
 
   trHistorico.classList.remove("hidden")
 
-  const { data, error } = await supabase.from('dispensas').select('*').eq('cpf', cpf).order('data_hora', { ascending: false })
+  let query = supabase.from('dispensas').select('*').eq('cpf', cpf)
+  if (local) query = query.eq('usuario', local)
+
+  const { data, error } = await query.order('data_hora', { ascending: false })
   if (error) return showToast("Erro ao carregar histórico", "erro")
 
   const html = data.map(item => `
@@ -325,6 +506,10 @@ window.toggleFiltroPersonalizado = toggleFiltroPersonalizado
 // DISPENSADOS (funções globais)
 // =========================
 window.abrirModalDispensados = abrirModalDispensados
+window.abrirModalDispensadosPorLocal = abrirModalDispensados
 window.fecharModalDispensados = fecharModalDispensados
 window.exportarListaPDF = exportarListaPDF
 window.exportarHistoricoPDF = exportarHistoricoPDF
+window.abrirModalNovosCadastros = abrirModalNovosCadastros
+window.fecharModalNovosCadastros = fecharModalNovosCadastros
+window.exportarNovosCadastrosPDF = exportarNovosCadastrosPDF
