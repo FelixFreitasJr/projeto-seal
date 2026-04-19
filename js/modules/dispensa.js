@@ -23,13 +23,16 @@ export function initDispensa() {
   async function buscar() {
     const termo = busca.value.trim()
 
+    if (!termo) {
+      renderTabela([])
+      return
+    }
+
     let query = supabase.from('colaboradores').select('*').order('nome', { ascending: true })
 
-    if (termo) {
-      query = query.or(
-        `cpf.ilike.%${termo}%,nome.ilike.%${termo}%,empresa.ilike.%${termo}%,funcao.ilike.%${termo}%`
-      )
-    }
+    query = query.or(
+      `cpf.ilike.%${termo}%,nome.ilike.%${termo}%,empresa.ilike.%${termo}%,funcao.ilike.%${termo}%`
+    )
 
     const { data, error } = await query
 
@@ -96,8 +99,8 @@ export function initDispensa() {
   // expõe global
   window.atualizarDispensa = buscar
 
-  // primeira carga
-  buscar()
+  // primeira carga: mantém a tabela vazia até o usuário pesquisar
+  renderTabela([])
 }
 
 // =========================
