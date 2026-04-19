@@ -7,15 +7,11 @@ import { carregarGraficos, filtrarPeriodo, toggleFiltroPersonalizado } from './m
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 let colaboradoresDispensados = {}
-let appInicializado = false
 
 // =========================
 // INIT
 // =========================
 function inicializarApp() {
-  if (appInicializado) return
-  appInicializado = true
-
   const pathname = window.location.pathname.toLowerCase()
 
   if (pathname.endsWith('/estoque.html')) initEstoque()
@@ -75,10 +71,6 @@ if (document.readyState === 'loading') {
 } else {
   inicializarApp()
 }
-
-window.addEventListener('pageshow', () => {
-  if (!appInicializado) inicializarApp()
-})
 
 function initMenuResponsivo() {
   const menuPrincipal = document.querySelector('.menu-principal')
@@ -186,31 +178,21 @@ function mascararCPF(cpf) {
 // =========================
 // MODAL DISPENSADOS
 // =========================
-async function abrirModalDispensados(local = null) {
-  document.getElementById('modalDispensados').classList.remove('hidden')
+async function abrirModalDispensados() {
+  document.getElementById("modalDispensados").classList.remove("hidden")
 
-  const tituloModal = document.querySelector('#modalDispensados h3')
-  if (tituloModal) {
-    tituloModal.innerText = local
-      ? `Colaboradores com Dispensas — ${local}`
-      : 'Colaboradores com Dispensas'
-  }
-
-  let query = supabase.from('dispensas').select('*')
-  if (local) query = query.eq('usuario', local)
-
-  const { data, error } = await query
-  if (error) return showToast('Erro ao carregar dispensas', 'erro')
+  const { data, error } = await supabase.from('dispensas').select('*')
+  if (error) return showToast("Erro ao carregar dispensas", "erro")
 
   const mapa = {}
   data.forEach(item => {
     if (!mapa[item.cpf]) {
-      mapa[item.cpf] = {
-        cpf: item.cpf,
-        nome: item.nome,
-        empresa: item.empresa,
-        funcao: item.funcao,
-        quantidade: 0
+      mapa[item.cpf] = { 
+        cpf: item.cpf, 
+        nome: item.nome, 
+        empresa: item.empresa, 
+        funcao: item.funcao,   // nova coluna
+        quantidade: 0 
       }
     }
     mapa[item.cpf].quantidade++
@@ -218,30 +200,30 @@ async function abrirModalDispensados(local = null) {
 
   colaboradoresDispensados = mapa
 
-  const tbody = document.getElementById('listaDispensados')
+  const tbody = document.getElementById("listaDispensados")
   tbody.innerHTML = ''
 
   Object.values(mapa).sort((a, b) => b.quantidade - a.quantidade).forEach(p => {
-    const tr = document.createElement('tr')
+    const tr = document.createElement("tr")
     if (p.quantidade > 15) {
-      tr.style.background = '#ffe0e0'
-      tr.style.fontWeight = 'bold'
+      tr.style.background = "#ffe0e0"
+      tr.style.fontWeight = "bold"
     }
     tr.innerHTML = `
       <td>${mascararCPF(p.cpf)}</td>
       <td>${p.nome}</td>
       <td>${p.empresa}</td>
-      <td>${p.funcao || '-'}</td>
+      <td>${p.funcao || "-"}</td>
       <td>${p.quantidade}</td>
     `
-    tr.style.cursor = 'pointer'
-    tr.onclick = () => toggleHistorico(p.cpf, local)
+    tr.style.cursor = "pointer"
+    tr.onclick = () => toggleHistorico(p.cpf)
     tbody.appendChild(tr)
 
-    const trHistorico = document.createElement('tr')
+    const trHistorico = document.createElement("tr")
     trHistorico.id = `historico-${p.cpf}`
-    trHistorico.classList.add('hidden')
-    trHistorico.innerHTML = '<td colspan="5"></td>'
+    trHistorico.classList.add("hidden")
+    trHistorico.innerHTML = `<td colspan="5"></td>`
     tbody.appendChild(trHistorico)
   })
 }
@@ -250,17 +232,14 @@ function fecharModalDispensados() {
   document.getElementById("modalDispensados").classList.add("hidden")
 }
 
-async function toggleHistorico(cpf, local = null) {
+async function toggleHistorico(cpf) {
   document.querySelectorAll("[id^='historico-']").forEach(h => h.classList.add("hidden"))
   const trHistorico = document.getElementById(`historico-${cpf}`)
   if (!trHistorico) return
 
   trHistorico.classList.remove("hidden")
 
-  let query = supabase.from('dispensas').select('*').eq('cpf', cpf)
-  if (local) query = query.eq('usuario', local)
-
-  const { data, error } = await query.order('data_hora', { ascending: false })
+  const { data, error } = await supabase.from('dispensas').select('*').eq('cpf', cpf).order('data_hora', { ascending: false })
   if (error) return showToast("Erro ao carregar histórico", "erro")
 
   const html = data.map(item => `
@@ -352,7 +331,6 @@ window.toggleFiltroPersonalizado = toggleFiltroPersonalizado
 // DISPENSADOS (funções globais)
 // =========================
 window.abrirModalDispensados = abrirModalDispensados
-window.abrirModalDispensadosPorLocal = abrirModalDispensados
 window.fecharModalDispensados = fecharModalDispensados
 window.exportarListaPDF = exportarListaPDF
 window.exportarHistoricoPDF = exportarHistoricoPDF
