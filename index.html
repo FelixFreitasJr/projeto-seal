@@ -69,6 +69,16 @@
       <h3>Dispensas</h3>
       <p id="totalDispensas">0</p>
     </div>
+
+    <div class="card" onclick="abrirModalNovosCadastros('colaboradores')">
+      <h3>Novos Colaboradores (30 dias)</h3>
+      <p id="novosColaboradores">0</p>
+    </div>
+
+    <div class="card" onclick="abrirModalNovosCadastros('produtos')">
+      <h3>Novos Itens (30 dias)</h3>
+      <p id="novosItens">0</p>
+    </div>
   </div>
 
   <div class="dashboard-info">
@@ -157,6 +167,29 @@
   </div>
 </div>
 
+
+<!-- Modal Novos Cadastros -->
+<div id="modalNovosCadastros" class="modal hidden">
+  <div class="modal-content modal-dispensados-content">
+    <h3 id="tituloNovosCadastros">Novos Cadastros</h3>
+    <div class="modal-actions">
+      <button id="btnExportarNovosCadastros" class="hidden" onclick="exportarNovosCadastrosPDF()">
+        <img src="img/baixar.svg" alt="Exportar"> Exportar Lista</button>
+      <button onclick="fecharModalNovosCadastros()">Fechar</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th id="colNovosCpf">CPF</th>
+          <th>Nome</th>
+          <th>Empresa / Código</th>
+        </tr>
+      </thead>
+      <tbody id="listaNovosCadastros"></tbody>
+    </table>
+  </div>
+</div>
 
 <footer class="rodape">
   Desenvolvido por 
