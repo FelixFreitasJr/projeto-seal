@@ -169,9 +169,31 @@ function obterDataCadastro(item) {
   return data
 }
 
+
+async function buscarTodosRegistros(tabela) {
+  const limitePagina = 1000
+  let pagina = 0
+  let resultado = []
+
+  while (true) {
+    const from = pagina * limitePagina
+    const to = from + limitePagina - 1
+
+    const { data, error } = await supabase.from(tabela).select('*').range(from, to)
+    if (error || !data) break
+
+    resultado = resultado.concat(data)
+
+    if (data.length < limitePagina) break
+    pagina++
+  }
+
+  return resultado
+}
+
 async function buscarCadastrosRecentes(tabela, dias = 30) {
-  const { data, error } = await supabase.from(tabela).select('*')
-  if (error || !data) return []
+  const data = await buscarTodosRegistros(tabela)
+  if (!data.length) return []
 
   const agora = new Date()
   const limite = new Date()

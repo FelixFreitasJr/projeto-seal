@@ -23,6 +23,8 @@ function destruirGraficos() {
     graficoDia.destroy()
     graficoDia = null
   }
+
+  return datas
 }
 
 function converterParaSaoPaulo(dataISO) {
@@ -50,18 +52,48 @@ function getDatasUltimosDias(quantidade) {
   return datas
 }
 
+
+function formatarDataInput(data) {
+  const ano = data.getFullYear()
+  const mes = String(data.getMonth() + 1).padStart(2, '0')
+  const dia = String(data.getDate()).padStart(2, '0')
+  return `${ano}-${mes}-${dia}`
+}
+
+async function buscarDispensasPaginadas(inicio, fim) {
+  const limitePagina = 1000
+  let pagina = 0
+  let resultado = []
+
+  while (true) {
+    let query = supabase.from('dispensas').select('*')
+
+    if (inicio) query = query.gte('data_hora', `${inicio}T00:00:00`)
+    if (fim) query = query.lte('data_hora', `${fim}T23:59:59`)
+
+    const from = pagina * limitePagina
+    const to = from + limitePagina - 1
+
+    const { data, error } = await query.range(from, to)
+    if (error || !data) break
+
+    resultado = resultado.concat(data)
+
+    if (data.length < limitePagina) break
+    pagina++
+  }
+
+  return resultado
+}
+
 export async function carregarGraficos() {
   destruirGraficos()
 
   const inicio = document.getElementById('dataInicio')?.value
   const fim = document.getElementById('dataFim')?.value
 
-  let query = supabase.from('dispensas').select('*')
-  if (inicio) query = query.gte('data_hora', `${inicio}T00:00:00`)
-  if (fim) query = query.lte('data_hora', `${fim}T23:59:59`)
-
-  const { data, error } = await query
-  if (error || !data) return
+  const data = await buscarDispensasPaginadas(inicio, fim)
+  if (!data.length) return
 
   // 📊 Pizza (Local)
   const mapaLocal = { ADM: 0, EXTERNO: 0, SATELITE: 0 }
@@ -188,8 +220,8 @@ export function filtrarPeriodo(dias) {
   const inicio = new Date()
   inicio.setDate(hoje.getDate() - dias)
 
-  document.getElementById('dataInicio').value = inicio.toISOString().split('T')[0]
-  document.getElementById('dataFim').value = hoje.toISOString().split('T')[0]
+  document.getElementById('dataInicio').value = formatarDataInput(inicio)
+  document.getElementById('dataFim').value = formatarDataInput(hoje)
 
   carregarGraficos()
 }
