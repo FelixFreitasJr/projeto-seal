@@ -7,11 +7,15 @@ import { carregarGraficos, filtrarPeriodo, toggleFiltroPersonalizado } from './m
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 let colaboradoresDispensados = {}
+let appInicializado = false
 
 // =========================
 // INIT
 // =========================
 function inicializarApp() {
+  if (appInicializado) return
+  appInicializado = true
+
   const pathname = window.location.pathname.toLowerCase()
 
   if (pathname.endsWith('/estoque.html')) initEstoque()
@@ -71,6 +75,10 @@ if (document.readyState === 'loading') {
 } else {
   inicializarApp()
 }
+
+window.addEventListener('pageshow', () => {
+  if (!appInicializado) inicializarApp()
+})
 
 function initMenuResponsivo() {
   const menuPrincipal = document.querySelector('.menu-principal')
