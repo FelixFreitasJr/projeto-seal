@@ -90,6 +90,11 @@ export async function carregarGraficos() {
 
         if (window.abrirModalDispensadosPorLocal) {
           window.abrirModalDispensadosPorLocal(local)
+          return
+        }
+
+        if (window.abrirModalDispensados) {
+          window.abrirModalDispensados(local)
         }
       }
     }
