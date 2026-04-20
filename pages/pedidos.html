@@ -50,11 +50,12 @@
   <div id="areaPedidos">
 
     <!-- Formulário -->
-    <h3>Novo Item</h3>
+    <h3>Novo Pedido</h3>
     <div class="tabela-container tabela-formulario">
       <table>
         <thead>
           <tr>
+            <th class="usuario-codigo-inline">Usuário</th>
             <th class="col-codigo">Código</th>
             <th class="col-nome">Descrição</th>
             <th class="col-qtdFat">Qtd. Fat.</th>
@@ -64,13 +65,8 @@
         </thead>
         <tbody>
           <tr>
-            <td>
-              <div class="usuario-codigo-inline">
-                <input id="usuarioPedido" type="text" placeholder="Usuário" class="usuario-pedido-inline">
-                <span class="separador-campos">|</span>
-                <input id="codigo" placeholder="Código MV ou SGA" oninput="previewCodigo(this.value)">
-              </div>
-            </td>
+            <td><input id="usuarioPedido" type="text" placeholder="Usuário" class="usuario-pedido-inline"></td>
+            <td><input id="codigo" placeholder="Código MV ou SGA" oninput="previewCodigo(this.value)"></td>
             <td><div id="previewItem"></div></td>
             <td><div id="qtdFat">—</div></td>
             <td><input id="quantidade" type="text" placeholder="Qtd."></td>

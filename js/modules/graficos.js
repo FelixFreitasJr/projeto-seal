@@ -23,8 +23,6 @@ function destruirGraficos() {
     graficoDia.destroy()
     graficoDia = null
   }
-
-  return datas
 }
 
 function converterParaSaoPaulo(dataISO) {
