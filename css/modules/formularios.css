@@ -129,21 +129,20 @@
   box-shadow: 0 2px 10px rgba(0,0,0,0.25);
 }
 
-#modal .modal-content,
-#modalColaborador .modal-content {
-  max-width: 560px;
+/* Modais de cadastro (produto e colaborador) */
+.modal-cadastro-content {
+  max-width: 620px;
+  padding: 24px;
 }
 
-#modal .modal-content h3,
-#modalColaborador .modal-content h3 {
+.modal-cadastro-content h3 {
   margin-top: 0;
+  margin-bottom: 14px;
   color: var(--primary);
 }
 
-#modal .modal-content input,
-#modal .modal-content select,
-#modalColaborador .modal-content input,
-#modalColaborador .modal-content select {
+.modal-cadastro-content input,
+.modal-cadastro-content select {
   width: 100%;
   box-sizing: border-box;
   margin-bottom: 10px;

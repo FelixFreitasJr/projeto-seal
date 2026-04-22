@@ -4,6 +4,7 @@ import { SUPABASE_URL, SUPABASE_KEY } from './config.js'
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 import { getUser } from './auth.js'
 import { carregarGraficos, filtrarPeriodo, toggleFiltroPersonalizado } from './modules/graficos.js'
+import { habilitarResizeTabelas } from './modules/column-resizer.js'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 let colaboradoresDispensados = {}
@@ -64,7 +65,9 @@ function inicializarApp() {
   }
 
   initMenuResponsivo()
+  habilitarResizeTabelas()
 }
+
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', inicializarApp)
