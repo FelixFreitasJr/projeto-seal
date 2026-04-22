@@ -22,17 +22,19 @@ export function initEstoque() {
 
   const tabela = document.getElementById('tabelaEstoque')
   const busca = document.getElementById('busca')
-  let timeout = null
 
-  if (!isAdmin) {
-    document.getElementById("colAcoes")?.style.setProperty('display', 'none')
-    document.getElementById("qtdFat")?.style.setProperty('display', 'none')
-    document.getElementById("btnNovo")?.remove()
-  }
+  // Ajusta cabeçalho conforme perfil
+  const thExterno = document.querySelector("th[onclick*='endereco_externo']")
+  const thSatelite = document.querySelector("th[onclick*='endereco_satelite']")
 
-  if (isAdmin) {
-    document.getElementById("btnExportarEstoque")?.classList.remove("hidden")
-    document.getElementById("btnExportarEstoque")?.addEventListener("click", exportarEstoquePDF)
+  if (user?.perfil === "EXTERNO") {
+    thSatelite?.remove()   // remove coluna Satélite
+    if (thExterno) thExterno.innerText = "Endereço"
+  } else if (user?.perfil === "SATELITE") {
+    thExterno?.remove()    // remove coluna Externo
+    if (thSatelite) thSatelite.innerText = "Endereço"
+  } else if (isAdmin) {
+    // mantém as duas colunas com nomes originais
   }
 
   // =========================
@@ -62,11 +64,11 @@ export function initEstoque() {
     atualizarContador(data.length)
   }
 
-function renderTabela(data) {
-  let linhas = ''
+  function renderTabela(data) {
+    let linhas = ''
 
-  data.forEach(item => {
-    linhas += `
+    data.forEach(item => {
+      linhas += `
       <tr>
         <td class="codigo">${escapeHtml(item.codigo_mv)}</td>
         ${isAdmin ? `<td class="col-sga">${escapeHtml(item.codigo_sga)}</td>` : ''}
@@ -80,12 +82,12 @@ function renderTabela(data) {
           </div>
         </td>
         ${user?.perfil === "EXTERNO" ? `
-          <td class="externo">${escapeHtml(item.endereco_externo)}</td>
+          <td>${escapeHtml(item.endereco_externo)}</td>
         ` : user?.perfil === "SATELITE" ? `
-          <td class="satelite">${escapeHtml(item.endereco_satelite)}</td>
+          <td>${escapeHtml(item.endereco_satelite)}</td>
         ` : `
-          <td class="externo">${escapeHtml(item.endereco_externo)}</td>
-          <td class="satelite">${escapeHtml(item.endereco_satelite)}</td>
+          <td>${escapeHtml(item.endereco_externo)}</td>
+          <td>${escapeHtml(item.endereco_satelite)}</td>
         `}
         ${isAdmin ? `
         <td class="qtdFat">${escapeHtml(item.quantidade_faturamento || '—')}</td>
@@ -103,15 +105,19 @@ function renderTabela(data) {
           </div>
         </td>` : ''}
       </tr>`
-  })
+    })
 
-  tabela.innerHTML = linhas
-}
+    tabela.innerHTML = linhas
+  }
 
   function atualizarContador(qtd) {
     const contador = document.getElementById("contadorEstoque")
     if (contador) contador.innerText = "Itens: " + qtd
   }
+
+  // dispara primeira busca
+  buscar()
+}
 
   // =========================
   // EVENTOS
