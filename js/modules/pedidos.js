@@ -4,6 +4,34 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 let itensPedido = []
+let salvandoPedido = false
+
+function formatarDataHoraBrasilia(dataISO) {
+  return new Intl.DateTimeFormat('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    dateStyle: 'short',
+    timeStyle: 'medium'
+  }).format(new Date(dataISO))
+}
+
+async function buscarProdutoPorCodigo(codigo) {
+  const codigoNormalizado = codigo.trim()
+  if (!codigoNormalizado) return null
+
+  const { data, error } = await supabase
+    .from('produtos')
+    .select('nome, quantidade_faturamento, codigo_sga, codigo_mv')
+    .or(`codigo_mv.eq.${codigoNormalizado},codigo_sga.eq.${codigoNormalizado}`)
+    .limit(1)
+    .maybeSingle()
+
+  if (error) {
+    console.error('Erro ao buscar produto:', error)
+    return null
+  }
+
+  return data || null
+}
 
 // Preview dinâmico ao digitar código
 async function previewCodigo(codigo) {
@@ -14,19 +42,16 @@ async function previewCodigo(codigo) {
     return
   }
 
-  const { data, error } = await supabase
-    .from('produtos')
-    .select('nome, quantidade_faturamento, codigo_sga')
-    .eq('codigo_mv', codigo)
-    .maybeSingle()
+  const data = await buscarProdutoPorCodigo(codigo)
 
-  if (error || !data) {
+  if (!data) {
     document.getElementById("previewItem").innerText = "Não encontrado"
     document.getElementById("qtdFat").innerText = "—"
-  } else {
-    document.getElementById("previewItem").innerText = data.nome
-    document.getElementById("qtdFat").innerText = data.quantidade_faturamento || "—"
+    return
   }
+
+  document.getElementById("previewItem").innerText = data.nome
+  document.getElementById("qtdFat").innerText = data.quantidade_faturamento || "—"
 }
 
 // Incluir item na lista
@@ -41,13 +66,9 @@ async function incluirItem() {
     return
   }
 
-  const { data, error } = await supabase
-    .from('produtos')
-    .select('nome, quantidade_faturamento, codigo_sga')
-    .eq('codigo_mv', codigo)
-    .maybeSingle()
+  const data = await buscarProdutoPorCodigo(codigo)
 
-  if (error || !data) {
+  if (!data) {
     showToast("Item não encontrado", "alerta")
     return
   }
@@ -123,60 +144,75 @@ async function finalizarPedido() {
 
 // Salvar pedido no banco com código sequencial
 async function salvarPedido() {
-  const usuarioInput = document.getElementById("usuarioPedido")
-  const usuario = usuarioInput?.value.trim() || "ADM"
+  if (salvandoPedido) return null
 
-  // Buscar último pedido para gerar código sequencial
-  const { data: ultimoPedido, error: erroUltimo } = await supabase
-    .from('pedidos')
-    .select('codigo')
-    .order('id', { ascending: false })
-    .limit(1)
-
-  let novoCodigo = "PED-001"
-  if (!erroUltimo && ultimoPedido && ultimoPedido.length > 0) {
-    const ultimoCodigo = ultimoPedido[0].codigo
-    const numero = parseInt(ultimoCodigo.replace("PED-", ""), 10) + 1
-    novoCodigo = "PED-" + numero.toString().padStart(3, "0")
-  }
-
-  const { data, error } = await supabase.from('pedidos').insert({
-    codigo: novoCodigo,
-    usuario: usuario,
-    data: new Date().toISOString(),
-    status: "aberto"
-  }).select()
-
-  if (error || !data) {
-    showToast("Erro ao salvar pedido", "erro")
+  if (!itensPedido.length) {
+    showToast("Inclua ao menos um item antes de salvar", "alerta")
     return null
   }
 
-  const pedidoId = data[0].id
+  salvandoPedido = true
 
-  for (const item of itensPedido) {
-    const { error } = await supabase.from('pedido_itens').insert({
-      pedido_id: pedidoId,
-      codigo_mv: item.codigo,
-      codigo_sga: item.codigo_sga || null,
-      nome: item.nome,
-      quantidade: item.quantidade,
-      quantidade_faturamento: item.quantidade_faturamento || null
-    })
-    if (error) {
-      console.error("Erro ao salvar item:", error)
-      showToast("Erro ao salvar item do pedido", "erro")
+  try {
+    const usuarioInput = document.getElementById("usuarioPedido")
+    const usuario = usuarioInput?.value.trim() || "ADM"
+
+    // Buscar último pedido para gerar código sequencial
+    const { data: ultimoPedido, error: erroUltimo } = await supabase
+      .from('pedidos')
+      .select('codigo')
+      .order('id', { ascending: false })
+      .limit(1)
+
+    let novoCodigo = "PED-001"
+    if (!erroUltimo && ultimoPedido && ultimoPedido.length > 0) {
+      const ultimoCodigo = ultimoPedido[0].codigo
+      const numero = parseInt(ultimoCodigo.replace("PED-", ""), 10) + 1
+      novoCodigo = "PED-" + numero.toString().padStart(3, "0")
     }
+
+    const { data, error } = await supabase.from('pedidos').insert({
+      codigo: novoCodigo,
+      usuario: usuario,
+      data: new Date().toISOString(),
+      status: "aberto"
+    }).select()
+
+    if (error || !data) {
+      console.error('Erro ao salvar pedido:', error)
+      showToast("Erro ao salvar pedido", "erro")
+      return null
+    }
+
+    const pedidoId = data[0].id
+
+    for (const item of itensPedido) {
+      const { error } = await supabase.from('pedido_itens').insert({
+        pedido_id: pedidoId,
+        codigo_mv: item.codigo,
+        codigo_sga: item.codigo_sga || null,
+        nome: item.nome,
+        quantidade: item.quantidade,
+        quantidade_faturamento: item.quantidade_faturamento || null
+      })
+      if (error) {
+        console.error("Erro ao salvar item:", error)
+        showToast("Erro ao salvar item do pedido", "erro")
+        return null
+      }
+    }
+
+    showToast(`Pedido ${novoCodigo} salvo com sucesso por ${usuario}`, "sucesso")
+    carregarHistorico()
+
+    itensPedido = []
+    renderLista()
+    fecharModal()
+
+    return pedidoId
+  } finally {
+    salvandoPedido = false
   }
-
-  showToast(`Pedido ${novoCodigo} salvo com sucesso por ${usuario}`, "sucesso")
-  carregarHistorico()
-
-  itensPedido = []
-  renderLista()
-  fecharModal()
-
-  return pedidoId
 }
 
 // Imprimir pedido já salvo
@@ -280,7 +316,7 @@ async function carregarHistorico() {
     <tr>
       <td>${p.codigo}</td>
       <td>${p.usuario}</td>
-      <td>${new Date(p.data).toLocaleString()}</td>
+      <td>${formatarDataHoraBrasilia(p.data)}</td>
       <td><input type="checkbox" class="chkPedido" value="${p.id}"></td>
     </tr>
   `).join("")

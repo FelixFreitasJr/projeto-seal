@@ -7,8 +7,6 @@ let graficoPizza = null
 let graficoEquipes = null
 let graficoDia = null
 
-const EQUIPES = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D']
-const DATA_BASE_CICLO = new Date('2025-01-01T00:00:00-03:00')
 
 function destruirGraficos() {
   if (graficoPizza) {
@@ -25,26 +23,56 @@ function destruirGraficos() {
   }
 }
 
-function converterParaSaoPaulo(dataISO) {
-  return new Date(new Date(dataISO).toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }))
+function obterPartesDataSP(dataISO) {
+  const partes = new Intl.DateTimeFormat('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    hour12: false
+  }).formatToParts(new Date(dataISO))
+
+  const mapa = Object.fromEntries(partes.filter((p) => p.type !== 'literal').map((p) => [p.type, p.value]))
+  return {
+    ano: Number(mapa.year),
+    mes: Number(mapa.month),
+    dia: Number(mapa.day),
+    hora: Number(mapa.hour)
+  }
+}
+
+function obterChaveDataSP(dataISO) {
+  const { ano, mes, dia } = obterPartesDataSP(dataISO)
+  return `${ano}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`
 }
 
 function calcularEquipe(dataISO) {
-  const dataDispensa = converterParaSaoPaulo(dataISO)
-  const diferencaMs = dataDispensa.getTime() - DATA_BASE_CICLO.getTime()
-  const diasCiclo = Math.floor(diferencaMs / (1000 * 60 * 60 * 24))
-  const indiceEquipe = ((diasCiclo % EQUIPES.length) + EQUIPES.length) % EQUIPES.length
-  return EQUIPES[indiceEquipe]
+  const partes = obterPartesDataSP(dataISO)
+  const plantaoDiurno = partes.hora >= 7 && partes.hora < 19
+
+  let diaReferencia = partes.dia
+
+  if (!plantaoDiurno && partes.hora < 7) {
+    const dataAnterior = new Date(Date.UTC(partes.ano, partes.mes - 1, partes.dia))
+    dataAnterior.setUTCDate(dataAnterior.getUTCDate() - 1)
+    diaReferencia = dataAnterior.getUTCDate()
+  }
+
+  const diaPar = diaReferencia % 2 === 0
+
+  if (plantaoDiurno) return diaPar ? 'Equipe C' : 'Equipe A'
+  return diaPar ? 'Equipe D' : 'Equipe B'
 }
 
 function getDatasUltimosDias(quantidade) {
-  const hoje = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }))
+  const agora = new Date()
   const datas = []
 
   for (let i = quantidade - 1; i >= 0; i--) {
-    const data = new Date(hoje)
-    data.setDate(hoje.getDate() - i)
-    datas.push(data)
+    const data = new Date(agora)
+    data.setDate(agora.getDate() - i)
+    datas.push(obterChaveDataSP(data.toISOString()))
   }
 
   return datas
@@ -171,14 +199,12 @@ export async function carregarGraficos() {
   const datasUltimos7Dias = getDatasUltimosDias(7)
   const mapaDias = {}
 
-  datasUltimos7Dias.forEach((dataDia) => {
-    const chave = dataDia.toISOString().split('T')[0]
+  datasUltimos7Dias.forEach((chave) => {
     mapaDias[chave] = 0
   })
 
   data.forEach((d) => {
-    const dataSP = converterParaSaoPaulo(d.data_hora)
-    const chave = dataSP.toISOString().split('T')[0]
+    const chave = obterChaveDataSP(d.data_hora)
     if (mapaDias[chave] !== undefined) mapaDias[chave]++
   })
 
@@ -215,7 +241,7 @@ export async function carregarGraficos() {
 
 export function filtrarPeriodo(dias) {
   const hoje = new Date()
-  const inicio = new Date()
+  const inicio = new Date(hoje)
   inicio.setDate(hoje.getDate() - dias)
 
   document.getElementById('dataInicio').value = formatarDataInput(inicio)

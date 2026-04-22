@@ -109,7 +109,7 @@ td.satelite {
   width: 100%;
   min-width: 700px;       /* largura mínima fixa */
   border-collapse: collapse;
-  table-layout: fixed;    /* força largura proporcional */
+  table-layout: auto;
 }
 
 .tabela-container th,
@@ -390,3 +390,28 @@ td.satelite {
   max-width: 800px;
 }
 
+
+
+/* Redimensionamento de colunas */
+.resizable-table th {
+  position: relative;
+}
+
+.col-resize-handle {
+  position: absolute;
+  top: 0;
+  right: -3px;
+  width: 8px;
+  height: 100%;
+  cursor: col-resize;
+  user-select: none;
+}
+
+.col-resize-handle:hover {
+  background: rgba(25, 118, 210, 0.2);
+}
+
+body.resizing-column {
+  cursor: col-resize;
+  user-select: none;
+}
