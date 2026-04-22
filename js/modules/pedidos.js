@@ -6,6 +6,22 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 let itensPedido = []
 let salvandoPedido = false
 
+function escapeHtml(value) {
+  if (value == null) return ''
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+}
+
+function normalizarQuantidadeFaturamento(valor) {
+  if (valor == null || valor === '' || valor === '—') return null
+  const numero = Number(valor)
+  return Number.isFinite(numero) ? numero : null
+}
+
 function formatarDataHoraBrasilia(dataISO) {
   return new Intl.DateTimeFormat('pt-BR', {
     timeZone: 'America/Sao_Paulo',
@@ -74,7 +90,7 @@ async function incluirItem() {
   }
 
   itensPedido.push({
-    codigo: codigo,
+    codigo: (data.codigo_mv || codigo).toString().toUpperCase(),
     codigo_sga: data.codigo_sga || null,
     nome: data.nome,
     quantidade_faturamento: data.quantidade_faturamento || "—",
@@ -96,10 +112,10 @@ function renderLista() {
 
   tbody.innerHTML = itensPedido.map((i, idx) => `
     <tr>
-      <td>${i.codigo}</td>
-      <td>${i.codigo_sga || "—"}</td>
-      <td>${i.nome}</td>
-      <td>${i.quantidade_faturamento}</td>
+      <td>${escapeHtml(i.codigo)}</td>
+      <td>${escapeHtml(i.codigo_sga || "—")}</td>
+      <td>${escapeHtml(i.nome)}</td>
+      <td>${escapeHtml(i.quantidade_faturamento)}</td>
       <td>${i.quantidade}</td>
       <td class="acoes-pedidos">
           <button class="btn-editar" onclick="editarItem(${idx})"><img src="../img/editar.svg" alt="Editar"> Editar</button>
@@ -166,8 +182,9 @@ async function salvarPedido() {
 
     let novoCodigo = "PED-001"
     if (!erroUltimo && ultimoPedido && ultimoPedido.length > 0) {
-      const ultimoCodigo = ultimoPedido[0].codigo
-      const numero = parseInt(ultimoCodigo.replace("PED-", ""), 10) + 1
+      const ultimoCodigo = ultimoPedido[0].codigo || "PED-000"
+      const numeroAtual = parseInt(String(ultimoCodigo).replace("PED-", ""), 10)
+      const numero = (Number.isNaN(numeroAtual) ? 0 : numeroAtual) + 1
       novoCodigo = "PED-" + numero.toString().padStart(3, "0")
     }
 
@@ -193,7 +210,7 @@ async function salvarPedido() {
         codigo_sga: item.codigo_sga || null,
         nome: item.nome,
         quantidade: item.quantidade,
-        quantidade_faturamento: item.quantidade_faturamento || null
+        quantidade_faturamento: normalizarQuantidadeFaturamento(item.quantidade_faturamento)
       })
       if (error) {
         console.error("Erro ao salvar item:", error)
@@ -217,22 +234,33 @@ async function salvarPedido() {
 
 // Imprimir pedido já salvo
 async function imprimirPedido(pedidoId) {
-  const { data, error } = await supabase
+  const { data: itens, error } = await supabase
     .from('pedido_itens')
     .select('codigo_mv, codigo_sga, nome, quantidade, quantidade_faturamento')
     .eq('pedido_id', pedidoId)
 
-  if (error || !data) {
+  if (error || !itens) {
     showToast("Erro ao buscar itens do pedido", "erro")
     return
   }
 
+  const { data: pedidoInfo } = await supabase
+    .from('pedidos')
+    .select('codigo, usuario')
+    .eq('id', pedidoId)
+    .maybeSingle()
+
   const { jsPDF } = window.jspdf
   const doc = new jsPDF()
-  doc.text(`Pedido ${pedidoId}`, 14, 20)
+  const codigoPedido = pedidoInfo?.codigo || `#${pedidoId}`
+  doc.text(`Pedido ${codigoPedido}`, 14, 20)
+  if (pedidoInfo?.usuario) {
+    doc.text(`Usuário: ${pedidoInfo.usuario}`, 14, 28)
+  }
   doc.autoTable({
+    startY: pedidoInfo?.usuario ? 34 : 24,
     head: [["Código MV", "Código SGA", "Descrição", "Qtd. Fat.", "Qtd. Solicitada"]],
-    body: data.map(i => [
+    body: itens.map(i => [
       i.codigo_mv,
       i.codigo_sga || "—",
       i.nome,
@@ -240,7 +268,7 @@ async function imprimirPedido(pedidoId) {
       i.quantidade
     ])
   })
-  doc.save(gerarNomeArquivo(`pedido_${pedidoId}`))
+  doc.save(gerarNomeArquivo(`pedido_${codigoPedido}`))
 }
 
 // Exportar apenas selecionados
@@ -314,10 +342,15 @@ async function carregarHistorico() {
 
   document.getElementById("listaHistorico").innerHTML = data.map(p => `
     <tr>
-      <td>${p.codigo}</td>
-      <td>${p.usuario}</td>
+      <td>${escapeHtml(p.codigo)}</td>
+      <td>${escapeHtml(p.usuario)}</td>
       <td>${formatarDataHoraBrasilia(p.data)}</td>
-      <td><input type="checkbox" class="chkPedido" value="${p.id}"></td>
+      <td>
+        <div class="acoes-historico">
+          <input type="checkbox" class="chkPedido" value="${p.id}">
+          <button type="button" class="btn-editar" onclick="imprimirPedido('${p.id}')">Imprimir</button>
+        </div>
+      </td>
     </tr>
   `).join("")
 }

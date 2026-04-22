@@ -81,11 +81,20 @@
 <div id="modalColaborador" class="modal hidden" role="dialog" aria-modal="true">
   <div class="modal-content modal-cadastro-content">
     <h3>Novo Colaborador</h3>
+    <p class="modal-subtitle">Informe os dados do colaborador para liberar a dispensa.</p>
+    <div class="modal-form-grid">
+      <label for="cpf">CPF *</label>
+      <input id="cpf" placeholder="CPF (somente números)" maxlength="14">
 
-    <input id="cpf" placeholder="CPF (somente números)" maxlength="14">
-    <input id="nome" placeholder="Nome">
-    <input id="empresa" placeholder="Empresa">
-    <input id="funcao" placeholder="Função">
+      <label for="nome">Nome *</label>
+      <input id="nome" placeholder="Nome completo">
+
+      <label for="empresa">Empresa *</label>
+      <input id="empresa" placeholder="Ex: FIOCRUZ">
+
+      <label for="funcao">Função *</label>
+      <input id="funcao" placeholder="Ex: TÉCNICO DE ENFERMAGEM">
+    </div>
 
     <div class="modal-actions">
       <button id="btnCancelarColaborador">
