@@ -62,11 +62,11 @@ export function initEstoque() {
     atualizarContador(data.length)
   }
 
-  function renderTabela(data) {
-    let linhas = ''
+function renderTabela(data) {
+  let linhas = ''
 
-    data.forEach(item => {
-      linhas += `
+  data.forEach(item => {
+    linhas += `
       <tr>
         <td class="codigo">${escapeHtml(item.codigo_mv)}</td>
         ${isAdmin ? `<td class="col-sga">${escapeHtml(item.codigo_sga)}</td>` : ''}
@@ -79,8 +79,14 @@ export function initEstoque() {
             <div class="info-extra">| ${escapeHtml(item.observacao || '-')}</div>
           </div>
         </td>
-        <td class="externo">${escapeHtml(item.endereco_externo)}</td>
-        <td class="satelite">${escapeHtml(item.endereco_satelite)}</td>
+        ${user?.perfil === "EXTERNO" ? `
+          <td class="externo">${escapeHtml(item.endereco_externo)}</td>
+        ` : user?.perfil === "SATELITE" ? `
+          <td class="satelite">${escapeHtml(item.endereco_satelite)}</td>
+        ` : `
+          <td class="externo">${escapeHtml(item.endereco_externo)}</td>
+          <td class="satelite">${escapeHtml(item.endereco_satelite)}</td>
+        `}
         ${isAdmin ? `
         <td class="qtdFat">${escapeHtml(item.quantidade_faturamento || '—')}</td>
         <td>
@@ -97,10 +103,10 @@ export function initEstoque() {
           </div>
         </td>` : ''}
       </tr>`
-    })
+  })
 
-    tabela.innerHTML = linhas
-  }
+  tabela.innerHTML = linhas
+}
 
   function atualizarContador(qtd) {
     const contador = document.getElementById("contadorEstoque")
@@ -320,7 +326,6 @@ function exportarEstoquePDF() {
   doc.autoTable({ head, body })
   doc.save(gerarNomeArquivo("estoque"))
 }
-
 
 // =========================
 // GLOBAL

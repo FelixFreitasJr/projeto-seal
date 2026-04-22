@@ -38,7 +38,9 @@ export function initDispensa() {
     const { data, error } = await supabase
       .from('colaboradores')
       .select('*')
+      .or(`cpf.ilike.%${termoNumerico}%,nome.ilike.%${termo}%,empresa.ilike.%${termo}%,funcao.ilike.%${termo}%`)
       .order('nome', { ascending: true })
+
 
     if (error) {
       console.error(error)
