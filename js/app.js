@@ -344,6 +344,48 @@ function mascararCPF(cpf) {
   return cpf.substring(0, 3) + '.' + cpf.substring(3, 6) + '.XXX-' + cpf.substring(9, 11)
 }
 
+function obterPartesDataSP(dataISO) {
+  const partes = new Intl.DateTimeFormat('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  }).formatToParts(new Date(dataISO))
+
+  const mapa = Object.fromEntries(partes.filter((p) => p.type !== 'literal').map((p) => [p.type, p.value]))
+  return {
+    ano: Number(mapa.year),
+    mes: Number(mapa.month),
+    dia: Number(mapa.day),
+    hora: Number(mapa.hour)
+  }
+}
+
+function obterChaveDataSP(dataISO) {
+  const { ano, mes, dia } = obterPartesDataSP(dataISO)
+  return `${ano}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`
+}
+
+function calcularPlantao(dataISO) {
+  const partes = obterPartesDataSP(dataISO)
+  const plantaoDiurno = partes.hora >= 7 && partes.hora < 19
+
+  let diaReferencia = partes.dia
+  if (!plantaoDiurno && partes.hora < 7) {
+    const dataAnterior = new Date(Date.UTC(partes.ano, partes.mes - 1, partes.dia))
+    dataAnterior.setUTCDate(dataAnterior.getUTCDate() - 1)
+    diaReferencia = dataAnterior.getUTCDate()
+  }
+
+  const diaPar = diaReferencia % 2 === 0
+  if (plantaoDiurno) return diaPar ? 'Plantão C' : 'Plantão A'
+  return diaPar ? 'Plantão D' : 'Plantão B'
+}
+
 // =========================
 // MODAL DISPENSADOS
 // =========================
@@ -405,6 +447,65 @@ async function abrirModalDispensados(local = null) {
 
 function fecharModalDispensados() {
   document.getElementById('modalDispensados').classList.add('hidden')
+}
+
+async function abrirModalDetalhesGrafico({ titulo, filtro }) {
+  const modal = document.getElementById('modalDetalhesGrafico')
+  const tituloModal = document.getElementById('tituloModalDetalhesGrafico')
+  const tbody = document.getElementById('listaDetalhesGrafico')
+  if (!modal || !tituloModal || !tbody) return
+
+  tituloModal.innerText = titulo
+  modal.classList.remove('hidden')
+
+  const { data, error } = await supabase
+    .from('dispensas')
+    .select('*')
+    .order('data_hora', { ascending: false })
+
+  if (error) return showToast('Erro ao carregar detalhes do gráfico', 'erro')
+
+  const itens = data.filter(filtro)
+  tbody.innerHTML = ''
+
+  if (!itens.length) {
+    tbody.innerHTML = '<tr><td colspan="7">Nenhuma dispensa encontrada para o filtro selecionado.</td></tr>'
+    return
+  }
+
+  itens.forEach((item) => {
+    const tr = document.createElement('tr')
+    const cpf = isAdminAtual() ? (item.cpf || '-') : mascararCPF(item.cpf || '-')
+    tr.innerHTML = `
+      <td>${new Date(item.data_hora).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}</td>
+      <td>${cpf}</td>
+      <td>${item.nome || '-'}</td>
+      <td>${item.empresa || '-'}</td>
+      <td>${item.funcao || '-'}</td>
+      <td>${item.usuario || '-'}</td>
+      <td>${calcularPlantao(item.data_hora)}</td>
+    `
+    tbody.appendChild(tr)
+  })
+}
+
+function fecharModalDetalhesGrafico() {
+  document.getElementById('modalDetalhesGrafico')?.classList.add('hidden')
+}
+
+async function abrirModalDispensasPorEquipe(equipe) {
+  await abrirModalDetalhesGrafico({
+    titulo: `Dispensas do ${equipe}`,
+    filtro: (item) => calcularPlantao(item.data_hora) === equipe
+  })
+}
+
+async function abrirModalDispensasPorDia(dataChave) {
+  const [ano, mes, dia] = dataChave.split('-')
+  await abrirModalDetalhesGrafico({
+    titulo: `Dispensas do dia ${dia}/${mes}/${ano}`,
+    filtro: (item) => obterChaveDataSP(item.data_hora) === dataChave
+  })
 }
 
 async function toggleHistorico(cpf, local = null) {
@@ -516,3 +617,6 @@ window.exportarHistoricoPDF = exportarHistoricoPDF
 window.abrirModalNovosCadastros = abrirModalNovosCadastros
 window.fecharModalNovosCadastros = fecharModalNovosCadastros
 window.exportarNovosCadastrosPDF = exportarNovosCadastrosPDF
+window.abrirModalDispensasPorEquipe = abrirModalDispensasPorEquipe
+window.abrirModalDispensasPorDia = abrirModalDispensasPorDia
+window.fecharModalDetalhesGrafico = fecharModalDetalhesGrafico

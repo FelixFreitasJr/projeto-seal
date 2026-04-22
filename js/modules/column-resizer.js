@@ -14,12 +14,25 @@ function aplicarLargurasSalvas(table) {
   headers.forEach((th, indice) => {
     const valor = localStorage.getItem(getStorageKey(table, indice))
     if (!valor) return
-    th.style.width = `${Math.max(parseInt(valor, 10) || MIN_WIDTH, MIN_WIDTH)}px`
+    const largura = Math.max(parseInt(valor, 10) || MIN_WIDTH, MIN_WIDTH)
+    aplicarLarguraColuna(table, indice, largura)
   })
 }
 
 function salvarLargura(table, indice, largura) {
   localStorage.setItem(getStorageKey(table, indice), String(Math.round(largura)))
+}
+
+function aplicarLarguraColuna(table, indice, largura) {
+  const headers = table.querySelectorAll('thead th')
+  const header = headers[indice]
+  if (header) header.style.width = `${largura}px`
+
+  table.querySelectorAll('tbody tr').forEach((linha) => {
+    const celula = linha.children[indice]
+    if (!celula) return
+    celula.style.width = `${largura}px`
+  })
 }
 
 function prepararHeader(table, th, indice) {
@@ -38,7 +51,7 @@ function prepararHeader(table, th, indice) {
   const mover = (evento) => {
     const delta = evento.clientX - inicioX
     const novaLargura = Math.max(MIN_WIDTH, larguraInicial + delta)
-    th.style.width = `${novaLargura}px`
+    aplicarLarguraColuna(table, indice, novaLargura)
     salvarLargura(table, indice, novaLargura)
   }
 
