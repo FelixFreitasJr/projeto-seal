@@ -29,6 +29,12 @@ export function initDispensa() {
     const termo = termoDigitado.toUpperCase()
     const termoNumerico = limparCPF(termoDigitado)
 
+    if (!termo) {
+      renderTabela([])
+      atualizarContador(0)
+      return
+    }
+
     const { data, error } = await supabase
       .from('colaboradores')
       .select('*')
@@ -41,24 +47,27 @@ export function initDispensa() {
 
     colaboradoresCache = data || []
 
-    const filtrados = termo
-      ? colaboradoresCache.filter((item) => {
-        const cpf = String(item.cpf || '')
-        const nome = String(item.nome || '').toUpperCase()
-        const empresa = String(item.empresa || '').toUpperCase()
-        const funcao = String(item.funcao || '').toUpperCase()
-        return cpf.includes(termoNumerico) ||
-          nome.includes(termo) ||
-          empresa.includes(termo) ||
-          funcao.includes(termo)
-      })
-      : colaboradoresCache
+    const filtrados = colaboradoresCache.filter((item) => {
+      const cpf = String(item.cpf || '')
+      const nome = String(item.nome || '').toUpperCase()
+      const empresa = String(item.empresa || '').toUpperCase()
+      const funcao = String(item.funcao || '').toUpperCase()
+      return cpf.includes(termoNumerico) ||
+        nome.includes(termo) ||
+        empresa.includes(termo) ||
+        funcao.includes(termo)
+    })
 
     renderTabela(filtrados)
     atualizarContador(filtrados.length)
   }
 
   function renderTabela(data) {
+    if (!data.length) {
+      tabela.innerHTML = ''
+      return
+    }
+
     let linhas = ''
 
     data.forEach(item => {
@@ -261,16 +270,7 @@ async function dispensarItem(id) {
     showToast("Erro ao dispensar", "erro")
   } else {
     showToast("Dispensa registrada", "sucesso")
-
-    // limpa busca
-    const busca = document.getElementById("busca")
-    const tabela = document.getElementById("tabela")
-
-    if (busca) busca.value = ""
-    if (tabela) tabela.innerHTML = ""
-
-    // foca no campo novamente
-    busca?.focus()
+    window.atualizarDispensa?.()
   }
 }
 
