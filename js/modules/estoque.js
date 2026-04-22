@@ -117,7 +117,7 @@ export function initEstoque() {
 
   // dispara primeira busca
   buscar()
-}
+
 
   // =========================
   // EVENTOS
@@ -141,11 +141,11 @@ export function initEstoque() {
   document.getElementById("btnCancelar")?.addEventListener("click", fecharModal)
   document.getElementById("btnSalvar")?.addEventListener("click", salvarProduto)
   carregarSugestoesEndereco()
-buscar()
-}
+
+
 
 window.atualizarEstoque = buscar
-
+}
 // =========================
 // CRUD PRODUTO
 // =========================
