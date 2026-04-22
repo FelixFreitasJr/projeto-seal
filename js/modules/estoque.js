@@ -141,9 +141,10 @@ export function initEstoque() {
   document.getElementById("btnCancelar")?.addEventListener("click", fecharModal)
   document.getElementById("btnSalvar")?.addEventListener("click", salvarProduto)
   carregarSugestoesEndereco()
-
-  window.atualizarEstoque = buscar
+buscar()
 }
+
+window.atualizarEstoque = buscar
 
 // =========================
 // CRUD PRODUTO
