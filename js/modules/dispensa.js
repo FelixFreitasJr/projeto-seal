@@ -14,7 +14,10 @@ export function initDispensa() {
 
   const sessao = JSON.parse(localStorage.getItem('usuarioLogado') || '{}')
   const mostrarCpfCompleto = sessao?.perfil === 'ADM'
-  const isAdmin = sessao?.perfil === 'ADM'
+  const perfil = String(sessao?.perfil || '').toUpperCase()
+  const perfisComGerenciamento = ['ADM', 'EXTERNO', 'SATELITE']
+  const podeGerenciar = perfisComGerenciamento.includes(perfil)
+  let colaboradoresCache = []
 
   let timeout = null
 
@@ -22,25 +25,37 @@ export function initDispensa() {
   // BUSCAR / LISTAR
   // =========================
   async function buscar() {
-    const termo = busca.value.trim()
+    const termoDigitado = busca.value.trim()
+    const termo = termoDigitado.toUpperCase()
+    const termoNumerico = limparCPF(termoDigitado)
 
-    let query = supabase.from('colaboradores').select('*').order('nome', { ascending: true })
-
-    if (termo) {
-      query = query.or(
-        `cpf.ilike.%${termo}%,nome.ilike.%${termo}%,empresa.ilike.%${termo}%,funcao.ilike.%${termo}%`
-      )
-    }
-
-    const { data, error } = await query
+    const { data, error } = await supabase
+      .from('colaboradores')
+      .select('*')
+      .order('nome', { ascending: true })
 
     if (error) {
       console.error(error)
       return
     }
 
-    renderTabela(data)
-    atualizarContador(data.length)
+    colaboradoresCache = data || []
+
+    const filtrados = termo
+      ? colaboradoresCache.filter((item) => {
+        const cpf = String(item.cpf || '')
+        const nome = String(item.nome || '').toUpperCase()
+        const empresa = String(item.empresa || '').toUpperCase()
+        const funcao = String(item.funcao || '').toUpperCase()
+        return cpf.includes(termoNumerico) ||
+          nome.includes(termo) ||
+          empresa.includes(termo) ||
+          funcao.includes(termo)
+      })
+      : colaboradoresCache
+
+    renderTabela(filtrados)
+    atualizarContador(filtrados.length)
   }
 
   function renderTabela(data) {
@@ -58,7 +73,7 @@ export function initDispensa() {
               <button class="btn-dispensar" onclick="dispensarItem('${item.id}')">
                 <img src="../img/salvar.svg" alt="Dispensar"> Dispensar
               </button>
-              ${isAdmin ? `
+              ${podeGerenciar ? `
               <button class="btn-editar" onclick="editarColaborador('${item.id}')">
                 <img src="../img/editar.svg" alt="Editar"> Editar
               </button>
@@ -101,9 +116,11 @@ export function initDispensa() {
 
   document.getElementById("btnSalvarColaborador")?.addEventListener("click", salvarColaborador)
 
-  if (!isAdmin) {
+  if (!podeGerenciar) {
     document.getElementById("btnNovoColaborador")?.classList.add('hidden')
   }
+
+  carregarSugestoesColaborador()
 
   // expõe global
   window.atualizarDispensa = buscar
@@ -176,6 +193,7 @@ async function salvarColaborador() {
   }
 
   window.atualizarDispensa?.()
+  await carregarSugestoesColaborador()
   fecharModal()
   limparCampos()
 }
@@ -203,6 +221,9 @@ async function editarColaborador(id) {
 }
 
 async function excluirItem(id) {
+  const confirmarExclusao = window.confirm('Tem certeza que deseja excluir este colaborador?')
+  if (!confirmarExclusao) return
+
   const { error } = await supabase.from('colaboradores').delete().eq('id', id)
 
   if (error) {
@@ -274,6 +295,31 @@ function fecharModal() {
 
 function limparCampos() {
   document.querySelectorAll("#modalColaborador input").forEach(i => i.value = "")
+}
+
+async function carregarSugestoesColaborador() {
+  const { data, error } = await supabase
+    .from('colaboradores')
+    .select('empresa, funcao')
+    .order('empresa', { ascending: true })
+
+  if (error || !data) return
+
+  preencherDatalist('sugestoesEmpresa', data.map(item => item.empresa))
+  preencherDatalist('sugestoesFuncao', data.map(item => item.funcao))
+}
+
+function preencherDatalist(id, valores = []) {
+  const datalist = document.getElementById(id)
+  if (!datalist) return
+
+  const unicos = [...new Set(
+    valores
+      .map(v => String(v || '').trim().toUpperCase())
+      .filter(Boolean)
+  )]
+
+  datalist.innerHTML = unicos.map(valor => `<option value="${escapeHtml(valor)}"></option>`).join('')
 }
 
 // =========================

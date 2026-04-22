@@ -128,6 +128,7 @@ export function initEstoque() {
 
   document.getElementById("btnCancelar")?.addEventListener("click", fecharModal)
   document.getElementById("btnSalvar")?.addEventListener("click", salvarProduto)
+  carregarSugestoesEndereco()
 
   // primeira carga
   buscar()
@@ -177,6 +178,7 @@ async function salvarProduto() {
   }
 
   window.atualizarEstoque?.()
+  await carregarSugestoesEndereco()
   fecharModal()
   limparCampos()
 }
@@ -199,6 +201,9 @@ async function editarProduto(id) {
 }
 
 async function excluirProduto(id) {
+  const confirmarExclusao = window.confirm("Tem certeza que deseja excluir este item?")
+  if (!confirmarExclusao) return
+
   const { error } = await supabase.from('produtos').delete().eq('id', id)
   if (error) showToast("Erro ao excluir", "erro")
   else {
@@ -266,6 +271,30 @@ function escapeHtml(value) {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;')
+}
+
+async function carregarSugestoesEndereco() {
+  const { data, error } = await supabase
+    .from('produtos')
+    .select('endereco_externo, endereco_satelite')
+
+  if (error || !data) return
+
+  preencherDatalist('sugestoesEnderecoExterno', data.map(item => item.endereco_externo))
+  preencherDatalist('sugestoesEnderecoSatelite', data.map(item => item.endereco_satelite))
+}
+
+function preencherDatalist(id, valores = []) {
+  const datalist = document.getElementById(id)
+  if (!datalist) return
+
+  const unicos = [...new Set(
+    valores
+      .map(v => String(v || '').trim().toUpperCase())
+      .filter(Boolean)
+  )]
+
+  datalist.innerHTML = unicos.map(valor => `<option value="${escapeHtml(valor)}"></option>`).join('')
 }
 function toggleMenu(btn) {
   const menu = btn.nextElementSibling
