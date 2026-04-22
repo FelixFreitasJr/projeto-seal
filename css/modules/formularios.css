@@ -133,19 +133,51 @@
 .modal-cadastro-content {
   max-width: 620px;
   padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #e6edf8;
+  box-shadow: 0 18px 36px rgba(15, 34, 58, 0.18);
 }
 
 .modal-cadastro-content h3 {
   margin-top: 0;
-  margin-bottom: 14px;
+  margin-bottom: 6px;
   color: var(--primary);
+}
+
+.modal-subtitle {
+  margin: 0 0 16px 0;
+  color: var(--text-light);
+  font-size: 0.92rem;
+}
+
+.modal-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.modal-form-grid label {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #334155;
 }
 
 .modal-cadastro-content input,
 .modal-cadastro-content select {
   width: 100%;
   box-sizing: border-box;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  border: 1px solid #cfd7e6;
+  border-radius: 8px;
+  padding: 10px 12px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.modal-cadastro-content input:focus,
+.modal-cadastro-content select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
 }
 
 .modal-dispensados-content {

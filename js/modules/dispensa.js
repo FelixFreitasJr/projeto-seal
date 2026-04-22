@@ -14,6 +14,7 @@ export function initDispensa() {
 
   const sessao = JSON.parse(localStorage.getItem('usuarioLogado') || '{}')
   const mostrarCpfCompleto = sessao?.perfil === 'ADM'
+  const isAdmin = sessao?.perfil === 'ADM'
 
   let timeout = null
 
@@ -23,16 +24,13 @@ export function initDispensa() {
   async function buscar() {
     const termo = busca.value.trim()
 
-    if (!termo) {
-      renderTabela([])
-      return
-    }
-
     let query = supabase.from('colaboradores').select('*').order('nome', { ascending: true })
 
-    query = query.or(
-      `cpf.ilike.%${termo}%,nome.ilike.%${termo}%,empresa.ilike.%${termo}%,funcao.ilike.%${termo}%`
-    )
+    if (termo) {
+      query = query.or(
+        `cpf.ilike.%${termo}%,nome.ilike.%${termo}%,empresa.ilike.%${termo}%,funcao.ilike.%${termo}%`
+      )
+    }
 
     const { data, error } = await query
 
@@ -42,6 +40,7 @@ export function initDispensa() {
     }
 
     renderTabela(data)
+    atualizarContador(data.length)
   }
 
   function renderTabela(data) {
@@ -59,18 +58,24 @@ export function initDispensa() {
               <button class="btn-dispensar" onclick="dispensarItem('${item.id}')">
                 <img src="../img/salvar.svg" alt="Dispensar"> Dispensar
               </button>
+              ${isAdmin ? `
               <button class="btn-editar" onclick="editarColaborador('${item.id}')">
                 <img src="../img/editar.svg" alt="Editar"> Editar
               </button>
               <button class="btn-excluir" onclick="excluirItem('${item.id}')">
                 <img src="../img/excluir.svg" alt="Excluir"> Excluir
-              </button>
+              </button>` : ''}
             </div>
           </td>
         </tr>`
     })
 
     tabela.innerHTML = linhas
+  }
+
+  function atualizarContador(qtd) {
+    const contador = document.getElementById("contadorColaboradores")
+    if (contador) contador.innerText = `Colaboradores: ${qtd}`
   }
 
   // =========================
@@ -96,11 +101,15 @@ export function initDispensa() {
 
   document.getElementById("btnSalvarColaborador")?.addEventListener("click", salvarColaborador)
 
+  if (!isAdmin) {
+    document.getElementById("btnNovoColaborador")?.classList.add('hidden')
+  }
+
   // expõe global
   window.atualizarDispensa = buscar
 
-  // primeira carga: mantém a tabela vazia até o usuário pesquisar
-  renderTabela([])
+  // primeira carga
+  buscar()
 }
 
 // =========================

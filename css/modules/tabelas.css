@@ -197,6 +197,12 @@ td.satelite {
   background: #f9f9f9;
 }
 
+.acoes-historico {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 #listaDispensados tr:hover {
   background: var(--background);
 }
