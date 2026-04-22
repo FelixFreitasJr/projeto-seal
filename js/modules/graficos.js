@@ -61,8 +61,8 @@ function calcularEquipe(dataISO) {
 
   const diaPar = diaReferencia % 2 === 0
 
-  if (plantaoDiurno) return diaPar ? 'Equipe C' : 'Equipe A'
-  return diaPar ? 'Equipe D' : 'Equipe B'
+  if (plantaoDiurno) return diaPar ? 'Plantão C' : 'Plantão A'
+  return diaPar ? 'Plantão D' : 'Plantão B'
 }
 
 function getDatasUltimosDias(quantidade) {
@@ -160,10 +160,10 @@ export async function carregarGraficos() {
 
   // 📊 Barra (Dispensas por equipe no ciclo 4x)
   const mapaEquipes = {
-    'Equipe A': 0,
-    'Equipe B': 0,
-    'Equipe C': 0,
-    'Equipe D': 0
+    'Plantão A': 0,
+    'Plantão B': 0,
+    'Plantão C': 0,
+    'Plantão D': 0
   }
 
   data.forEach((d) => {
@@ -185,6 +185,12 @@ export async function carregarGraficos() {
     options: {
       plugins: {
         legend: { display: false }
+      },
+      onClick: (_, elements) => {
+        if (!elements.length) return
+        const indice = elements[0].index
+        const equipe = graficoEquipes.data.labels[indice]
+        window.abrirModalDispensasPorEquipe?.(equipe)
       },
       scales: {
         y: {
@@ -228,6 +234,12 @@ export async function carregarGraficos() {
     options: {
       plugins: {
         legend: { position: 'bottom' }
+      },
+      onClick: (_, elements) => {
+        if (!elements.length) return
+        const indice = elements[0].index
+        const dataChave = datasUltimos7Dias[indice]
+        window.abrirModalDispensasPorDia?.(dataChave)
       },
       scales: {
         y: {

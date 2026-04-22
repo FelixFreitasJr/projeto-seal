@@ -112,11 +112,13 @@
 
     <div class="grafico-box">
       <h3>Plantão 12x36 (4 equipes)</h3>
+      <p class="grafico-ajuda">Clique em um plantão para ver a listagem detalhada.</p>
       <canvas id="graficoEquipes"></canvas>
     </div>
 
     <div class="grafico-box">
       <h3>Dispensas do Dia (últimos 7 dias)</h3>
+      <p class="grafico-ajuda">Clique em um ponto para ver as dispensas da data.</p>
       <canvas id="graficoDia"></canvas>
     </div>
   </div>
@@ -165,6 +167,30 @@
       <tbody id="listaDispensados"></tbody>
     </table>
 
+  </div>
+</div>
+
+<!-- Modal Detalhes dos Gráficos -->
+<div id="modalDetalhesGrafico" class="modal hidden">
+  <div class="modal-content modal-dispensados-content">
+    <h3 id="tituloModalDetalhesGrafico">Detalhes do gráfico</h3>
+    <div class="modal-actions">
+      <button onclick="fecharModalDetalhesGrafico()">Fechar</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Data/Hora</th>
+          <th>CPF</th>
+          <th>Nome</th>
+          <th>Empresa</th>
+          <th>Função</th>
+          <th>Local</th>
+          <th>Plantão</th>
+        </tr>
+      </thead>
+      <tbody id="listaDetalhesGrafico"></tbody>
+    </table>
   </div>
 </div>
 

@@ -375,29 +375,6 @@ td.satelite {
   font-weight: bold;
 }
 
-/* Modais */
-.modal {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.modal.hidden {
-  display: none;
-}
-.modal-content {
-  background: #fff;
-  padding: 20px;
-  border-radius: 6px;
-  width: 80%;
-  max-width: 800px;
-}
-
-
-
 /* Redimensionamento de colunas */
 .resizable-table th {
   position: relative;
