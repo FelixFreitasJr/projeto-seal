@@ -386,6 +386,39 @@ function calcularPlantao(dataISO) {
   return diaPar ? 'Plantão D' : 'Plantão B'
 }
 
+async function buscarDispensasPaginadas({ usuario = null, cpf = null } = {}) {
+  const limitePagina = 1000
+  let pagina = 0
+  let resultado = []
+
+  while (true) {
+    let query = supabase
+      .from('dispensas')
+      .select('*')
+      .order('data_hora', { ascending: false })
+
+    if (usuario) query = query.eq('usuario', usuario)
+    if (cpf) query = query.eq('cpf', cpf)
+
+    const from = pagina * limitePagina
+    const to = from + limitePagina - 1
+
+    const { data, error } = await query.range(from, to)
+    if (error) {
+      console.error(error)
+      return null
+    }
+    if (!data) break
+
+    resultado = resultado.concat(data)
+
+    if (data.length < limitePagina) break
+    pagina++
+  }
+
+  return resultado
+}
+
 // =========================
 // MODAL DISPENSADOS
 // =========================
@@ -395,11 +428,8 @@ async function abrirModalDispensados(local = null) {
   const titulo = document.querySelector('#modalDispensados h3')
   if (titulo) titulo.innerText = local ? `Colaboradores com Dispensas — ${local}` : 'Colaboradores com Dispensas'
 
-  let query = supabase.from('dispensas').select('*')
-  if (local) query = query.eq('usuario', local)
-
-  const { data, error } = await query
-  if (error) return showToast("Erro ao carregar dispensas", "erro")
+  const data = await buscarDispensasPaginadas({ usuario: local })
+  if (!data) return showToast("Erro ao carregar dispensas", "erro")
 
   const mapa = {}
   data.forEach(item => {
@@ -458,12 +488,8 @@ async function abrirModalDetalhesGrafico({ titulo, filtro }) {
   tituloModal.innerText = titulo
   modal.classList.remove('hidden')
 
-  const { data, error } = await supabase
-    .from('dispensas')
-    .select('*')
-    .order('data_hora', { ascending: false })
-
-  if (error) return showToast('Erro ao carregar detalhes do gráfico', 'erro')
+  const data = await buscarDispensasPaginadas()
+  if (!data) return showToast('Erro ao carregar detalhes do gráfico', 'erro')
 
   const itens = data.filter(filtro)
   tbody.innerHTML = ''
@@ -515,11 +541,8 @@ async function toggleHistorico(cpf, local = null) {
 
   trHistorico.classList.remove("hidden")
 
-  let query = supabase.from('dispensas').select('*').eq('cpf', cpf)
-  if (local) query = query.eq('usuario', local)
-
-  const { data, error } = await query.order('data_hora', { ascending: false })
-  if (error) return showToast("Erro ao carregar histórico", "erro")
+  const data = await buscarDispensasPaginadas({ cpf, usuario: local })
+  if (!data) return showToast("Erro ao carregar histórico", "erro")
 
   const html = data.map(item => `
     <tr>
