@@ -272,7 +272,17 @@ async function dispensarItem(id) {
     showToast("Erro ao dispensar", "erro")
   } else {
     showToast("Dispensa registrada", "sucesso")
-    window.atualizarDispensa?.()
+
+    // limpa tabela e contador
+    renderTabela([])
+    atualizarContador(0)
+
+    // limpa campo de busca e foca novamente
+    const busca = document.getElementById('busca')
+    if (busca) {
+      busca.value = ''
+      busca.focus()
+    }
   }
 }
 
