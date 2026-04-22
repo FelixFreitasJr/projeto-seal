@@ -142,9 +142,6 @@ export function initEstoque() {
   document.getElementById("btnSalvar")?.addEventListener("click", salvarProduto)
   carregarSugestoesEndereco()
 
-  // primeira carga
-  buscar()
-
   window.atualizarEstoque = buscar
 }
 
