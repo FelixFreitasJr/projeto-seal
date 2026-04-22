@@ -83,20 +83,27 @@
     <h3>Novo Item</h3>
     <p class="modal-subtitle">Preencha os dados do material para cadastro no estoque.</p>
     <div class="modal-form-grid">
-      <label for="codigo_mv">Código MV *</label>
-      <input id="codigo_mv" placeholder="Ex: 12345">
-
-      <label for="codigo_sga">Código SGA</label>
-      <input id="codigo_sga" class="col-sga" placeholder="Ex: ABC-123">
+      <div class="modal-form-row codigos-row">
+        <div class="campo-grupo">
+          <label for="codigo_mv">Código MV *</label>
+          <input id="codigo_mv" placeholder="Ex: 12345">
+        </div>
+        <div class="campo-grupo">
+          <label for="codigo_sga">Código SGA</label>
+          <input id="codigo_sga" class="col-sga" placeholder="Ex: ABC-123">
+        </div>
+      </div>
 
       <label for="nome">Nome do material *</label>
       <input id="nome" placeholder="Ex: LUVA DESCARTÁVEL">
 
       <label for="externo">Endereço Externo</label>
-      <input id="externo" placeholder="Ex: A1-03">
+      <input id="externo" list="sugestoesEnderecoExterno" placeholder="Ex: A1-03">
+      <datalist id="sugestoesEnderecoExterno"></datalist>
 
       <label for="satelite">Endereço Satélite</label>
-      <input id="satelite" placeholder="Ex: SAT-B2">
+      <input id="satelite" list="sugestoesEnderecoSatelite" placeholder="Ex: SAT-B2">
+      <datalist id="sugestoesEnderecoSatelite"></datalist>
 
       <label for="quantidade_faturamento">Qtd. Faturamento</label>
       <input id="quantidade_faturamento" type="number" placeholder="Ex: 10">
