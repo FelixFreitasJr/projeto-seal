@@ -22,6 +22,7 @@ export function initEstoque() {
 
   const tabela = document.getElementById('tabelaEstoque')
   const busca = document.getElementById('busca')
+  let timeout = null
 
   // Ajusta cabeçalho conforme perfil
   const thExterno = document.querySelector("th[onclick*='endereco_externo']")
