@@ -27,6 +27,8 @@ export function initEstoque() {
   // Ajusta cabeçalho conforme perfil
   const thExterno = document.querySelector("th[onclick*='endereco_externo']")
   const thSatelite = document.querySelector("th[onclick*='endereco_satelite']")
+  const thQtdFat = document.getElementById("qtdFat")
+  const thAcoes = document.getElementById("colAcoes")
 
   if (user?.perfil === "EXTERNO") {
     thSatelite?.remove()   // remove coluna Satélite
@@ -36,6 +38,11 @@ export function initEstoque() {
     if (thSatelite) thSatelite.innerText = "Endereço"
   } else if (isAdmin) {
     // mantém as duas colunas com nomes originais
+  }
+
+  if (!isAdmin) {
+    thQtdFat?.remove()
+    thAcoes?.remove()
   }
 
   // =========================

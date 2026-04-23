@@ -203,7 +203,7 @@ async function salvarColaborador() {
     showToast("Colaborador cadastrado", "sucesso")
   }
 
-  window.atualizarDispensa?.()
+  window.atualizarDispensa()
   await carregarSugestoesColaborador()
   fecharModal()
   limparCampos()
@@ -241,7 +241,7 @@ async function excluirItem(id) {
     showToast("Erro ao excluir", "erro")
   } else {
     showToast("Excluído com sucesso", "sucesso")
-    window.atualizarDispensa?.()
+    window.atualizarDispensa()
   }
 }
 
