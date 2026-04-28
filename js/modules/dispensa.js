@@ -157,6 +157,9 @@ async function salvarColaborador() {
 
   if (!validarCPF(cpf)) {
     showToast("CPF inválido", "erro")
+    const cpfInput = document.getElementById("cpf")
+    cpfInput?.focus()
+    cpfInput?.setSelectionRange(0, cpfInput.value.length)
     return
   }
 
@@ -185,6 +188,9 @@ async function salvarColaborador() {
 
     if (existente) {
       showToast("CPF já cadastrado", "alerta")
+      const cpfInput = document.getElementById("cpf")
+      cpfInput?.focus()
+      cpfInput?.setSelectionRange(0, cpfInput.value.length)
       return
     }
 
@@ -351,7 +357,19 @@ function mascararCPF(cpf) {
 function validarCPF(cpf) {
   if (!cpf || cpf.length !== 11) return false
   if (/^(\d)\1+$/.test(cpf)) return false
-  return true
+
+  const digitos = cpf.split('').map(Number)
+
+  const calcularDigito = (base, pesoInicial) => {
+    const soma = base.reduce((acc, numero, idx) => acc + (numero * (pesoInicial - idx)), 0)
+    const resto = (soma * 10) % 11
+    return resto === 10 ? 0 : resto
+  }
+
+  const primeiroDigito = calcularDigito(digitos.slice(0, 9), 10)
+  const segundoDigito = calcularDigito(digitos.slice(0, 10), 11)
+
+  return primeiroDigito === digitos[9] && segundoDigito === digitos[10]
 }
 
 function escapeHtml(value) {
