@@ -157,13 +157,10 @@
       let valor = cpfInput.value.replace(/\D/g, "")
       if (valor.length > 11) valor = valor.slice(0, 11)
       cpfInput.value = formatarCPF(valor)
-    })
-
-    cpfInput.addEventListener("blur", () => {
-      const valor = cpfInput.value.replace(/\D/g, "")
-      if (!validarCPF(valor)) {
-        alert("CPF inválido. Verifique e corrija antes de salvar.")
-        cpfInput.focus()
+      if (!valor || validarCPF(valor)) {
+        cpfInput.removeAttribute("aria-invalid")
+      } else {
+        cpfInput.setAttribute("aria-invalid", "true")
       }
     })
   }
