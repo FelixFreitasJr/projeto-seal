@@ -35,11 +35,18 @@
     flex-wrap: wrap;
     gap: 6px;
     padding: 8px;
+    align-items: stretch;
   }
 
   .busca-box {
     max-width: 100%;
     flex: 1 1 100%;
+  }
+
+  .barra-topo > button,
+  .barra-topo > span {
+    flex: 1 1 calc(50% - 8px);
+    justify-content: center;
   }
 
   /* Menu suspenso */
@@ -70,6 +77,8 @@
 
   main.conteudo {
     margin-top: 118px;
+    padding: 14px;
+    padding-bottom: 90px;
   }
 
   .barra-topo {
@@ -112,6 +121,112 @@
   }
 }
 
+@media (max-width: 768px) {
+  footer.rodape {
+    position: static;
+  }
+
+  main.conteudo {
+    padding-bottom: 24px;
+  }
+
+  .tabela-container {
+    overflow: visible;
+    border: 0;
+    background: transparent;
+    margin-top: 12px;
+  }
+
+  .tabela-container table {
+    min-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+    background: transparent;
+  }
+
+  .tabela-container table thead {
+    border: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    white-space: nowrap;
+  }
+
+  .tabela-container table tbody tr {
+    display: block;
+    border: 1px solid #dde4ee;
+    border-radius: 12px;
+    background: var(--white);
+    box-shadow: 0 2px 8px rgba(15, 34, 58, 0.08);
+  }
+
+  .tabela-container table tbody td {
+    display: grid;
+    grid-template-columns: minmax(100px, 38%) 1fr;
+    align-items: start;
+    gap: 8px;
+    border-bottom: 1px solid #eef2f7;
+    padding: 10px 12px;
+    width: auto !important;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .tabela-container table tbody td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: #5c6b80;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+  }
+
+  .tabela-container table tbody td:last-child {
+    border-bottom: 0;
+  }
+
+  .tabela-container table tbody td:empty::after {
+    content: "—";
+    color: #9aa4b2;
+  }
+
+  .acoes-estoque,
+  .acoes-dispensa,
+  .acoes-pedidos,
+  .acoes-historico {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .acoes-estoque button,
+  .acoes-dispensa button,
+  .acoes-pedidos button {
+    flex: 1 1 calc(50% - 6px);
+    justify-content: center;
+  }
+
+  .modal-content {
+    max-height: 86vh;
+    overflow: auto;
+  }
+
+  .modal-actions {
+    flex-wrap: wrap;
+    justify-content: stretch;
+  }
+
+  .modal-actions button {
+    flex: 1 1 100%;
+    justify-content: center;
+    margin-left: 0;
+  }
+}
+
 /* Ajustes extras para telas muito pequenas */
 @media (max-width: 480px) {
   header.topo {
@@ -123,12 +238,28 @@
     align-items: flex-start;
   }
 
+  .barra-topo > button,
+  .barra-topo > span {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
   .card p {
     font-size: 1.5em;
   }
 
   .modal-content {
     width: 95%;
-    margin: 20% auto;
+    margin: 12% auto;
+    padding: 14px;
+  }
+
+  .tabela-container table tbody td {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .tabela-container table tbody td::before {
+    margin-bottom: 2px;
   }
 }

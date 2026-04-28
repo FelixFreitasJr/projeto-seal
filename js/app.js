@@ -5,6 +5,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 import { getUser } from './auth.js'
 import { carregarGraficos, filtrarPeriodo, toggleFiltroPersonalizado } from './modules/graficos.js'
 import { habilitarResizeTabelas } from './modules/column-resizer.js'
+import { initResponsiveTables } from './modules/responsive-tables.js'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 let colaboradoresDispensados = {}
@@ -68,6 +69,7 @@ function inicializarApp() {
 
   initMenuResponsivo()
   habilitarResizeTabelas()
+  initResponsiveTables()
 }
 
 
