@@ -8,6 +8,8 @@ import { habilitarResizeTabelas } from './modules/column-resizer.js'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 let colaboradoresDispensados = {}
+let cacheDetalhesGrafico = []
+let tituloDetalhesGraficoAtual = 'Detalhes do gráfico'
 
 // =========================
 // INIT
@@ -482,16 +484,20 @@ function fecharModalDispensados() {
 async function abrirModalDetalhesGrafico({ titulo, filtro }) {
   const modal = document.getElementById('modalDetalhesGrafico')
   const tituloModal = document.getElementById('tituloModalDetalhesGrafico')
+  const btnExportar = document.getElementById('btnExportarDetalhesGrafico')
   const tbody = document.getElementById('listaDetalhesGrafico')
   if (!modal || !tituloModal || !tbody) return
 
   tituloModal.innerText = titulo
+  tituloDetalhesGraficoAtual = titulo
+  btnExportar?.classList.toggle('hidden', !isAdminAtual())
   modal.classList.remove('hidden')
 
   const data = await buscarDispensasPaginadas()
   if (!data) return showToast('Erro ao carregar detalhes do gráfico', 'erro')
 
   const itens = data.filter(filtro)
+  cacheDetalhesGrafico = itens
   tbody.innerHTML = ''
 
   if (!itens.length) {
@@ -517,6 +523,39 @@ async function abrirModalDetalhesGrafico({ titulo, filtro }) {
 
 function fecharModalDetalhesGrafico() {
   document.getElementById('modalDetalhesGrafico')?.classList.add('hidden')
+  cacheDetalhesGrafico = []
+}
+
+function exportarDetalhesGraficoPDF() {
+  if (!isAdminAtual()) {
+    showToast('Somente ADM pode exportar o detalhamento do gráfico', 'alerta')
+    return
+  }
+
+  if (!cacheDetalhesGrafico.length) {
+    showToast('Sem dados para exportar', 'alerta')
+    return
+  }
+
+  const { jsPDF } = window.jspdf
+  const doc = new jsPDF('landscape')
+  doc.text(tituloDetalhesGraficoAtual, 14, 16)
+
+  doc.autoTable({
+    startY: 22,
+    head: [["Data/Hora", "CPF", "Nome", "Empresa", "Função", "Local", "Plantão"]],
+    body: cacheDetalhesGrafico.map((item) => [
+      new Date(item.data_hora).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }),
+      item.cpf || '-',
+      item.nome || '-',
+      item.empresa || '-',
+      item.funcao || '-',
+      item.usuario || '-',
+      calcularPlantao(item.data_hora)
+    ])
+  })
+
+  doc.save(gerarNomeArquivo('detalhes_grafico'))
 }
 
 async function abrirModalDispensasPorEquipe(equipe) {
@@ -643,3 +682,4 @@ window.exportarNovosCadastrosPDF = exportarNovosCadastrosPDF
 window.abrirModalDispensasPorEquipe = abrirModalDispensasPorEquipe
 window.abrirModalDispensasPorDia = abrirModalDispensasPorDia
 window.fecharModalDetalhesGrafico = fecharModalDetalhesGrafico
+window.exportarDetalhesGraficoPDF = exportarDetalhesGraficoPDF

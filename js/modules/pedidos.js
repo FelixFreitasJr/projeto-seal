@@ -1,5 +1,6 @@
 import { SUPABASE_URL, SUPABASE_KEY } from '../config.js'
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+import { getUser } from '../auth.js'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
@@ -158,7 +159,7 @@ async function finalizarPedido() {
   document.getElementById("modalResumo").classList.remove("hidden")
 }
 
-// Salvar pedido no banco com código sequencial
+// Salvar pedido localmente como relatório em PDF
 async function salvarPedido() {
   if (salvandoPedido) return null
 
@@ -171,62 +172,35 @@ async function salvarPedido() {
 
   try {
     const usuarioInput = document.getElementById("usuarioPedido")
-    const usuario = usuarioInput?.value.trim() || "ADM"
+    const usuario = usuarioInput?.value.trim() || getUser() || "ADM"
+    const codigoPedido = `PED-${Date.now()}`
+    const dataCriacao = new Date().toISOString()
 
-    // Buscar último pedido para gerar código sequencial
-    const { data: ultimoPedido, error: erroUltimo } = await supabase
-      .from('pedidos')
-      .select('codigo')
-      .order('id', { ascending: false })
-      .limit(1)
+    const { jsPDF } = window.jspdf
+    const doc = new jsPDF()
+    doc.text(`Pedido ${codigoPedido}`, 14, 20)
+    doc.text(`Usuário: ${usuario}`, 14, 28)
+    doc.text(`Criado em: ${formatarDataHoraBrasilia(dataCriacao)}`, 14, 36)
+    doc.autoTable({
+      startY: 44,
+      head: [["Código MV", "Código SGA", "Descrição", "Qtd. Fat.", "Qtd. Solicitada"]],
+      body: itensPedido.map(item => [
+        item.codigo,
+        item.codigo_sga || "—",
+        item.nome,
+        normalizarQuantidadeFaturamento(item.quantidade_faturamento) ?? "—",
+        item.quantidade
+      ])
+    })
+    doc.save(gerarNomeArquivo(`pedido_${codigoPedido}`))
 
-    let novoCodigo = "PED-001"
-    if (!erroUltimo && ultimoPedido && ultimoPedido.length > 0) {
-      const ultimoCodigo = ultimoPedido[0].codigo || "PED-000"
-      const numeroAtual = parseInt(String(ultimoCodigo).replace("PED-", ""), 10)
-      const numero = (Number.isNaN(numeroAtual) ? 0 : numeroAtual) + 1
-      novoCodigo = "PED-" + numero.toString().padStart(3, "0")
-    }
-
-    const { data, error } = await supabase.from('pedidos').insert({
-      codigo: novoCodigo,
-      usuario: usuario,
-      data: new Date().toISOString(),
-      status: "aberto"
-    }).select()
-
-    if (error || !data) {
-      console.error('Erro ao salvar pedido:', error)
-      showToast("Erro ao salvar pedido", "erro")
-      return null
-    }
-
-    const pedidoId = data[0].id
-
-    for (const item of itensPedido) {
-      const { error } = await supabase.from('pedido_itens').insert({
-        pedido_id: pedidoId,
-        codigo_mv: item.codigo,
-        codigo_sga: item.codigo_sga || null,
-        nome: item.nome,
-        quantidade: item.quantidade,
-        quantidade_faturamento: normalizarQuantidadeFaturamento(item.quantidade_faturamento)
-      })
-      if (error) {
-        console.error("Erro ao salvar item:", error)
-        showToast("Erro ao salvar item do pedido", "erro")
-        return null
-      }
-    }
-
-    showToast(`Pedido ${novoCodigo} salvo com sucesso por ${usuario}`, "sucesso")
-    carregarHistorico()
+    showToast(`Pedido gerado com sucesso por ${usuario}`, "sucesso")
 
     itensPedido = []
     renderLista()
     fecharModal()
 
-    return pedidoId
+    return codigoPedido
   } finally {
     salvandoPedido = false
   }
@@ -246,19 +220,26 @@ async function imprimirPedido(pedidoId) {
 
   const { data: pedidoInfo } = await supabase
     .from('pedidos')
-    .select('codigo, usuario')
+    .select('codigo, usuario, data')
     .eq('id', pedidoId)
     .maybeSingle()
 
   const { jsPDF } = window.jspdf
   const doc = new jsPDF()
   const codigoPedido = pedidoInfo?.codigo || `#${pedidoId}`
+  const usuarioImpressao = getUser() || 'N/D'
+  const dataHoraImpressao = formatarDataHoraBrasilia(new Date().toISOString())
   doc.text(`Pedido ${codigoPedido}`, 14, 20)
   if (pedidoInfo?.usuario) {
     doc.text(`Usuário: ${pedidoInfo.usuario}`, 14, 28)
   }
+  if (pedidoInfo?.data) {
+    doc.text(`Criado em: ${formatarDataHoraBrasilia(pedidoInfo.data)}`, 14, 36)
+  }
+  doc.text(`Impresso por: ${usuarioImpressao}`, 14, pedidoInfo?.data ? 44 : 36)
+  doc.text(`Impresso em: ${dataHoraImpressao}`, 14, pedidoInfo?.data ? 52 : 44)
   doc.autoTable({
-    startY: pedidoInfo?.usuario ? 34 : 24,
+    startY: pedidoInfo?.data ? 58 : 50,
     head: [["Código MV", "Código SGA", "Descrição", "Qtd. Fat.", "Qtd. Solicitada"]],
     body: itens.map(i => [
       i.codigo_mv,
@@ -307,15 +288,6 @@ async function exportarSelecionados() {
   }
 
   doc.save(gerarNomeArquivo("pedidos_selecionados"))
-}
-
-// Salvar e imprimir
-async function salvarEImprimir() {
-  const pedidoId = await salvarPedido()
-  if (pedidoId) {
-    await imprimirPedido(pedidoId)
-    fecharModal()
-  }
 }
 
 // Fechar modal de resumo
@@ -383,10 +355,6 @@ async function abrirPedido(pedidoId) {
 document.getElementById("codigo").addEventListener("input", e => previewCodigo(e.target.value))
 document.getElementById("btnIncluir").addEventListener("click", incluirItem)
 document.getElementById("btnFinalizar").addEventListener("click", finalizarPedido)
-document.getElementById("btnHistorico").addEventListener("click", () => {
-  carregarHistorico()
-  document.getElementById("modalHistorico").classList.remove("hidden")
-})
 
 // Expor funções globais para uso no HTML
 window.editarItem = editarItem
@@ -394,7 +362,6 @@ window.excluirItem = excluirItem
 window.previewCodigo = previewCodigo
 window.salvarPedido = salvarPedido
 window.imprimirPedido = imprimirPedido
-window.salvarEImprimir = salvarEImprimir
 window.fecharModal = fecharModal
 window.carregarHistorico = carregarHistorico
 window.abrirPedido = abrirPedido
