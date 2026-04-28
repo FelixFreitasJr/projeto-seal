@@ -157,6 +157,9 @@ async function salvarColaborador() {
 
   if (!validarCPF(cpf)) {
     showToast("CPF inválido", "erro")
+    const cpfInput = document.getElementById("cpf")
+    cpfInput?.focus()
+    cpfInput?.setSelectionRange(0, cpfInput.value.length)
     return
   }
 
