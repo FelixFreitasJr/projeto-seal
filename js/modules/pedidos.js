@@ -1,5 +1,6 @@
 import { SUPABASE_URL, SUPABASE_KEY } from '../config.js'
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+import { getUser } from '../auth.js'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
@@ -246,19 +247,26 @@ async function imprimirPedido(pedidoId) {
 
   const { data: pedidoInfo } = await supabase
     .from('pedidos')
-    .select('codigo, usuario')
+    .select('codigo, usuario, data')
     .eq('id', pedidoId)
     .maybeSingle()
 
   const { jsPDF } = window.jspdf
   const doc = new jsPDF()
   const codigoPedido = pedidoInfo?.codigo || `#${pedidoId}`
+  const usuarioImpressao = getUser() || 'N/D'
+  const dataHoraImpressao = formatarDataHoraBrasilia(new Date().toISOString())
   doc.text(`Pedido ${codigoPedido}`, 14, 20)
   if (pedidoInfo?.usuario) {
     doc.text(`Usuário: ${pedidoInfo.usuario}`, 14, 28)
   }
+  if (pedidoInfo?.data) {
+    doc.text(`Criado em: ${formatarDataHoraBrasilia(pedidoInfo.data)}`, 14, 36)
+  }
+  doc.text(`Impresso por: ${usuarioImpressao}`, 14, pedidoInfo?.data ? 44 : 36)
+  doc.text(`Impresso em: ${dataHoraImpressao}`, 14, pedidoInfo?.data ? 52 : 44)
   doc.autoTable({
-    startY: pedidoInfo?.usuario ? 34 : 24,
+    startY: pedidoInfo?.data ? 58 : 50,
     head: [["Código MV", "Código SGA", "Descrição", "Qtd. Fat.", "Qtd. Solicitada"]],
     body: itens.map(i => [
       i.codigo_mv,
@@ -307,15 +315,6 @@ async function exportarSelecionados() {
   }
 
   doc.save(gerarNomeArquivo("pedidos_selecionados"))
-}
-
-// Salvar e imprimir
-async function salvarEImprimir() {
-  const pedidoId = await salvarPedido()
-  if (pedidoId) {
-    await imprimirPedido(pedidoId)
-    fecharModal()
-  }
 }
 
 // Fechar modal de resumo
@@ -383,10 +382,6 @@ async function abrirPedido(pedidoId) {
 document.getElementById("codigo").addEventListener("input", e => previewCodigo(e.target.value))
 document.getElementById("btnIncluir").addEventListener("click", incluirItem)
 document.getElementById("btnFinalizar").addEventListener("click", finalizarPedido)
-document.getElementById("btnHistorico").addEventListener("click", () => {
-  carregarHistorico()
-  document.getElementById("modalHistorico").classList.remove("hidden")
-})
 
 // Expor funções globais para uso no HTML
 window.editarItem = editarItem
@@ -394,7 +389,6 @@ window.excluirItem = excluirItem
 window.previewCodigo = previewCodigo
 window.salvarPedido = salvarPedido
 window.imprimirPedido = imprimirPedido
-window.salvarEImprimir = salvarEImprimir
 window.fecharModal = fecharModal
 window.carregarHistorico = carregarHistorico
 window.abrirPedido = abrirPedido
